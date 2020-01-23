@@ -1,0 +1,238 @@
+﻿@using AirPro.Service.DTOs.Interface
+@model AirPro.Site.Models.Request.DiagnosticResultViewModel
+
+<style>
+    .panel-title > a {
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Diagnostics Information
+                </h4>
+            </div>
+            <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ResultId)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ResultId)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.DiagnosticTool)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.DiagnosticTool)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.VehicleVin)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.VehicleVin)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.VehicleMake)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.VehicleMake)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.VehicleModel)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.VehicleModel)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.VehicleYear)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.VehicleYear)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ScanDateTime)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ScanDateTime)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h4 class="panel-title">Testability Issues</h4>
+            </div>
+            <div class="panel-body">
+                @if ((Model?.TestabilityIssuesList?.Count ?? 0) > 0)
+                {
+                    foreach (var issue in Model?.TestabilityIssuesList ?? new string[] { })
+                    {
+                        <div class="row">
+                            <div class="col-xs-12">
+                                @issue
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <em>None</em>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-sm-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title">Trouble Codes</h4>
+            </div>
+            <div class="panel-body">
+                @if ((Model?.Controllers?.Count ?? 0) > 0)
+                {
+                    foreach (var controller in Model?.Controllers ?? new List<IDiagnosticControllerDto>())
+                    {
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="panel panel-primary panel-body">
+                                    <strong>@controller.ControllerName</strong>
+                                    @if (controller.TroubleCodes.Count > 0)
+                                    {
+                                        <div class="panel panel-default" style="margin-top: 10px;">
+                                            <table class="table table-responsive">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 10%;">Code</th>
+                                                        <th style="width: 40%">Description</th>
+                                                        <th style="width: 50%">Information</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var code in controller.TroubleCodes)
+                                                    {
+                                                        var rowColor =
+                                                            (code.DiagnosticTroubleCodeDescription ?? "").ToLower().Contains("unknown") || (code.DiagnosticTroubleCodeDescription ?? "").ToLower().Contains("either") ? "danger" : "";
+                                                        <tr class="@rowColor">
+                                                            <td>
+                                                                @code.DiagnosticTroubleCode
+                                                            </td>
+                                                            <td>
+                                                                @code.DiagnosticTroubleCodeDescription
+                                                            </td>
+                                                            <td>
+                                                                @if (code.DiagnosticTroubleCodeInformationList.Count > 0)
+                                                                {
+                                                                    <ul style="padding-left: 15px;">
+                                                                        @foreach (var info in code.DiagnosticTroubleCodeInformationList)
+                                                                        {
+                                                                            <li>@info</li>
+                                                                        }
+                                                                    </ul>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    @if (controller.FreezeFrames.Count > 0)
+                                    {
+                                        <div class="panel panel-warning">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="collapsed" role="button" data-toggle="collapse" href="#framesCollapse" aria-expanded="false" aria-controls="framesCollapse">
+                                                        Freeze Frames&nbsp;<span class="badge">@controller.FreezeFrames.Count</span>
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div class="panel-collapse collapse" id="framesCollapse">
+                                                <div class="panel-body">
+                                                    <div class="panel-group" id="freezeFrames" role="tablist" aria-multiselectable="true" style="margin-bottom: 0;">
+                                                        @{ var frames = controller.FreezeFrames.ToList(); }
+                                                        @for (var f = 0; f < frames.Count; f++)
+                                                        {
+                                                            var frame = frames[f];
+                                                            <div class="panel panel-info">
+                                                                <div class="panel-heading" role="tab" id="frameHeading_@f">
+                                                                    <h4 class="panel-title">
+                                                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#freezeFrames" href="#frameCollapse_@f" aria-expanded="false" aria-controls="frameCollapse_@f">
+                                                                            @frame.FreezeFrameDiagnosticTroubleCode
+                                                                        </a>
+                                                                    </h4>
+                                                                </div>
+                                                                <div id="frameCollapse_@f" class="panel-collapse collapse" role="tabpanel" aria-labelledby="frameHeading_@f">
+                                                                    <table class="table table-responsive">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Group</th>
+                                                                                <th>Name</th>
+                                                                                <th>Unit</th>
+                                                                                <th>Value</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @for (var g = 0; g < frame.FreezeFrameSensorGroups.Count; g++)
+                                                                            {
+                                                                                var sensors = frame.FreezeFrameSensorGroups.ToList();
+                                                                                foreach (var sensor in sensors[g].FreezeFrameSensors)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td>@g</td>
+                                                                                        <td>@sensor.SensorName</td>
+                                                                                        <td>@sensor.SensorUnit</td>
+                                                                                        <td>@sensor.SensorValue</td>
+                                                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-danger" style="margin: 0;">
+                        <em>No Trouble Codes Found</em>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

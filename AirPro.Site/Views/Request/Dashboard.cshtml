@@ -1,0 +1,212 @@
+﻿@using AirPro.Common.Enumerations
+@{
+    ViewBag.Title = "Request Dashboard";
+}
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    #requests .panel,
+    #requests .table-responsive {
+        overflow: visible !important;
+    }
+
+    #gridSearch > .bootgrid-header {
+        margin: 0;
+    }
+
+    .panel-heading #gridSearch {
+        padding-top: 2px;
+    }
+
+    #status {
+        width: 125px;
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .bootgrid-header .actionBar {
+            text-align: left !important;
+        }
+
+        .panel-heading #gridSearch {
+            padding-top: 4px;
+        }
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div id="requests" class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-5">
+                <h4 class="panel-title">
+                    <span style="position: relative; top: 2px;">Requests</span>
+                </h4>
+            </div>
+            <div class="col-md-7" id="gridSearch">
+                <select id="status" class="form-control input-sm">
+                    <option value="false" selected="selected">Active</option>
+                    <option value="true">Completed</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div style="overflow-y: auto;">
+        <div style="min-width: 700px;">
+            <table id="requests-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                <thead>
+                    <tr>
+                        <th data-column-id="requestId" data-visible-in-selection="false" data-identifier="true" data-width="100">Request</th>
+                        <th data-column-id="requestCategoryName" data-visible="false">Category</th>
+                        <th data-column-id="requestTypeName">Type</th>
+                        <th data-column-id="repairId" data-visible="false" data-width="100">Repair</th>
+                        <th data-column-id="repairStatusName" data-visible="false">Status</th>
+                        <th data-column-id="shopName">Shop Name</th>
+                        <th data-column-id="insuranceCompanyName" data-visible="false" data-sortable="false">Ins Co</th>
+                        <th data-column-id="vehicleVIN">Vehicle VIN</th>
+                        <th data-column-id="vehicleMakeName">Vehicle Make</th>
+                        <th data-column-id="vehicleModelName">Vehicle Model</th>
+                        <th data-column-id="vehicleYear">Vehicle Year</th>
+                        <th data-column-id="technicianName" data-converter="assignment" data-visible="false" data-sortable="false">Technician</th>
+                        <th data-column-id="requestCreateDt" data-converter="date" data-width="150">Requested</th>
+                        <th data-column-id="scanUploadDt" data-converter="date" data-visible="false" data-sortable="false">Scan Uploaded</th>
+                        <th data-column-id="completedInd" data-converter="bool" data-visible="false" data-sortable="false" data-align="center" data-header-align="center">Completed</th>
+                        <th data-column-id="cancelledInd" data-converter="bool" data-visible="false" data-sortable="false" data-align="center" data-header-align="center">Cancelled</th>
+                        <th data-column-id="requestMenu" data-visible-in-selection="false" data-formatter="requestMenu" data-sortable="false" data-align="center" data-css-class="requestMenu" data-width="90"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#requests-grid-header').appendTo('#gridSearch');
+            $('#status').prependTo('.actionBar');
+            $('.panel-heading .btn-group').addClass('btn-group-sm');
+            $('.panel-heading .input-group').addClass('input-group-sm');
+
+            $('#status').on('change',
+                function() {
+                    $('#requests-grid').bootgrid("reload");
+                });
+
+            moveActionMenu();
+            $(window).resize(moveActionMenu);
+        });
+
+        function moveActionMenu() {
+            var menu = $('.actionBar .actions');
+            if (menu && $(menu).offset().left < 27) {
+                $(menu).find('.dropdown-menu.pull-right').removeClass('pull-right').addClass('pull-left');
+            } else {
+                $(menu).find('.dropdown-menu.pull-left').removeClass('pull-left').addClass('pull-right');
+            }
+        }
+
+        $("#requests-grid").bootgrid({
+            url: '@Url.Action("GetRequestsByPage")',
+            multiSort: false,
+            post: function() {
+                return {
+                    completedInd: $('#status').val()
+                }
+            },
+            rowCount: [25, 50, 100],
+            searchSettings: {
+                delay: 500,
+                characters: 3
+            },
+            formatters: {
+                "requestMenu": function(column, row) {
+                    return requestMenu(row.requestId, row.completedInd);
+                }
+            },
+            converters: {
+                date: {
+                    to: function(value) { return value ? moment(value).format('MM/DD/YYYY hh:mm A') : '- No Date -'; }
+                },
+                bool: {
+                    to: function (value) { return value ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>" : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>"; }
+                },
+                assignment: {
+                    to: function (value) { return value ? value : '- Not Assigned -'; }
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid",
+            function(e) {
+                $(".dropdown-toggle").dropdown();
+
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]',
+                    container: 'body'
+                });
+            });
+
+        function requestMenu(requestId, completedInd) {
+            var menu = '<div class="btn-group btn-group-sm pull-right" role="group">';
+
+            if (completedInd)
+                menu += '<a href="@Url.Action("ScanReport", "Download")/' + requestId +'" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Scan&nbsp;Report"><i class="glyphicon glyphicon-file"></i></a>';
+
+            @if (User.IsInRole(ApplicationRoles.ReportCreate.ToString()) || User.IsInRole(ApplicationRoles.ReportEdit.ToString()))
+            {
+                <text>
+                    menu += '<a href="@Url.Action("Report", "Request")/' + requestId + '" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Scan&nbsp;Request"><i class="glyphicon glyphicon-book"></i></a>';
+                </text>
+            }
+
+            menu += '</div>';
+
+            return menu;
+        }
+    </script>
+}

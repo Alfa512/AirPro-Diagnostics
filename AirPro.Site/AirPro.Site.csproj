@@ -1,0 +1,928 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{906C5A81-603E-4F18-A04F-35AB0A737488}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AirPro.Site</RootNamespace>
+    <AssemblyName>AirPro.Site</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.None.None</AssemblyVersionSettings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.5.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="GridMvc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Grid.Mvc.3.0.0\lib\net40\GridMvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.2.0.4\lib\net45\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.0.0\lib\net451\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.0.0\lib\net451\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.0\lib\net451\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=9.3.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.9.3.3\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.6\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.6\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="UniMatrix.Common, Version=1.0.6638.28250, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UniMatrix.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\Attributes\NoCacheAttribute.cs" />
+    <Compile Include="App_Start\Attributes\RequiredIfAttribute.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\BaseController.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\Filters\RequestLogEntryDto.cs" />
+    <Compile Include="App_Start\Filters\RequestLoggingAttribute.cs" />
+    <Compile Include="App_Start\ModelBindersConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\SqlClientConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AccessController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DecisionController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RecommendationController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RegistrationController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ReleaseNotesController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SupportController.cs" />
+    <Compile Include="Areas\Admin\Controllers\VehicleMakesController.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopContactViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopVehicleMakesPricingViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopVehicleMakesPricingViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Decision\DecisionViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Decision\DecisionRequestCategoryViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Decision\DecisionRequestTypeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Decision\DecisionVehicleMakeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Decision\DecisionViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Inventory\AirProToolStatsViewModel.cs" />
+    <Compile Include="Areas\Admin\Controllers\InsuranceCompaniesController.cs" />
+    <Compile Include="Areas\Admin\Controllers\InventoryController.cs" />
+    <Compile Include="Areas\Admin\Controllers\TechProfileController.cs" />
+    <Compile Include="Areas\Admin\Models\Inventory\AirProToolViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Inventory\AirProToolViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Recommendation\RecommendationViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Recommendation\RecommendationUsageViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Recommendation\RecommendationViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\AccountInformationViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\MitchellRegistrationStatusDto.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\ManageRegistrationViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\ManageRegistrationViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\ShopInformationViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Registration\UserDetailsViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\TechnicianCoverageRowItemViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\TechnicianCoverageViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\TechnicianCoverageViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeRequestTypeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeVehicleMakeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\VehicleMakes\VehicleMakeToolModelBinder.cs" />
+    <Compile Include="Areas\Admin\Models\VehicleMakes\VehicleMakeToolViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\InvoiceLineItemViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\InvoiceWorkItemViewModel.cs" />
+    <Compile Include="Areas\Reporting\Controllers\ExtractController.cs" />
+    <Compile Include="App_Start\SelectListItemCache.cs" />
+    <Compile Include="Areas\Admin\Controllers\WorkTypesController.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopInsuranceCompanyPlanViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopInsuranceCompanyPricingViewModelProfile.cs" />
+    <Compile Include="Areas\Reporting\Models\Templates\ReportTemplateViewModel.cs" />
+    <Compile Include="Areas\Reporting\Controllers\TemplatesController.cs" />
+    <Compile Include="Areas\Reporting\Models\Dashboard\ChartDataModel.cs" />
+    <Compile Include="Areas\Reporting\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RequestTypeController.cs" />
+    <Compile Include="Areas\Admin\Models\Access\AccessViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\AccountViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Access\AccountViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\GroupViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\GroupViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\ShopViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Access\UserViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Access\UserViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\InsuranceCompanies\InsuranceCompanyViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\InsuranceCompanies\InsuranceCompanyViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\Inventory\AirProToolDepositViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Inventory\AirProToolSubscriptionViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\ReleaseNote\ReleaseNoteViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\ReleaseNote\ReleaseNoteViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\ProfileScheduleViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\ProfileTimeOffEntryViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\TechnicianProfileViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TechProfile\TechnicianProfileViewModelProfile.cs" />
+    <Compile Include="Areas\Reporting\Models\Extract\GenerateExtractViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\VehicleMakes\VehicleMakeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\VehicleMakes\VehicleMakeViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeGroupViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeGroupViewModelProfile.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\WorkTypes\WorkTypeViewModelProfile.cs" />
+    <Compile Include="Areas\Billing\BillingAreaRegistration.cs" />
+    <Compile Include="Areas\Billing\Controllers\EstimatePlansController.cs" />
+    <Compile Include="Areas\Billing\Controllers\InvoicingController.cs" />
+    <Compile Include="Areas\Admin\Controllers\TemplatesController.cs" />
+    <Compile Include="Areas\Billing\Controllers\PaymentsController.cs" />
+    <Compile Include="App_Start\Attributes\AuthorizeRolesAttribute.cs" />
+    <Compile Include="Areas\Billing\Controllers\PricingPlansController.cs" />
+    <Compile Include="Areas\Billing\Models\EstimatePlanVehicleViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\EstimatePlanVehicleViewModelProfile.cs" />
+    <Compile Include="Areas\Billing\Models\EstimatePlanViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\EstimatePlanViewModelProfile.cs" />
+    <Compile Include="Areas\Billing\Models\InvoiceViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\InvoiceViewModelProfile.cs" />
+    <Compile Include="Areas\Billing\Models\PricingPlanLineItemViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\PricingPlanViewModel.cs" />
+    <Compile Include="Areas\Billing\Models\PricingPlanLineItemViewModelProfile.cs" />
+    <Compile Include="Areas\Billing\Models\PricingPlanViewModelProfile.cs" />
+    <Compile Include="Areas\Reporting\ReportingAreaRegistration.cs" />
+    <Compile Include="Controllers\ClientController.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
+    <Compile Include="Controllers\HelpController.cs" />
+    <Compile Include="Controllers\RepairsController.cs" />
+    <Compile Include="Controllers\RequestController.cs" />
+    <Compile Include="Controllers\ScansController.cs" />
+    <Compile Include="Controllers\NoteController.cs" />
+    <Compile Include="Hubs\HubConnectionDto.cs" />
+    <Compile Include="Hubs\HubMessengerBase.cs" />
+    <Compile Include="Models\Client\AccountInformationViewModel.cs" />
+    <Compile Include="Models\Client\CreateViewModel.cs" />
+    <Compile Include="Models\Client\CreateViewModelProfile.cs" />
+    <Compile Include="Models\Client\ExternalServicesViewModel.cs" />
+    <Compile Include="Models\Client\RegistrationViewModel.cs" />
+    <Compile Include="Models\Client\RepairInformationViewModel.cs" />
+    <Compile Include="Models\Client\ShopInformationViewModel.cs" />
+    <Compile Include="Models\Client\ShopInsuranceCompanyPlanViewModel.cs" />
+    <Compile Include="Models\Client\ShopVehicleMakesPricingViewModel.cs" />
+    <Compile Include="Models\Client\UserDetailsViewModel.cs" />
+    <Compile Include="Models\Manage\AddPhoneNumberViewModel.cs" />
+    <Compile Include="Models\Manage\ChangePasswordViewModel.cs" />
+    <Compile Include="Models\Manage\IndexViewModel.cs" />
+    <Compile Include="Models\Manage\ManageLoginsViewModel.cs" />
+    <Compile Include="Models\Manage\SetPasswordViewModel.cs" />
+    <Compile Include="Models\Manage\VerifyPhoneNumberViewModel.cs" />
+    <Compile Include="Models\Notes\NoteControlViewModel.cs" />
+    <Compile Include="Models\Notes\NoteViewModel.cs" />
+    <Compile Include="Models\Help\HelpIndexViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticControllerViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticFreezeFrameSensorGroupViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticFreezeFrameSensorViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticFreezeFrameViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticResultViewModel.cs" />
+    <Compile Include="Models\Request\DiagnosticResultViewModelProfile.cs" />
+    <Compile Include="Models\Request\DiagnosticTroubleCodeViewModel.cs" />
+    <Compile Include="Models\Request\ReportDecisionSelectionItemViewModel.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Error\404.aspx.cs">
+      <DependentUpon>404.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\404.aspx.designer.cs">
+      <DependentUpon>404.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error\500.aspx.cs">
+      <DependentUpon>500.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\500.aspx.designer.cs">
+      <DependentUpon>500.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Alerts.cs" />
+    <Compile Include="Helpers\Controls.cs" />
+    <Compile Include="Helpers\HtmlAttribute.cs" />
+    <Compile Include="Helpers\Buttons.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\Labels.cs" />
+    <Compile Include="Helpers\Selections.cs" />
+    <Compile Include="Hubs\ClientHub.cs" />
+    <Compile Include="Hubs\ClientHubMessenger.cs" />
+    <Compile Include="Hubs\HubBase.cs" />
+    <Compile Include="Hubs\ScanRequestHub.cs" />
+    <Compile Include="Hubs\ScanRequestHubMessenger.cs" />
+    <Compile Include="Models\Help\ReleaseNoteInfoViewModel.cs" />
+    <Compile Include="Models\Home\SignatureGeneratorViewModel.cs" />
+    <Compile Include="Models\Hubs\TechncianConnectionModel.cs" />
+    <Compile Include="Models\Hubs\TechnicianBaseModel.cs" />
+    <Compile Include="Models\Hubs\TechnicianScheduleModel.cs" />
+    <Compile Include="Models\Account\ForgotPasswordViewModel.cs" />
+    <Compile Include="Models\Account\ForgotViewModel.cs" />
+    <Compile Include="Models\Account\LoginViewModel.cs" />
+    <Compile Include="Models\Account\ResetPasswordViewModel.cs" />
+    <Compile Include="Models\Account\SendCodeViewModel.cs" />
+    <Compile Include="Models\Account\VerifyCodeViewModel.cs" />
+    <Compile Include="Models\Repairs\CreateRepairViewModel.cs" />
+    <Compile Include="Models\Repairs\FeedbackViewModel.cs" />
+    <Compile Include="Models\Repairs\PointOfImpactViewModel.cs" />
+    <Compile Include="Models\Repairs\RepairViewModel.cs" />
+    <Compile Include="Models\Repairs\RepairViewModelProfile.cs" />
+    <Compile Include="Models\Repairs\VehicleViewModel.cs" />
+    <Compile Include="Models\Repairs\VehicleViewModelProfile.cs" />
+    <Compile Include="Models\Request\IQuickRequest.cs" />
+    <Compile Include="Models\Request\RepairRequestScanViewModel.cs" />
+    <Compile Include="Models\Request\ReportDecisionSelectionItemViewModelProfile.cs" />
+    <Compile Include="Models\Request\ReportDiagnosticResultSelectionItemViewModel.cs" />
+    <Compile Include="Models\Request\ReportTroubleCodeRecommendationViewModel.cs" />
+    <Compile Include="Models\Request\ReportTroubleCodeViewModel.cs" />
+    <Compile Include="Models\Request\ReportValidationRuleViewModel.cs" />
+    <Compile Include="Models\Request\ReportVehicleMakeToolViewModel.cs" />
+    <Compile Include="Models\Request\ReportViewModel.cs" />
+    <Compile Include="Models\Request\ReportViewModelProfile.cs" />
+    <Compile Include="Models\Request\ReportWorkTypeSelectionItemViewModel.cs" />
+    <Compile Include="Models\Request\ScanAnalysisViewModel.cs" />
+    <Compile Include="Models\Request\RequestViewModel.cs" />
+    <Compile Include="Models\Request\RequestViewModelProfile.cs" />
+    <Compile Include="Models\Request\SelfScanViewModel.cs" />
+    <Compile Include="Models\Shared\UpdateResultViewModel.cs" />
+    <Compile Include="Models\Shared\ContactSelectViewModel.cs" />
+    <Compile Include="Models\Shared\HasInsuranceSelectViewModel.cs" />
+    <Compile Include="Models\Shared\MembershipControlViewModel.cs" />
+    <Compile Include="Models\Shared\PermissionSelectionViewModel.cs" />
+    <Compile Include="Models\Shared\PointOfImpactDefinition.cs" />
+    <Compile Include="Models\Shared\RequestTypeControlViewModel.cs" />
+    <Compile Include="Models\Uploads\UploadControlViewModel.cs" />
+    <Compile Include="Models\Uploads\UploadViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Results\JsonCamelResult.cs" />
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Admin\Views\Inventory\AirProToolViewModel.js" />
+    <Content Include="Areas\Admin\Views\Access\ShopManageViewModel.js" />
+    <Content Include="Areas\Admin\Views\RequestType\RequestTypeDashboardViewModel.js" />
+    <Content Include="Areas\Admin\Views\TechProfile\TechnicianScheduleViewModel.js" />
+    <Content Include="Areas\Admin\Views\TechProfile\TechnicianTimeOffViewModel.js" />
+    <Content Include="Content\alert.mp3" />
+    <Content Include="Content\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap\css\bootstrap.css" />
+    <Content Include="Content\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\bootstrap\js\bootstrap.js" />
+    <Content Include="Content\chart.js\Chart.js" />
+    <Content Include="Content\font-awesome\font-awesome.css" />
+    <Content Include="Content\font-awesome\font-awesome.min.css" />
+    <Content Include="Content\font-awesome\fontawesome-webfont.svg" />
+    <Content Include="Content\Gridmvc.css" />
+    <Content Include="Content\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
+    <Content Include="Content\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Content\jquery-validation\jquery.validate.js" />
+    <Content Include="Content\jquery.bootgrid\jquery.bootgrid.css" />
+    <Content Include="Content\jquery.bootgrid\jquery.bootgrid.js" />
+    <Content Include="Content\jquery.inputmask\jquery.inputmask.bundle.js" />
+    <Content Include="Content\jquery\jquery.js" />
+    <Content Include="Content\knockout\knockout.js" />
+    <Content Include="Content\moment\moment.js" />
+    <Content Include="Content\notify.mp3" />
+    <Content Include="Content\respond\respond.src.js" />
+    <Content Include="Content\signalr\jquery.signalR.js" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\tinymce\jquery.tinymce.js" />
+    <Content Include="Content\tinymce\jquery.tinymce.min.js" />
+    <Content Include="Content\tinymce\license.txt" />
+    <Content Include="Content\tinymce\plugins\advlist\index.js" />
+    <Content Include="Content\tinymce\plugins\advlist\plugin.js" />
+    <Content Include="Content\tinymce\plugins\advlist\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\anchor\index.js" />
+    <Content Include="Content\tinymce\plugins\anchor\plugin.js" />
+    <Content Include="Content\tinymce\plugins\anchor\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\autolink\index.js" />
+    <Content Include="Content\tinymce\plugins\autolink\plugin.js" />
+    <Content Include="Content\tinymce\plugins\autolink\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\autoresize\index.js" />
+    <Content Include="Content\tinymce\plugins\autoresize\plugin.js" />
+    <Content Include="Content\tinymce\plugins\autoresize\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\autosave\index.js" />
+    <Content Include="Content\tinymce\plugins\autosave\plugin.js" />
+    <Content Include="Content\tinymce\plugins\autosave\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\bbcode\index.js" />
+    <Content Include="Content\tinymce\plugins\bbcode\plugin.js" />
+    <Content Include="Content\tinymce\plugins\bbcode\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\charmap\index.js" />
+    <Content Include="Content\tinymce\plugins\charmap\plugin.js" />
+    <Content Include="Content\tinymce\plugins\charmap\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\codesample\css\prism.css" />
+    <Content Include="Content\tinymce\plugins\codesample\index.js" />
+    <Content Include="Content\tinymce\plugins\codesample\plugin.js" />
+    <Content Include="Content\tinymce\plugins\codesample\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\code\index.js" />
+    <Content Include="Content\tinymce\plugins\code\plugin.js" />
+    <Content Include="Content\tinymce\plugins\code\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\colorpicker\index.js" />
+    <Content Include="Content\tinymce\plugins\colorpicker\plugin.js" />
+    <Content Include="Content\tinymce\plugins\colorpicker\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\contextmenu\index.js" />
+    <Content Include="Content\tinymce\plugins\contextmenu\plugin.js" />
+    <Content Include="Content\tinymce\plugins\contextmenu\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\directionality\index.js" />
+    <Content Include="Content\tinymce\plugins\directionality\plugin.js" />
+    <Content Include="Content\tinymce\plugins\directionality\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-cool.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-cry.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-embarassed.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-foot-in-mouth.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-frown.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-innocent.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-kiss.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-laughing.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-money-mouth.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-sealed.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-smile.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-surprised.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-tongue-out.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-undecided.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-wink.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\img\smiley-yell.gif" />
+    <Content Include="Content\tinymce\plugins\emoticons\index.js" />
+    <Content Include="Content\tinymce\plugins\emoticons\plugin.js" />
+    <Content Include="Content\tinymce\plugins\emoticons\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\fullpage\index.js" />
+    <Content Include="Content\tinymce\plugins\fullpage\plugin.js" />
+    <Content Include="Content\tinymce\plugins\fullpage\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\fullscreen\index.js" />
+    <Content Include="Content\tinymce\plugins\fullscreen\plugin.js" />
+    <Content Include="Content\tinymce\plugins\fullscreen\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\help\img\logo.png" />
+    <Content Include="Content\tinymce\plugins\help\index.js" />
+    <Content Include="Content\tinymce\plugins\help\plugin.js" />
+    <Content Include="Content\tinymce\plugins\help\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\hr\index.js" />
+    <Content Include="Content\tinymce\plugins\hr\plugin.js" />
+    <Content Include="Content\tinymce\plugins\hr\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\imagetools\index.js" />
+    <Content Include="Content\tinymce\plugins\imagetools\plugin.js" />
+    <Content Include="Content\tinymce\plugins\imagetools\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\image\index.js" />
+    <Content Include="Content\tinymce\plugins\image\plugin.js" />
+    <Content Include="Content\tinymce\plugins\image\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\importcss\index.js" />
+    <Content Include="Content\tinymce\plugins\importcss\plugin.js" />
+    <Content Include="Content\tinymce\plugins\importcss\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\insertdatetime\index.js" />
+    <Content Include="Content\tinymce\plugins\insertdatetime\plugin.js" />
+    <Content Include="Content\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\legacyoutput\index.js" />
+    <Content Include="Content\tinymce\plugins\legacyoutput\plugin.js" />
+    <Content Include="Content\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\link\index.js" />
+    <Content Include="Content\tinymce\plugins\link\plugin.js" />
+    <Content Include="Content\tinymce\plugins\link\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\lists\index.js" />
+    <Content Include="Content\tinymce\plugins\lists\plugin.js" />
+    <Content Include="Content\tinymce\plugins\lists\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\media\index.js" />
+    <Content Include="Content\tinymce\plugins\media\plugin.js" />
+    <Content Include="Content\tinymce\plugins\media\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\nonbreaking\index.js" />
+    <Content Include="Content\tinymce\plugins\nonbreaking\plugin.js" />
+    <Content Include="Content\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\noneditable\index.js" />
+    <Content Include="Content\tinymce\plugins\noneditable\plugin.js" />
+    <Content Include="Content\tinymce\plugins\noneditable\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\pagebreak\index.js" />
+    <Content Include="Content\tinymce\plugins\pagebreak\plugin.js" />
+    <Content Include="Content\tinymce\plugins\pagebreak\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\paste\index.js" />
+    <Content Include="Content\tinymce\plugins\paste\plugin.js" />
+    <Content Include="Content\tinymce\plugins\paste\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\preview\index.js" />
+    <Content Include="Content\tinymce\plugins\preview\plugin.js" />
+    <Content Include="Content\tinymce\plugins\preview\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\print\index.js" />
+    <Content Include="Content\tinymce\plugins\print\plugin.js" />
+    <Content Include="Content\tinymce\plugins\print\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\save\index.js" />
+    <Content Include="Content\tinymce\plugins\save\plugin.js" />
+    <Content Include="Content\tinymce\plugins\save\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\searchreplace\index.js" />
+    <Content Include="Content\tinymce\plugins\searchreplace\plugin.js" />
+    <Content Include="Content\tinymce\plugins\searchreplace\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\spellchecker\index.js" />
+    <Content Include="Content\tinymce\plugins\spellchecker\plugin.js" />
+    <Content Include="Content\tinymce\plugins\spellchecker\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\tabfocus\index.js" />
+    <Content Include="Content\tinymce\plugins\tabfocus\plugin.js" />
+    <Content Include="Content\tinymce\plugins\tabfocus\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\table\index.js" />
+    <Content Include="Content\tinymce\plugins\table\plugin.js" />
+    <Content Include="Content\tinymce\plugins\table\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\template\index.js" />
+    <Content Include="Content\tinymce\plugins\template\plugin.js" />
+    <Content Include="Content\tinymce\plugins\template\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\textcolor\index.js" />
+    <Content Include="Content\tinymce\plugins\textcolor\plugin.js" />
+    <Content Include="Content\tinymce\plugins\textcolor\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\textpattern\index.js" />
+    <Content Include="Content\tinymce\plugins\textpattern\plugin.js" />
+    <Content Include="Content\tinymce\plugins\textpattern\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\toc\index.js" />
+    <Content Include="Content\tinymce\plugins\toc\plugin.js" />
+    <Content Include="Content\tinymce\plugins\toc\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\visualblocks\css\visualblocks.css" />
+    <Content Include="Content\tinymce\plugins\visualblocks\index.js" />
+    <Content Include="Content\tinymce\plugins\visualblocks\plugin.js" />
+    <Content Include="Content\tinymce\plugins\visualblocks\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\visualchars\index.js" />
+    <Content Include="Content\tinymce\plugins\visualchars\plugin.js" />
+    <Content Include="Content\tinymce\plugins\visualchars\plugin.min.js" />
+    <Content Include="Content\tinymce\plugins\wordcount\index.js" />
+    <Content Include="Content\tinymce\plugins\wordcount\plugin.js" />
+    <Content Include="Content\tinymce\plugins\wordcount\plugin.min.js" />
+    <Content Include="Content\tinymce\skins\lightgray\content.inline.min.css" />
+    <Content Include="Content\tinymce\skins\lightgray\content.min.css" />
+    <Content Include="Content\tinymce\skins\lightgray\content.mobile.min.css" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce-small.svg" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce.svg" />
+    <Content Include="Content\tinymce\skins\lightgray\img\anchor.gif" />
+    <Content Include="Content\tinymce\skins\lightgray\img\loader.gif" />
+    <Content Include="Content\tinymce\skins\lightgray\img\object.gif" />
+    <Content Include="Content\tinymce\skins\lightgray\img\trans.gif" />
+    <Content Include="Content\tinymce\skins\lightgray\skin.ie7.min.css" />
+    <Content Include="Content\tinymce\skins\lightgray\skin.min.css" />
+    <Content Include="Content\tinymce\skins\lightgray\skin.mobile.min.css" />
+    <Content Include="Content\tinymce\themes\inlite\index.js" />
+    <Content Include="Content\tinymce\themes\inlite\theme.js" />
+    <Content Include="Content\tinymce\themes\inlite\theme.min.js" />
+    <Content Include="Content\tinymce\themes\mobile\index.js" />
+    <Content Include="Content\tinymce\themes\mobile\theme.js" />
+    <Content Include="Content\tinymce\themes\mobile\theme.min.js" />
+    <Content Include="Content\tinymce\themes\modern\index.js" />
+    <Content Include="Content\tinymce\themes\modern\theme.js" />
+    <Content Include="Content\tinymce\themes\modern\theme.min.js" />
+    <Content Include="Content\tinymce\tinymce.js" />
+    <Content Include="Content\tinymce\tinymce.min.js" />
+    <Content Include="Error\404.aspx" />
+    <Content Include="Error\404.html" />
+    <Content Include="Error\500.aspx" />
+    <Content Include="Error\500.html" />
+    <Content Include="Error\Default.aspx" />
+    <Content Include="Error\Default.html" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Images\AirProLogoSmall.png" />
+    <Content Include="Images\AirProOrionLogo-2000x585.png" />
+    <Content Include="Images\car_silouette.png" />
+    <Content Include="Images\RobotHeadSmall.png" />
+    <Content Include="Images\Steps\WizardProgress-1of4.png" />
+    <Content Include="Images\Steps\WizardProgress-1of5.png" />
+    <Content Include="Images\Steps\WizardProgress-2of4.png" />
+    <Content Include="Images\Steps\WizardProgress-2of5.png" />
+    <Content Include="Images\Steps\WizardProgress-3of4.png" />
+    <Content Include="Images\Steps\WizardProgress-3of5.png" />
+    <Content Include="Images\Steps\WizardProgress-4of4.png" />
+    <Content Include="Images\Steps\WizardProgress-4of5.png" />
+    <Content Include="Images\Steps\WizardProgress-5of5.png" />
+    <Content Include="Images\UniMatrixBannerSmall.png" />
+    <Content Include="robots.txt" />
+    <Content Include="Areas\Admin\Views\Web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Reporting\Views\Dashboard\DashboardHome.cshtml" />
+    <Content Include="Content\font-awesome\font-awesome.css.map" />
+    <Content Include="Content\font-awesome\fontawesome-webfont.eot" />
+    <Content Include="Content\font-awesome\fontawesome-webfont.ttf" />
+    <Content Include="Content\font-awesome\fontawesome-webfont.woff" />
+    <Content Include="Content\font-awesome\fontawesome-webfont.woff2" />
+    <Content Include="Content\font-awesome\FontAwesome.otf" />
+    <Content Include="Areas\Admin\Views\RequestType\RequestTypeDashboard.cshtml" />
+    <Content Include="Areas\Billing\Views\Web.config" />
+    <Content Include="Areas\Billing\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Billing\Views\Payments\Dashboard.cshtml" />
+    <Content Include="Areas\Billing\Views\Payments\_AcceptPayment.cshtml" />
+    <Content Include="Areas\Billing\Views\Payments\_AcceptPaymentGrid.cshtml" />
+    <Content Include="Areas\Admin\Views\Access\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Access\_AccountManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Access\_ShopManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Access\_UserManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Access\_GroupManage.cshtml" />
+    <Content Include="bower.json" />
+    <Content Include=".bowerrc" />
+    <Content Include="Areas\Reporting\Views\Extract\ExtractHome.cshtml" />
+    <Content Include="Areas\Admin\Views\WorkTypes\WorkTypeDashboard.cshtml" />
+    <Content Include="Areas\Admin\Views\WorkTypes\_WorkTypeManage.cshtml" />
+    <Content Include="Areas\Admin\Views\WorkTypes\_WorkTypeGroupManage.cshtml" />
+    <Content Include="Areas\Billing\Views\PricingPlans\PricingPlansHome.cshtml" />
+    <Content Include="Areas\Billing\Views\PricingPlans\_PricingPlanManage.cshtml" />
+    <Content Include="Areas\Admin\Views\InsuranceCompanies\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\InsuranceCompanies\_InsuranceCompanyManage.cshtml" />
+    <Content Include="Areas\Admin\Views\TechProfile\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\TechProfile\_ProfilesManage.cshtml" />
+    <Content Include="Scripts\app\signalr.js" />
+    <Content Include="Scripts\gridmvc.js" />
+    <Content Include="Scripts\gridmvc.lang.ru.js" />
+    <Content Include="Scripts\gridmvc.min.js" />
+    <Content Include="Scripts\knockout\knockout-dateTimePicker.js" />
+    <Content Include="Scripts\knockout\knockout-mapping.js" />
+    <Content Include="Scripts\knockout\knockout-groupBy.js" />
+    <Content Include="Scripts\knockout\knockout-tooltip.js" />
+    <Content Include="Scripts\knockout\knockout-timePickerMoment.js" />
+    <Content Include="Scripts\knockout\knockout-enterKey.js" />
+    <Content Include="Scripts\knockout\knockout-modal.js" />
+    <Content Include="Scripts\knockout\knockout-numeric.js" />
+    <Content Include="Scripts\knockout\knockout-validation.min.js" />
+    <Content Include="Scripts\app\bootgridSettings.js" />
+    <Content Include="Scripts\validators\requiredIfValidator.js" />
+    <Content Include="Views\Client\ClientRegistrationViewModel.js" />
+    <Content Include="Views\Repairs\RepairViewModel.js" />
+    <Content Include="Views\Request\TechStatViewModel.js" />
+    <Content Include="Views\Request\ScanRequestViewModel.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Scripts\app\common.js" />
+    <Content Include="package.json" />
+    <Content Include="Views\Repairs\Dashboard.cshtml" />
+    <Content Include="Views\Request\ScanReportViewModel.js" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\SendCode.cshtml" />
+    <Content Include="Views\Account\VerifyCode.cshtml" />
+    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Shared\_GridPager.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Repairs\RequestScan.cshtml" />
+    <Content Include="Areas\Billing\Views\Invoicing\Dashboard.cshtml" />
+    <Content Include="Areas\Billing\Views\Invoicing\Invoice.cshtml" />
+    <Content Include="Views\Shared\_GoogleAnalytics.cshtml" />
+    <Content Include="Areas\Admin\Views\Templates\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Templates\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Templates\Index.cshtml" />
+    <Content Include="Areas\Billing\Views\EstimatePlans\EstimatePlansHome.cshtml" />
+    <Content Include="Areas\Billing\Views\EstimatePlans\_EstimatePlanManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Inventory\InventoryHome.cshtml" />
+    <Content Include="Areas\Admin\Views\Inventory\_AirProToolManage.cshtml" />
+    <Content Include="Areas\Admin\Views\VehicleMakes\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\VehicleMakes\_VehicleMakeManage.cshtml" />
+    <Content Include="Areas\Reporting\Views\Web.config" />
+    <Content Include="Areas\Reporting\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Reporting\Views\Templates\TemplateHome.cshtml" />
+    <Content Include="Areas\Admin\Views\TechProfile\_TechCoverage.cshtml" />
+    <Content Include="Areas\Admin\Views\Decision\DecisionManagement.cshtml" />
+    <Content Include="Areas\Admin\Views\ReleaseNotes\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ReleaseNotes\_ReleaseNoteManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Recommendation\RecommendationManagement.cshtml" />
+    <Content Include="Areas\Admin\Views\Support\SupportHome.cshtml" />
+    <Content Include="Areas\Admin\Views\Support\_ManageRequestMove.cshtml" />
+    <Content Include="Areas\Admin\Views\Registration\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Support\_ManageVinChange.cshtml" />
+    <Content Include="Areas\Admin\Views\Registration\_ManageRegistration.cshtml" />
+    <None Include="Areas\Admin\Views\Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Areas\Billing\Views\Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Areas\Reporting\Views\Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Content\bootstrap\config.json" />
+    <Content Include="Content\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\tinymce\bower.json" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce-mobile.woff" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce-small.woff" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce.eot" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce.ttf" />
+    <Content Include="Content\tinymce\skins\lightgray\fonts\tinymce.woff" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\AirPro%28QA%29 - Web Deploy.pubxml" />
+    <Content Include="Views\Repairs\_SelfScanCreate.cshtml" />
+    <Content Include="Views\Repairs\_Create.cshtml" />
+    <Content Include="Views\Repairs\_ScanAnalysisCreate.cshtml" />
+    <Content Include="Views\Shared\_UploadControl.cshtml" />
+    <Content Include="Views\Shared\_Grid.cshtml" />
+    <Content Include="Views\Repairs\_Complete.cshtml" />
+    <Content Include="Views\Home\SignatureGenerator.cshtml" />
+    <Content Include="Views\Shared\_Poi.cshtml" />
+    <Content Include="Views\Shared\_MembershipControl.cshtml" />
+    <Content Include="Views\Shared\_ContactSelectControl.cshtml" />
+    <Content Include="Views\Shared\_RequestTypeControl.cshtml" />
+    <Content Include="Views\Shared\_InsuranceSelectControl.cshtml" />
+    <Content Include="Views\Request\Report.cshtml" />
+    <Content Include="Views\Request\_Diagnostics.cshtml" />
+    <Content Include="Views\Request\Queue.cshtml" />
+    <Content Include="Views\Request\Dashboard.cshtml" />
+    <Content Include="Views\Help\_ReleaseNoteInfoModal.cshtml" />
+    <Content Include="Views\Shared\_PermissionSelectionControl.cshtml" />
+    <Content Include="Views\Repairs\_AssistedRequestAlert.cshtml" />
+    <Content Include="Views\Shared\_NoteControl.cshtml" />
+    <Content Include="Views\Help\Index.cshtml" />
+    <Content Include="Views\Help\_ReleaseNote.cshtml" />
+    <Content Include="Views\Repairs\RepairClosed.cshtml" />
+    <Content Include="Views\Client\Registration.cshtml" />
+    <Content Include="Views\Client\ThankYou.cshtml" />
+    <Content Include="Views\Client\NotFound.cshtml" />
+    <None Include="Views\Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AirPro.Common\AirPro.Common.csproj">
+      <Project>{469d19db-ccf9-45a1-825a-5d47c44d1bfb}</Project>
+      <Name>AirPro.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Entities\AirPro.Entities.csproj">
+      <Project>{c4734dca-e58e-4b05-b16f-b9b1b479d13a}</Project>
+      <Name>AirPro.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.FileParser\AirPro.FileParser.csproj">
+      <Project>{1d0576f4-c339-4be3-b8aa-bdc54f491667}</Project>
+      <Name>AirPro.FileParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Function.Mitchell\AirPro.Function.Mitchell.csproj">
+      <Project>{BC8CC9AB-D4B6-4D77-A7E5-DFB754612C64}</Project>
+      <Name>AirPro.Function.Mitchell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Library\AirPro.Library.csproj">
+      <Project>{2cf69709-73d5-409a-98ad-04f1548e9ec4}</Project>
+      <Name>AirPro.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Logging\AirPro.Logging.csproj">
+      <Project>{e49250a2-4b1b-4b20-9a21-3de4fcf391a2}</Project>
+      <Name>AirPro.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Messaging\AirPro.Messaging.csproj">
+      <Project>{0f3d0851-1199-4370-b2db-4f38436481f7}</Project>
+      <Name>AirPro.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Reports\AirPro.Reports.csproj">
+      <Project>{8b43be95-19a6-4c14-bfcc-195d0f610dfe}</Project>
+      <Name>AirPro.Reports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Service\AirPro.Service.csproj">
+      <Project>{8b76f6c7-12d1-442b-9dfc-611d3f965fbd}</Project>
+      <Name>AirPro.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Storage\AirPro.Storage.csproj">
+      <Project>{97a3a131-740c-4a1c-ad9b-fcdcc7bab842}</Project>
+      <Name>AirPro.Storage</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Views\Shared\" />
+    <Folder Include="Areas\Billing\Views\Shared\" />
+    <Folder Include="Areas\Reporting\Views\Shared\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56373</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:63000/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:63000/Scans/DiagnosticResults/41</IISAppRootUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppSettingsSecrets.config" "$(TargetDir)"
+if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppConnectionsSecrets.config" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

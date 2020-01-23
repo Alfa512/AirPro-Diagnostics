@@ -1,0 +1,46 @@
+﻿@model AirPro.Site.Models.Shared.HasInsuranceSelectViewModel
+@{
+    var controlId = Guid.NewGuid().ToString();
+
+    var insuranceCompanyIdControlClass = $"insurance-company-id-{controlId}";
+    var insuranceCompanyOtherControlClass = $"insurance-company-other-{controlId}";
+    var insuranceCompanyOtherContainerId = $"insurance-company-other-container-{controlId}";
+}
+<div class="row form-group">
+    @Html.LabelFor(model => model.InsuranceCompanyId, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+        @Html.DropDownListFor(model => model.InsuranceCompanyId, SelectListItemCache.InsuranceCompanySelectItems()?.ToList(), "<-- Select Company -->", new { @class = $"form-control {insuranceCompanyIdControlClass}", data_bind = @Model.InsuranceDataBind })
+        @Html.ValidationMessageFor(model => model.InsuranceCompanyId, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="row form-group" id="@insuranceCompanyOtherContainerId" style="display: none;">
+    @Html.LabelFor(model => model.InsuranceCompanyOther, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+        @Html.TextBoxFor(model => model.InsuranceCompanyOther, new { @class = $"form-control {insuranceCompanyOtherControlClass}", data_bind = @Model.InsuranceOtherDataBind })
+        @Html.ValidationMessageFor(model => model.InsuranceCompanyOther, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<script type="text/javascript">
+            $('.@insuranceCompanyOtherControlClass')
+            .on('keyup',
+                function () {
+                    if ($(this).val().length > 0) {
+                        $('.@insuranceCompanyIdControlClass').val(1);
+                    }
+                });
+
+        if ($('.@insuranceCompanyIdControlClass') && $('.@insuranceCompanyIdControlClass').val() === "1")
+            $('#@insuranceCompanyOtherContainerId').css('display', '');
+
+        $('.@insuranceCompanyIdControlClass').on('change',
+            function () {
+                if ($(this).val() > 1 || !$(this).val()) {
+                    $('.@insuranceCompanyOtherControlClass').val('');
+                    $('#@insuranceCompanyOtherContainerId').css('display', 'none');
+                } else {
+                    $('#@insuranceCompanyOtherContainerId').css('display', '');
+                }
+            });
+</script>

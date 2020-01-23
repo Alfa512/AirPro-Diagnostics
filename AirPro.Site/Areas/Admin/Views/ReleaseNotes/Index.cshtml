@@ -1,0 +1,204 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Release Notes";
+}
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    #manageBody .page-title {
+        margin: 0;
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div id="manageBody">
+
+    <div id="releasenotes" class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title pull-left">
+                <span style="position: relative; top: 2px;">Note Management</span>&nbsp;
+                @if (User.IsInRole(ApplicationRoles.ReleaseNoteCreate.ToString()))
+                {
+                    <a onclick="manageReleaseNote()" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add Release Note</a>
+                }
+            </h4>
+        </div>
+        <table id="releasenotes-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="releaseNoteId" data-identifier="true" data-visible="false"></th>
+                    <th data-column-id="version" data-width="100">Version</th>
+                    <th data-column-id="developmentId" data-width="75">Dev Id</th>
+                    <th data-column-id="summary">Summary</th>
+                    <th data-column-id="updatedBy" data-width="200">Updated By</th>
+                    <th data-column-id="updatedDt" data-converter="date" data-width="150">Updated Date</th>
+                    @if (User.IsInRole(ApplicationRoles.ReleaseNoteEdit.ToString()))
+                    {
+                        <th data-column-id="editReleaseNote" data-visible-in-selection="false" data-formatter="editReleaseNote" data-sortable="false" data-align="center" data-width="45"></th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Manage Release Note</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                @if (User.IsInRole(ApplicationRoles.ReleaseNoteDelete.ToString()))
+                {
+                    <button type="button" class="btn btn-danger delete-release-note-btn pull-left" onclick="deleteReleaseNote()" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Dismiss, "")>Delete</button>
+                }
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal();" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#manageModal')
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#manageModalBody').html('Loading...');
+                        $('#manageModal button[type=submit]').css('display', '');
+                });
+
+            $('#releasenotes-grid-header').appendTo('#releasenotes .panel-heading');
+            $('#releasenotes .panel-title').appendTo('#releasenotes-grid-header .actionBar');
+        });
+
+        $("#releasenotes-grid").bootgrid({
+            url: '@Url.Action("GetReleaseNotesByPage")',
+            formatters: {
+                "editReleaseNote": function (column, row) {
+                    return "<div class='btn-group btn-group-xs' role='group'><a onclick = 'manageReleaseNote(" +
+                        row.releaseNoteId + ");' class='btn btn-warning btn-xs'><i class='glyphicon glyphicon-edit'></i></a></div>";
+                }
+            },
+            converters: {
+                date: {
+                    to: function (value) { return moment(value).format('MM/DD/YYYY hh:mm A'); }
+                }
+            }
+        });
+        $("#releasenotes-grid").bootgrid("sort", { UpdatedDt: 'DESC' });
+
+        function manageReleaseNote(releaseNoteId) {
+            if (releaseNoteId) {
+                $('#manageModal .delete-release-note-btn').show();
+            } else {
+                $('#manageModal .delete-release-note-btn').hide();
+            }
+
+            $('#manageModal').modal('show');
+            var url = '@Url.Action("ManageReleaseNote", "ReleaseNotes")/' + ((releaseNoteId) ? releaseNoteId : '');
+            loadModal(url);
+        }
+
+
+        function refreshReleaseNotes() {
+            $('#releasenotes-grid').bootgrid("reload");
+        }
+
+        function loadModal(url) {
+            $.get(url,
+                    function (data) {
+                        $('#manageModalBody').html(data);
+                    })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function (data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function deleteReleaseNote() {
+            var releaseNoteId = $('#manageModalBody > form #ReleaseNoteId').val();
+            $.post('@Url.Action("DeleteReleaseNote", "ReleaseNotes")/' + releaseNoteId).then(function () {
+                refreshReleaseNotes();
+                $('#manageModal').modal('hide');
+            });
+        }
+
+        function updateComplete(html) {
+            $('#manageBody').prepend(html);
+            $('#manageBody > .alert').fadeTo(3000, 500).slideUp(500, function () {
+                $('#manageBody > .alert').slideUp(500);
+                $('#manageBody > .alert').remove();
+            });
+            $('#manageModal').modal('hide');
+        }
+
+    </script>
+}
+

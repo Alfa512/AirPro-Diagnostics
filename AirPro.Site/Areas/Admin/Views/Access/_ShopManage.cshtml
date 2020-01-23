@@ -1,0 +1,1093 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@model AirPro.Site.Areas.Admin.Models.Access.ShopViewModel
+@{
+    var canViewNotes = User.IsInRole(ApplicationRoles.ShopNoteView.ToString()) || User.IsInRole(ApplicationRoles.ShopNoteEdit.ToString());
+}
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                try {
+                    refreshShops();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+<style type="text/css">
+    .hiddenIgnore + span.validationMessage {
+        display: none;
+    }
+
+    span.validationMessage {
+        color: red;
+    }
+
+    .well li label {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+
+    .form-horizontal .checkbox, .form-horizontal .radio {
+        min-height: 34px;
+    }
+
+    .notification-checkbox {
+        top: 7px;
+        position: relative;
+    }
+</style>
+
+@if (!Model?.AllowEntry ?? true)
+{
+    <script type="text/javascript">
+        disableEntry();
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active in" role="presentation"><a href="#shop_info" aria-controls="shop_info" role="tab" data-toggle="tab">Shop</a></li>
+        <li role="presentation"><a href="#shop_settings" aria-controls="shop_settings" role="tab" data-toggle="tab">Settings</a></li>
+        <li role="presentation"><a href="#shop_oem_certs" aria-controls="shop_oem_certs" role="tab" data-toggle="tab">OEM Certs</a></li>
+        @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()))
+        {
+            <li role="presentation"><a href="#shop_insuranceCompanies" aria-controls="shop_insuranceCompanies" role="tab" data-toggle="tab">DRP</a></li>
+            <li role="presentation"><a href="#shop_insuranceBilling" aria-controls="shop_insuranceBilling" role="tab" data-toggle="tab">Billing</a></li>
+        }
+        @if (Model?.AirProTools != null || Model?.AccountAirProTools != null)
+        {
+            <li role="presentation"><a href="#shop_tools" aria-controls="shop_tools" role="tab" data-toggle="tab">Tools</a></li>
+        }
+        @if (Model?.Users != null || Model?.AccountUsers != null)
+        {
+            <li role="presentation"><a href="#memberships" aria-controls="memberships" role="tab" data-toggle="tab">Memberships</a></li>
+        }
+        @if ((Model?.ShopGuid ?? Guid.Empty) != Guid.Empty)
+        {
+            <li role="presentation"><a href="#shop_attachments" aria-controls="shop_attachments" role="tab" data-toggle="tab">Attachments</a></li>
+        }
+        <li role="presentation">
+            <a href="#contacts_management" aria-controls="contacts_management" role="tab" data-toggle="tab">Contacts</a>
+        </li>
+        @if ((Model?.ShopGuid ?? Guid.Empty) != Guid.Empty && canViewNotes)
+        {
+            <li role="presentation"><a href="#shop_notes" aria-controls="shop_notes" role="tab" data-toggle="tab">Notes</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane in active" id="shop_info">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ShopGuid)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountGuid, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.DropDownListFor(model => model.AccountGuid, new SelectList(ViewBag.AccountSelection, "Key", "Value"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AccountGuid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountEmployeeGuid, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9" style="padding-top: 7px;">
+                        @(string.IsNullOrWhiteSpace(Model.AccountRep) ? "Not Assigned" : Model.AccountRep)
+                        @Html.ValidationMessageFor(model => model.EmployeeGuid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <hr />
+
+                @if (User.IsInRole(ApplicationRoles.ShopDelete.ToString()) && (!Model?.ActiveInd ?? false))
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ActiveInd, new { @class = "control-label col-sm-3" })
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.ActiveInd)
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(m => m.ActiveInd)
+                }
+
+                @if (Model?.ShopGuid != null && Model.ShopGuid != Guid.Empty)
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ShopGuid, new { @class = "control-label col-sm-3" })
+                        <div class="col-sm-9" style="padding-top: 7px;">
+                            @Model.ShopGuid.ToString().ToUpper()
+                        </div>
+                    </div>
+                }
+
+                @if (Model?.ShopNumber != null && Model.ShopNumber > 0)
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ShopNumber, new { @class = "control-label col-sm-3" })
+                        <div class="col-sm-9" style="padding-top: 7px;">
+                            @Model.ShopNumber.ToString()
+                        </div>
+                    </div>
+                }
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EmployeeGuid, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.EmployeeGuid, new SelectList(ViewBag.EmployeeSelection, "Key", "Value"), "<-- Select Shop Rep -->", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.EmployeeGuid, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address1, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address2, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.City, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.State, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.DropDownListFor(model => model.State, new SelectList(ViewBag.StateSelection, "Key", "Value"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Zip, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Phone, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } })
+                        @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Fax, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Fax, new { htmlAttributes = new { @class = "form-control inputmask-phone" } })
+                        @Html.ValidationMessageFor(model => model.Fax, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Notes, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AverageVehiclesPerMonth, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.AverageVehiclesPerMonth, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0", @step = "1", @maxLength = "5" } })
+                        @Html.ValidationMessageFor(model => model.AverageVehiclesPerMonth, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="shop_settings">
+            <div class="form-horizontal">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DefaultInsuranceCompanyId, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.DropDownListFor(model => model.DefaultInsuranceCompanyId, new SelectList(ViewBag.DefaultInsuranceCompanies, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DefaultInsuranceCompanyId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AllowAutoRepairClose, new { @class = "control-label col-sm-3", @style = "white-space: nowrap; line-height: 6px;" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.AllowAutoRepairClose, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AllowAutoRepairClose, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AllowScanAnalysisAutoClose, new { @class = "control-label col-sm-3", @style = "white-space: nowrap; line-height: 6px;" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.AllowScanAnalysisAutoClose, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AllowScanAnalysisAutoClose, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AllowAllRepairAutoClose, new { @class = "control-label col-sm-3", @style = "white-space: nowrap; line-height: 6px;" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.AllowAllRepairAutoClose, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AllowAllRepairAutoClose, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AutomaticRepairCloseDays, new { @class = "control-label col-sm-3", @style = "white-space: nowrap" })
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.AutomaticRepairCloseDays, new { @class = "form-control", aria_describedby = "basic-addon2" })
+                            <span class="input-group-addon" id="basic-addon2">Days</span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.AutomaticRepairCloseDays, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <hr />
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HideFromReports, new { @class = "control-label col-sm-3", @style = "white-space: nowrap; line-height: 6px;" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.HideFromReports, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.HideFromReports, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <hr />
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCCShopId, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.CCCShopId, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CCCShopId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SendToMitchellInd, new { @class = "control-label col-sm-3", @style = "white-space: nowrap; line-height: 6px;" })
+                    <div class="col-sm-9">
+                        @Html.EditorFor(model => model.SendToMitchellInd, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.SendToMitchellInd, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ShopRequestTypes, new { @class = "control-label col-sm-3" })
+                    <div class="col-sm-9">
+                        <div class="checkbox">
+                            <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 145px; overflow-y: auto;">
+                                <ul class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                    @{
+                                        var requestTypes = (IEnumerable<KeyValuePair<string, string>>)ViewBag.RequestTypes;
+                                        int index = 0;
+                                    }
+                                    @foreach (var requestType in requestTypes)
+                                    {
+                                        var selected = Model.ShopRequestTypes != null ? Model.ShopRequestTypes.Any(x => x.ToString() == requestType.Key) : false;
+                                        <li>
+                                            <label for="ShopRequestTypes_@index">
+                                                <input type="checkbox" name="ShopRequestTypes" id="ShopRequestTypes_@index" value="@requestType.Key" @(selected ? "checked=\"checked\"" : "")>
+                                                <span style="margin-left: 20px;">@requestType.Value</span>
+                                            </label>
+                                        </li>
+                                        index++;
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="shop_oem_certs">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="VehicleMakes">Vehicle Makes</label>
+                    <div class="col-sm-10">
+                        <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 300px; overflow-y: auto;">
+                            <ul data-bind="foreach: allVehicleMakes" class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                <li>
+                                    <label data-bind="attr: { for: 'ShopVehicleMakes_' + Value, title: Text }">
+                                        <input type="checkbox" name="ShopVehicleMakes" data-bind="value: Value, checked: Selected, attr: { id: 'ShopVehicleMakes_' + Value }">
+                                        <span data-bind="text: Text"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()) || User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+        {
+            if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()))
+            {
+                <div role="tabpanel" class="tab-pane" id="shop_insuranceCompanies">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="InsuranceCompanies">Companies</label>
+                            <div class="col-sm-10">
+                                <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 300px; overflow-y: auto;">
+                                    <ul data-bind="foreach: allInsuranceDrpCompanies" class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                        <li>
+                                            <label data-bind="attr: { for: 'ShopInsuranceCompanies_' + Key, title: Value }">
+                                                <input type="checkbox" name="ShopInsuranceCompanies" data-bind="value: Key, checked: Selected, attr: { id: 'ShopInsuranceCompanies_' + Key }">
+                                                <span data-bind="text: Value"></span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div role="tabpanel" class="tab-pane" id="shop_insuranceBilling">
+                <div class="form-horizontal">
+                    @if (User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+                    {
+                        <div class="form-group" id="divPricingPlan">
+                            @Html.LabelFor(model => model.PricingPlanId, new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(model => model.PricingPlanId, new SelectList(ViewBag.PricingPlanSelection, "Key", "Value"), "<-- Select Pricing Plan -->", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PricingPlanId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ShopFixedPriceInd, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.ShopFixedPriceInd, new { htmlAttributes = new { @id = "chkFixedInd" } })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CurrencyId, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(model => model.CurrencyId, ViewBag.Currencies as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CurrencyId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group div-fixed-pricing">
+                            @Html.LabelFor(model => model.FirstScanCost, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.FirstScanCost, new { htmlAttributes = new { @class = "form-control ignore", @type = "number", @step = "any", @min = "0", @max = "999" } })
+                            </div>
+                        </div>
+
+                        <div class="form-group div-fixed-pricing">
+                            @Html.LabelFor(model => model.AdditionalScanCost, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.AdditionalScanCost, new { htmlAttributes = new { @class = "form-control ignore", @type = "number", @step = "any", @min = "0", @max = "999" } })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DiscountPercentage, new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control", @type = "number", @step = "any", @min = "0", @max = "100", @maxlength = "3" } })
+                                @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AutomaticInvoicesInd, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.AutomaticInvoicesInd)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.BillingCycleId, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(model => model.BillingCycleId, new SelectList(ViewBag.BillingCycles, "Key", "Value"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BillingCycleId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            $('#@Html.IdFor(m => m.DiscountPercentage)').on('keyup',
+                                function() {
+                                    if ($(this).val().length && parseFloat($(this).val()) > 100) {
+                                        $(this).val('100');
+                                    }
+                                });
+                        </script>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DisableShopBillingNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-2">
+                                @Html.CheckBoxFor(model => model.DisableShopBillingNotification, new { @class = "notification-checkbox" })
+                                @Html.ValidationMessageFor(model => model.DisableShopBillingNotification, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.DisableShopStatementNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-2">
+                                @Html.CheckBoxFor(model => model.DisableShopStatementNotification, new { @class = "notification-checkbox" })
+                                @Html.ValidationMessageFor(model => model.DisableShopStatementNotification, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.PricingPlanId)
+                    }
+
+                    @if (User.IsInRole(ApplicationRoles.EstimatePlanView.ToString()) && User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+                    {
+                        <hr />
+                    }
+
+                    @if (User.IsInRole(ApplicationRoles.ShopSelfScanGrant.ToString()))
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AllowSelfScanAssessment, new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.AllowSelfScanAssessment)
+                                    @Html.ValidationMessageFor(model => model.AllowSelfScanAssessment, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (User.IsInRole(ApplicationRoles.EstimatePlanView.ToString()))
+                    {
+                        <div class="form-group estimate-plan-cnt @(Model.AllowSelfScanAssessment ? "" : "hide")">
+                            @Html.LabelFor(model => model.EstimatePlanId, new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(model => model.EstimatePlanId, new SelectList(ViewBag.EstimatePlanSelection, "Key", "Value"), "<-- Select Estimate Plan -->", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EstimatePlanId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.EstimatePlanId)
+                    }
+
+                    @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()) || User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString()))
+                    {
+                        <hr />
+                    }
+
+                    <div class="form-group">
+                        @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()))
+                        {
+                            <div class="col-sm-12">
+                                <table class="table table-striped" style="margin-bottom: 0;">
+                                    <colgroup>
+                                        <col style="width: 50%" />
+                                        <col style="width: 50%" />
+                                        <col />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>Insurance Company</th>
+                                            <th>Pricing Plan</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: shopInsuranceCompanies">
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" class="hiddenIgnore"
+                                                       data-bind="value: insuranceCompanyId, attr: { name: 'ShopInsuranceCompanyPricingPlans[' + $index() +'].insuranceCompanyId' }" />
+                                                <select data-bind="options: insuranceCompanies, optionsText: 'InsuranceCompanyName',
+                                                                optionsValue: 'InsuranceCompanyId', optionsCaption:'Select a insurance company',
+                                                                value: insuranceCompanyId, attr: { disabled: insuranceCompanyId() != undefined }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <select data-bind="options: $parent.pricingPlans, optionsText: 'PricingPlanName',
+                                                                optionsValue: 'PricingPlanId', optionsCaption:'Select a pricing plan', value: planId,
+                                                                attr: { name: 'ShopInsuranceCompanyPricingPlans['+ $index() +'].planId' }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <button data-bind="click: $parent.removeInsuranceCompany" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="col-sm-12" style="margin-top: 10px;">
+                                <button data-bind="click: addInsuranceCompany, enable: shopInsuranceCompanies().length == 0 || isValid" class="btn btn-sm btn-success pull-left">Add Insurance Pricing Plan</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div data-bind="foreach: shopInsuranceCompanies">
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: insuranceCompanyId, attr: { name: 'ShopInsuranceCompanyPricingPlans[' + $index() +'].insuranceCompanyId' }" />
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: planId, attr: { name: 'ShopInsuranceCompanyPricingPlans[' + $index() +'].planId' }" />
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()))
+                        {
+                            <div class="col-sm-12">
+                                <table class="table table-striped" style="margin-bottom: 0;">
+                                    <colgroup>
+                                        <col style="width: 50%" />
+                                        <col style="width: 50%" />
+                                        <col />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>Insurance Company</th>
+                                            <th>Estimate Plan</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: shopEstimateInsuranceCompanies">
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" class="hiddenIgnore"
+                                                       data-bind="value: insuranceCompanyId, attr: { name: 'ShopInsuranceCompanyEstimatePlans[' + $index() +'].insuranceCompanyId' }" />
+                                                <select data-bind="options: insuranceCompanies, optionsText: 'InsuranceCompanyName',
+                                                                optionsValue: 'InsuranceCompanyId', optionsCaption:'Select a insurance company',
+                                                                value: insuranceCompanyId, attr: { disabled: insuranceCompanyId() != undefined }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <select data-bind="options: $parent.estimatePlans, optionsText: 'EstimatePlanName',
+                                                                optionsValue: 'EstimatePlanId', optionsCaption:'Select an estimate plan', value: planId,
+                                                                attr: { name: 'ShopInsuranceCompanyEstimatePlans['+ $index() +'].planId' }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <button data-bind="click: $parent.removeEstimatePlanInsuranceCompany" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="col-sm-12" style="margin-top: 10px;">
+                                <button data-bind="click: addEstimatePlanInsuranceCompany, enable: shopEstimateInsuranceCompanies().length == 0 || isEstimatePlanAddValid" class="btn btn-sm btn-success pull-left">Add Insurance Estimate Plan</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div data-bind="foreach: shopInsuranceCompanies">
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: insuranceCompanyId, attr: { name: 'ShopInsuranceCompanyEstimatePlans[' + $index() +'].insuranceCompanyId' }" />
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: planId, attr: { name: 'ShopInsuranceCompanyEstimatePlans[' + $index() +'].planId' }" />
+                            </div>
+                        }
+                    </div>
+
+                    @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()) && User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString()))
+                    {
+                        <hr />
+                    }
+
+                    <div class="form-group">
+                        @if (User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString()))
+                        {
+                            <div class="col-sm-12">
+                                <table class="table table-striped" style="margin-bottom: 0;">
+                                    <colgroup>
+                                        <col style="width: 50%" />
+                                        <col style="width: 50%" />
+                                        <col />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>Vehicle Make</th>
+                                            <th>Pricing Plan</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: shopVehicleMakes">
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" class="hiddenIgnore" data-bind="value: vehicleMakeId, attr: { name: 'ShopVehicleMakesPricingPlans[' + $index() +'].vehicleMakeId' }" />
+                                                <select data-bind="options: vehicleMakes, optionsText: 'VehicleMakeName',
+                                                            optionsValue: 'VehicleMakeId', optionsCaption:'Select a Vehicle Make',
+                                                            value: vehicleMakeId, attr: { disabled: vehicleMakeId() != undefined }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <select data-bind="options: $parent.pricingPlans, optionsText: 'PricingPlanName',
+                                                            optionsValue: 'PricingPlanId', optionsCaption:'Select a pricing plan', value: pricingPlanId,
+                                                            attr: { name: 'ShopVehicleMakesPricingPlans['+ $index() +'].pricingPlanId' }"
+                                                        class="form-control" required></select>
+                                            </td>
+                                            <td>
+                                                <button data-bind="click: $parent.removeVehicleMake" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="col-sm-12" style="margin-top: 10px">
+                                <button data-bind="click: addVehicleMake, enable: shopVehicleMakes().length == 0 || isValid" class="btn btn-sm btn-success pull-left">Add Vehicle Pricing Plan</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div data-bind="foreach: shopVehicleMakes">
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: vehicleMakeId, attr: { name: 'ShopVehicleMakesPricingPlans[' + $index() +'].vehicleMakeId' }" />
+                                <input type="hidden" class="hiddenIgnore"
+                                       data-bind="value: pricingPlanId, attr: { name: 'ShopVehicleMakesPricingPlans[' + $index() +'].pricingPlanId' }" />
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        }
+
+        @if (Model?.AirProTools != null || Model?.AccountAirProTools != null)
+        {
+            <div role="tabpanel" class="tab-pane" id="shop_tools">
+                <div class="form-group">
+                    <div class="panel-body" id="shop-tools" style="padding: 5px 0 0 0;">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title pull-left" style="font-size: 16px;"><span style="position: relative; top: 5px;">AirPro Tools</span></h4>
+                            </div>
+
+                            <table id="shop-tools-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="ToolId" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                        <th data-column-id="ToolName">Name</th>
+                                        <th data-column-id="AssignmentType">Assignment Type</th>
+                                        <th data-column-id="editTool" data-visible-in-selection="false" data-formatter="editTool" data-sortable="false" data-align="center" data-width="45"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model?.AirProTools != null)
+                                    {
+                                        foreach (var item in Model.AirProTools)
+                                        {
+                                            <tr>
+                                                <td>@item.ToolId</td>
+                                                <td>@item.ToolName</td>
+                                                <td>Shop</td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    }
+
+                                    @if (Model?.AccountAirProTools != null)
+                                    {
+                                        foreach (var item in Model.AccountAirProTools)
+                                        {
+                                            <tr>
+                                                <td>@item.ToolId</td>
+                                                <td>@item.ToolName</td>
+                                                <td>Account</td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model?.Users != null || Model?.AccountUsers != null)
+        {
+            <div role="tabpanel" class="tab-pane" id="memberships">
+                <div class="form-group">
+                    <div class="panel-body" id="shop-users" style="padding: 5px 0 0 0;">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title pull-left" style="font-size: 16px;"><span style="position: relative; top: 5px;">Shops Users</span></h4>
+                            </div>
+
+                            <table id="shop-users-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="userGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                        <th data-column-id="name">Name</th>
+                                        <th data-column-id="email">Email</th>
+                                        <th data-column-id="editUserGroup" data-visible-in-selection="false" data-formatter="shopUsersGrid" data-sortable="false" data-align="center" data-width="90"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Users)
+                                    {
+                                        <tr>
+                                            <td>@item.UserGuid</td>
+                                            <td>@(item.FirstName + " " + item.LastName)</td>
+                                            <td>@item.Email</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="shop_account">
+                    <div class="form-group">
+                        <div class="panel-body" id="shop-account-users" style="padding: 5px 0 0 0;">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title pull-left" style="font-size: 16px;"><span style="position: relative; top: 5px;">Account Users</span></h4>
+                                </div>
+
+                                <table id="shop-account-users-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid">
+                                    <thead>
+                                        <tr>
+                                            <th data-column-id="userGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                            <th data-column-id="name">Name</th>
+                                            <th data-column-id="email">Email</th>
+                                            <th data-column-id="editUserGroup" data-visible-in-selection="false" data-formatter="accountUsersGrid" data-sortable="false" data-align="center" data-width="90"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.AccountUsers)
+                                        {
+                                            <tr>
+                                                <td>@item.UserGuid</td>
+                                                <td>@(item.FirstName + " " + item.LastName)</td>
+                                                <td>@item.Email</td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if ((Model?.ShopGuid ?? Guid.Empty) != Guid.Empty)
+        {
+            <div role="tabpanel" class="tab-pane" id="shop_attachments">
+                @Html.UploadControl(UploadType.AccessShops, Model.ShopGuid.ToString(), "Shop Attachments")
+            </div>
+
+        }
+
+        <div role="tabpanel" class="tab-pane" id="contacts_management">
+            <div>
+                <a class="btn btn-primary pull-right" href="#" data-bind="click: addContact">Add</a>
+            </div>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Phone</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: contacts">
+                    <tr>
+                        <td>
+                            <input type="hidden" data-bind="value: shopContactGuid, attr: { name: 'ShopContacts[' + $index() + '].ShopContactGuid' }" />
+                            <input class="form-control" type="text" data-bind="value: firstName, attr: { name: 'ShopContacts[' + $index() + '].FirstName' }" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" data-bind="value: lastName, attr: { name: 'ShopContacts[' + $index() + '].LastName' }" />
+                        </td>
+                        <td>
+                            <input class="form-control inputmask-phone" type="text" data-bind="value: phoneNumber, attr: { name: 'ShopContacts[' + $index() + '].PhoneNumber' }" />
+                        </td>
+                        <td>
+                            <a href="#" data-bind="click: $parent.removeContact" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-remove"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @if ((Model?.ShopGuid ?? Guid.Empty) != Guid.Empty && canViewNotes)
+        {
+            <div role="tabpanel" class="tab-pane" id="shop_notes">
+                @if(User.IsInRole(ApplicationRoles.AccountNoteView.ToString()) || User.IsInRole(ApplicationRoles.AccountNoteEdit.ToString()))
+                {
+                    @Html.NoteControl(NoteType.Account, Model.AccountGuid.ToString(), "Account Notes", true)
+                }
+                <hr />
+                @Html.NoteControl(NoteType.Shop, Model.ShopGuid.ToString(), "Shop Notes")
+            </div>
+
+        }
+    </div>
+}
+
+<script type="text/javascript">
+    var shopGuid = '@Model.ShopGuid';
+    var accountGuid = '@Model.AccountGuid';
+    var currentUserGuid = '@Model.';
+
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+
+    $(document).ready(function() {
+        if ($('#chkFixedInd').is(':checked')) {
+            $('#divPricingPlan').hide();
+            $('.div-fixed-pricing').show();
+        } else {
+            $('#divPricingPlan').show();
+            $('.div-fixed-pricing').hide();
+        }
+
+        $('#chkFixedInd').on('click',
+            function() {
+                if ($(this).is(':checked')) {
+                    $('#divPricingPlan').hide();
+                    $('.div-fixed-pricing').show();
+                } else {
+                    $('#divPricingPlan').show();
+                    $('.div-fixed-pricing').hide();
+                }
+            });
+
+        var insuranceCompaniesDrpChoices =
+            @Html.Raw(JsonConvert.SerializeObject(ViewBag.InsuranceCompaniesDrpSelection));
+        var insuranceCompaniesChoices = @Html.Raw(JsonConvert.SerializeObject(ViewBag.InsuranceCompaniesSelection));
+        var pricingPlansChoices = @Html.Raw(JsonConvert.SerializeObject(ViewBag.PricingPlanSelection));
+        var estimatePlansChoices = @Html.Raw(JsonConvert.SerializeObject(ViewBag.EstimatePlanSelection));
+        var vehicleMakesChoices = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VehicleMakes));
+        var allVehicleMakesChoices = @Html.Raw(JsonConvert.SerializeObject(ViewBag.AllVehicleMakes));
+
+        var model = {
+            shopInsuranceCompaniesPricingPlans:
+                @Html.Raw(JsonConvert.SerializeObject(Model.ShopInsuranceCompanyPricingPlans)) || [],
+            shopInsuranceCompaniesEstimatePlans:
+                @Html.Raw(JsonConvert.SerializeObject(Model.ShopInsuranceCompanyEstimatePlans)) || [],
+            shopVehicleMakes: @Html.Raw(JsonConvert.SerializeObject(Model.ShopVehicleMakesPricingPlans)) || [],
+            insuranceCompanies: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInsuranceCompanies)) || [],
+            vehicleMakes: @Html.Raw(JsonConvert.SerializeObject(Model.ShopVehicleMakes)) || [],
+            contacts: @Html.Raw(JsonConvert.SerializeObject(Model.ShopContacts)) || []
+        };
+
+        var insuranceBillingTab = $('#shop_insuranceBilling')[0];
+
+        // Clean Binding if exists
+        if (insuranceBillingTab && ko.dataFor(insuranceBillingTab)) {
+            ko.cleanNode(insuranceBillingTab);
+        }
+
+        if (insuranceBillingTab) {
+            window.shopViewModel = new ShopManageViewModel(model,
+                insuranceCompaniesChoices,
+                insuranceCompaniesDrpChoices,
+                pricingPlansChoices,
+                estimatePlansChoices,
+                allVehicleMakesChoices);
+            ko.applyBindings(window.shopViewModel, insuranceBillingTab);
+        }
+
+        var insuranceCoTab = $('#shop_insuranceCompanies')[0];
+
+        // Clean Binding if exists
+        if (insuranceCoTab && ko.dataFor(insuranceCoTab)) {
+            ko.cleanNode(insuranceCoTab);
+        }
+
+        if (insuranceCoTab) {
+            window.shopInsuranceCoViewModel = new ShopManageViewModel(model,
+                insuranceCompaniesChoices,
+                insuranceCompaniesDrpChoices,
+                pricingPlansChoices);
+            ko.applyBindings(window.shopInsuranceCoViewModel, insuranceCoTab);
+        }
+
+        var oemCertsTab = $('#shop_oem_certs')[0];
+
+        // Clean Binding if exists
+        if (oemCertsTab && ko.dataFor(oemCertsTab)) {
+            ko.cleanNode(oemCertsTab);
+        }
+
+        if (oemCertsTab) {
+            window.shopOemCertsViewModel = new ShopManageViewModel(model,
+                insuranceCompaniesChoices,
+                insuranceCompaniesDrpChoices,
+                pricingPlansChoices,
+                estimatePlansChoices,
+                vehicleMakesChoices);
+            ko.applyBindings(window.shopOemCertsViewModel, oemCertsTab);
+        }
+
+        var contactsTab = $('#contacts_management')[0];
+
+        // Clean Binding if exists
+        if (contactsTab && ko.dataFor(contactsTab)) {
+            ko.cleanNode(contactsTab);
+        }
+
+        if (contactsTab) {
+            window.shopContactsViewModel = new ShopManageViewModel(model,
+                insuranceCompaniesChoices,
+                insuranceCompaniesDrpChoices,
+                pricingPlansChoices,
+                estimatePlansChoices,
+                vehicleMakesChoices);
+            ko.applyBindings(window.shopContactsViewModel, contactsTab);
+        }
+
+        $('#@Html.IdFor(m => m.DiscountPercentage)').wrap(
+                '<div class="input-group input-group-sm"></div>').before('<span class="input-group-addon">%</span>');
+
+        $("#shop-users-grid, #shop-account-users-grid, #shop-tools-grid").bootgrid({
+            formatters: {
+                "shopUsersGrid": function(column, row) {
+                    var result = '';
+                    @if (User.IsInRole(ApplicationRoles.UserEdit.ToString()))
+                    {
+                        <text>
+                            result = '<div class="btn-group btn-group-sm" role="group">';
+                            result += '<a href="#" onclick="manageUser(\'' +
+                                row.userGuid +
+                                '\')" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i></a>';
+                            if (allowDeleteMyShopRelation || row.userGuid !== userId) {
+                                result += '<a href="#" onclick="deleteShopUserAssociation(\'' +
+                                    row.userGuid +
+                                    '\', \'' +
+                                    shopGuid +
+                                    '\', this)" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a>';
+                            }
+
+                            result += '</div>';
+                        </text>
+                    }
+
+                    return result;
+                },
+                "accountUsersGrid": function(column, row) {
+                    var result = '';
+                    @if (User.IsInRole(ApplicationRoles.UserEdit.ToString()))
+                    {
+                        <text>
+                            result = '<div class="btn-group btn-group-sm" role="group">';
+
+                            result += '<a href="#" onclick="manageUser(\'' +
+                                row.userGuid +
+                                '\')" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i></a>';
+
+                            if (allowDeleteMyAccountRelation || row.userGuid !== userId) {
+                                result += '<a href="#" onclick="deleteAccountUserAssociation(\'' +
+                                    row.userGuid +
+                                    '\', \'' +
+                                    accountGuid +
+                                    '\', this)" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a>';
+                            }
+
+                            result += '</div>';
+                        </text>
+                    }
+
+                    return result;
+                },
+                "editTool": function (column, row) {
+                    var result = '<div class="btn-group btn-group-sm" role="group">' +
+                        '<a href="@Url.Action("Index", "Inventory", new { Area = "Admin" })?t='+ row.ToolId +'" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i></a>' +
+                        '</div>';
+
+                    return result;
+                }
+            }
+        });
+
+        $('#shop-users-grid-header').prependTo('#shop-users .panel-heading');
+        $('#shop-users .panel-title').prependTo('#shop-users-grid-header .actionBar');
+
+        $('#shop-account-users-grid-header').prependTo('#shop-account-users .panel-heading');
+        $('#shop-account-users .panel-title').prependTo('#shop-account-users-grid-header .actionBar');
+
+        $('#shop-tools-grid-header').prependTo('#shop-tools .panel-heading');
+        $('#shop-tools .panel-title').prependTo('#shop-tools-grid-header .actionBar');
+
+        $('#shop-users-grid-header .search .input-group').addClass('form-group-sm');
+        $('#shop-users-grid-header .actions .btn-group').addClass('btn-group-sm');
+
+        $('#shop-account-users-grid-header .search .input-group').addClass('form-group-sm');
+        $('#shop-account-users-grid-header .actions .btn-group').addClass('btn-group-sm');
+
+        $('#shop-tools-grid-header .search .input-group').addClass('form-group-sm');
+        $('#shop-tools-grid-header .actions .btn-group').addClass('btn-group-sm');
+
+        $("#AllowSelfScanAssessment").change(function () {
+            if ($(this).prop("checked")) {
+                $(".estimate-plan-cnt").removeClass("hide");
+            } else {
+                $(".estimate-plan-cnt").addClass("hide");
+            }
+        });
+
+        enableInputMasking();
+    });
+</script>
+

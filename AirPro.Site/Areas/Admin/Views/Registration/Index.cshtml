@@ -1,0 +1,214 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    #status {
+        width: 125px;
+        display: inline-block;
+        margin-right: 20px;
+    }
+</style>
+
+<h2>Registration Management</h2>
+<hr />
+
+<div id="registrations" class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-5">
+                <h4 class="panel-title pull-left">
+                    <span style="position: relative; top: 2px;">Registrations</span>
+                    &nbsp;@AddButton("manageRegistration();", "Registration", ApplicationRoles.RegistrationCreate.ToString())
+                </h4>
+            </div>
+            <div class="col-md-7" id="gridSearch">
+                <select id="status" class="form-control input-sm">
+                    <option value="-1" selected="selected">All</option>
+                    @foreach (int type in Enum.GetValues(typeof(RegistrationStatus)))
+                    {
+                        <option value="@type">@Enum.GetName(typeof(RegistrationStatus), type)</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <table id="registrations-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+        <thead>
+            <tr>
+                <th data-column-id="shortRegistrationId" data-identifier="true" data-visible-in-selection="false" data-visible="true" data-width="235">Reg Id</th>
+                <th data-column-id="registrationStatusString" data-visible-in-selection="false">Status</th>
+                <th data-column-id="email">Email</th>
+                <th data-column-id="createdBy">Created By</th>
+                <th data-column-id="createdDt" data-converter="date">Created Dt</th>
+                <th data-column-id="updatedDt" data-converter="date">Updated Dt</th>
+                @if (User.IsInRole(ApplicationRoles.RegistrationCreate.ToString()))
+                {
+                    <th data-column-id="editRegistration" data-visible-in-selection="false" data-formatter="editRegistration" data-sortable="false" data-align="center" data-width="45"></th>
+                }
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!-- Manage Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">View/Edit Registration</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody" style="overflow: auto;">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal()" class="btn btn-primary manage-registration-save-btn" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper AddButton(string function, string type, string role)
+{
+    if (User.IsInRole(role))
+    {
+        <a onclick="@function" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add @type</a>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+    @Scripts.Render("~/admin/access/js")
+
+    <script type="text/javascript">
+        $("#registrations-grid").bootgrid({
+            url: '@Url.Action("GetRegistrationsByPage")',
+            multiSort: false,
+            post: function () {
+                return {
+                    status: $('#status').val()
+                }
+            },
+            rowCount: [25, 50, 100, -1],
+            formatters: {
+                "editRegistration": function (column, row) {
+                    return editButtonFormat("Registration", row.registrationId, row.registrationStatusString);
+                }
+            },
+            converters: {
+                bool: {
+                    to: function (value) { return value ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>" : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>"; }
+                },
+                date: {
+                    to: function (value) { return value ? moment(value).format('MM/DD/YYYY hh:mm A') : '- No Date -'; }
+                }
+            }
+        });
+        $(document).ready(function () {
+            $('#registrations-grid-header').appendTo('#gridSearch');
+            $('#status').prependTo('#registrations-grid-header .actionBar');
+            $('.panel-heading .btn-group').addClass('btn-group-sm');
+            $('.panel-heading .input-group').addClass('input-group-sm');
+            $('#status').on('change',
+                function () {
+                    $('#registrations-grid').bootgrid("reload");
+                });
+        });
+        function editButtonFormat(func, id, registrationStatus) {
+            var result = "<div class='btn-group btn-group-sm' role='group'>";
+            if (registrationStatus == '@RegistrationStatus.Completed' || registrationStatus == '@RegistrationStatus.Withdrawn') {
+                result += "<a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-info'><i class='glyphicon glyphicon-info-sign'></i></a>";
+            }
+            else {
+                result += "<a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a>";
+            }
+            result += "</div>";
+            return result;
+        }
+        function manageRegistration(registrationLinkId) {
+            var url = '@Url.Action("ManageRegistration", "Registration")/' + ((registrationLinkId) ? registrationLinkId : '');
+            $.get(url, function (response) {
+                $('#manageModalBody').html(response);
+                var registrationStatus = $('#RegistrationStatus').val();
+                if (registrationStatus == '@RegistrationStatus.Completed' || registrationStatus == '@RegistrationStatus.Withdrawn') {
+                    $(".manage-registration-save-btn").hide();
+                } else {
+                    $(".manage-registration-save-btn").show();
+                }
+            });
+            $('#manageModalBody').text('Loading...');
+            $('#manageModal').modal('show');
+        }
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            if (!form.valid()) {
+                return;
+            }
+            if (!window.shopViewModel.isValid()) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize()
+            })
+                .done(function (data) {
+                    $('#manageModal').modal('hide');
+                    $('#registrations-grid').bootgrid("reload");
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+    </script>
+}

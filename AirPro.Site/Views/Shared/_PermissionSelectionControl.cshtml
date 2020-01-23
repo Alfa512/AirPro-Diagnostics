@@ -1,0 +1,31 @@
+﻿@model AirPro.Site.Models.Shared.PermissionSelectionViewModel
+@using AirPro.Common.Enumerations
+@using UniMatrix.Common.Extensions;
+
+<div style="position: relative;">
+    <a href="#" class="permission-select-all" style="display: block; text-align: right;">Select All</a>
+    <div class='well well-sm' style='margin: 0; background-color: white; border-color: #cccccc; height: 300px; overflow-y: auto;'>
+        <ul class='selectionList' style='columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 10px;'>
+            @foreach (var t in ((ApplicationRoles[]) Enum.GetValues(typeof(ApplicationRoles))).OrderBy(f => f.ToString()))
+            {
+                <li>
+                    @{
+                        var roleGuid = t.GetEnumGuid();
+                        string check = string.Empty;
+                        if (Model.PermissionGuids != null && Model.PermissionGuids.Contains(roleGuid))
+                        {
+                            check = "checked='checked'";
+                        }
+                    }
+                    <input type='checkbox' id='@(Model.FieldName)_@roleGuid' class="@(Model.FieldName)_checkbox" name='@(Model.FieldName)' value='@roleGuid' @check/>
+                    <label for='@(Model.FieldName)_@roleGuid'>@t</label>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(".permission-select-all").click(function() {
+        $(".@(Model.FieldName)_checkbox").prop("checked", true);
+    });
+</script>

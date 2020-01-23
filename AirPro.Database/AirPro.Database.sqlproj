@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>AirPro.Database</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{28faa9ad-982b-4dd3-bd5b-0ecb09c32e8e}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>AirProDB</RootNamespace>
+    <AssemblyName>AirproDB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <TargetDatabase>AirPro Database Project</TargetDatabase>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <SqlTargetName>AirProDB</SqlTargetName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Security\" />
+    <Folder Include="Support\" />
+    <Folder Include="Support\Tables\" />
+    <Folder Include="Access\" />
+    <Folder Include="Access\Tables\" />
+    <Folder Include="Scan\" />
+    <Folder Include="Scan\Tables\" />
+    <Folder Include="Scan\Stored Procedures\" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="Repair\" />
+    <Folder Include="Repair\Tables\" />
+    <Folder Include="Access\Stored Procedures\" />
+    <Folder Include="Support\Stored Procedures\" />
+    <Folder Include="Billing\" />
+    <Folder Include="Billing\Tables\" />
+    <Folder Include="Billing\Views\" />
+    <Folder Include="Billing\Stored Procedures\" />
+    <Folder Include="Notification\" />
+    <Folder Include="Notification\Tables\" />
+    <Folder Include="Access\Views\" />
+    <Folder Include="Common\" />
+    <Folder Include="Common\Tables\" />
+    <Folder Include="Repair\Views\" />
+    <Folder Include="Notification\Stored Procedures\" />
+    <Folder Include="Service\" />
+    <Folder Include="Service\Tables\" />
+    <Folder Include="Service\Stored Procedures\" />
+    <Folder Include="Repair\Stored Procedures\" />
+    <Folder Include="Common\Functions\" />
+    <Folder Include="Reporting\" />
+    <Folder Include="Reporting\Stored Procedures\" />
+    <Folder Include="Technician\" />
+    <Folder Include="Technician\Tables\" />
+    <Folder Include="Technician\Stored Procedures\" />
+    <Folder Include="Reporting\Tables\" />
+    <Folder Include="Reporting\Views\" />
+    <Folder Include="Billing\User Defined Types\" />
+    <Folder Include="Inventory\" />
+    <Folder Include="Inventory\Tables\" />
+    <Folder Include="Technician\User Defined Types\" />
+    <Folder Include="Diagnostic\" />
+    <Folder Include="Diagnostic\Tables\" />
+    <Folder Include="Inventory\Stored Procedures\" />
+    <Folder Include="Diagnostic\Stored Procedures\" />
+    <Folder Include="Diagnostic\User Defined Types\" />
+    <Folder Include="Scan\User Defined Types\" />
+    <Folder Include="Backups\" />
+    <Folder Include="Backups\Tables\" />
+    <Folder Include="Common\Stored Procedures\" />
+    <Folder Include="Access\User Defined Types\" />
+    <Folder Include="Billing\Functions\" />
+    <Folder Include="Diagnostic\Views\" />
+    <Folder Include="Storage\" />
+    <Folder Include="Scan\Views\" />
+    <Folder Include="Scan\Functions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Support\Tables\MigrationHistory.sql" />
+    <Build Include="Support\Tables\ApplicationExceptions.sql" />
+    <Build Include="Access\Tables\UserLogins.sql" />
+    <Build Include="Access\Tables\UserClaims.sql" />
+    <Build Include="Access\Tables\Users.sql" />
+    <Build Include="Access\Tables\UserRoles.sql" />
+    <Build Include="Access\Tables\Roles.sql" />
+    <Build Include="Security\Support.sql" />
+    <Build Include="Security\Access.sql" />
+    <Build Include="Security\Scan.sql" />
+    <Build Include="Scan\Tables\Requests.sql" />
+    <Build Include="Scan\Tables\Reports.sql" />
+    <Build Include="Access\Tables\Shops.sql" />
+    <Build Include="Repair\Tables\Vehicles.sql" />
+    <Build Include="Repair\Tables\Photos.sql" />
+    <Build Include="Repair\Tables\Orders.sql" />
+    <Build Include="Repair\Tables\VehicleLookups.sql" />
+    <Build Include="Security\Repair.sql" />
+    <Build Include="Scan\Tables\WarningIndicators.sql" />
+    <Build Include="Scan\Tables\RequestWarningIndicators.sql" />
+    <Build Include="Scan\Tables\RequestTypes.sql" />
+    <Build Include="Repair\Tables\Invoices.sql" />
+    <Build Include="Access\Stored Procedures\usp_ModifyAdminRights.sql" />
+    <Build Include="Repair\Tables\InsuranceCompanies.sql" />
+    <Build Include="Support\Tables\NotificationTemplates.sql" />
+    <Build Include="Access\Tables\Logins.sql" />
+    <Build Include="Scan\Tables\ReportsArchive.sql" />
+    <Build Include="Billing\Tables\PaymentTransactions.sql" />
+    <Build Include="Billing\Tables\PaymentTypes.sql" />
+    <Build Include="Billing\Tables\Payments.sql" />
+    <Build Include="Billing\Views\vwPaymentTransactions.sql" />
+    <Build Include="Billing\Views\vwInvoiceBalances.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetPaymentTransactions.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetOutstandingInvoices.sql" />
+    <Build Include="Security\Billing.sql" />
+    <Build Include="Access\Tables\UserShops.sql" />
+    <Build Include="Access\Tables\UserGroups.sql" />
+    <Build Include="Access\Tables\UserAccounts.sql" />
+    <Build Include="Access\Tables\Groups.sql" />
+    <Build Include="Access\Tables\GroupRoles.sql" />
+    <Build Include="Access\Tables\Accounts.sql" />
+    <Build Include="Notification\Tables\Templates.sql" />
+    <Build Include="Notification\Tables\Logs.sql" />
+    <Build Include="Notification\Tables\UserOptOuts.sql" />
+    <Build Include="Notification\Tables\Types.sql" />
+    <Build Include="Notification\Tables\TypeRoles.sql" />
+    <Build Include="Access\Stored Procedures\usp_UserGroupRoleSync.sql" />
+    <Build Include="Security\Notification.sql" />
+    <Build Include="Support\Tables\RequestLogUserAgents.sql" />
+    <Build Include="Support\Tables\RequestLogs.sql" />
+    <Build Include="Support\Tables\RequestLogExceptions.sql" />
+    <Build Include="Support\Tables\ConnectionLogs.sql" />
+    <Build Include="Common\Tables\States.sql" />
+    <Build Include="Common\Tables\Countries.sql" />
+    <Build Include="Repair\Views\vwRequestTimes.sql" />
+    <Build Include="Access\Views\vwUserMemberships.sql" />
+    <Build Include="Support\Stored Procedures\usp_SaveRequestLog.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetNotificationUsers.sql" />
+    <Build Include="Access\Stored Procedures\usp_ViewUserGroupRoles.sql" />
+    <Build Include="Security\Common.sql" />
+    <Build Include="Repair\Views\vwRequestTypeCounts.sql" />
+    <Build Include="Billing\Views\vwInvoiceLineItems.sql" />
+    <Build Include="Billing\Stored Procedures\usp_VoidPayment.sql" />
+    <Build Include="Service\Tables\CCCEstimates.sql" />
+    <Build Include="Service\Stored Procedures\usp_SaveCCCEstimate.sql" />
+    <Build Include="Security\Service.sql" />
+    <Build Include="Repair\Stored Procedures\usp_CreateFromCCCEstimates.sql" />
+    <Build Include="Scan\Tables\WorkTypes.sql" />
+    <Build Include="Scan\Tables\WorkTypeRequestTypes.sql" />
+    <Build Include="Scan\Tables\WorkTypeGroups.sql" />
+    <Build Include="Scan\Tables\ReportWorkTypes.sql" />
+    <Build Include="Common\Functions\udf_IdListToTable.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveWorkTypeGroup.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveWorkType.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetWorkTypeGroups.sql" />
+    <Build Include="Common\Functions\udf_GetLocalDateTime.sql" />
+    <Build Include="Common\Functions\udf_GetLastDayOfWeek.sql" />
+    <Build Include="Common\Functions\udf_GetDisplayName.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetChartingData.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetScanReportDataSource.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetStatementReportDataSource.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetInvoiceReportDataSource.sql" />
+    <Build Include="Security\Reporting.sql" />
+    <Build Include="Repair\Tables\VehicleMakeTypes.sql" />
+    <Build Include="Repair\Tables\VehicleMakes.sql" />
+    <Build Include="Repair\Stored Procedures\usp_SaveVehicleLookup.sql" />
+    <Build Include="Repair\Stored Procedures\usp_SaveVehicle.sql" />
+    <Build Include="Repair\Stored Procedures\usp_GetVehicleByVIN.sql" />
+    <Build Include="Repair\Stored Procedures\usp_GetRepairsByUser.sql" />
+    <Build Include="Billing\Tables\PricingPlanWorkTypes.sql" />
+    <Build Include="Billing\Tables\PricingPlans.sql" />
+    <Build Include="Billing\Tables\PricingPlanRequestTypes.sql" />
+    <Build Include="Billing\Stored Procedures\usp_SavePricingPlanLineItem.sql" />
+    <Build Include="Billing\Stored Procedures\usp_SavePricingPlan.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetPricingPlanTemplate.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetPricingPlans.sql" />
+    <Build Include="Repair\Stored Procedures\usp_GetInsuranceCompanies.sql" />
+    <Build Include="Repair\Stored Procedures\usp_SaveInsuranceCompany.sql" />
+    <Build Include="Support\Stored Procedures\usp_UserSessionEnd.sql" />
+    <Build Include="Support\Stored Procedures\usp_ApplicationStart.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetServiceUser.sql" />
+    <Build Include="Support\Stored Procedures\usp_SaveApplicationException.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetUserMemberships.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetRequestNotification.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetRepairNotification.sql" />
+    <Build Include="Technician\Tables\ProfileVehicleMakes.sql" />
+    <Build Include="Technician\Tables\Profiles.sql" />
+    <Build Include="Technician\Stored Procedures\usp_SaveProfile.sql" />
+    <Build Include="Security\Technician.sql" />
+    <Build Include="Reporting\Tables\ReportDataLoads.sql" />
+    <Build Include="Reporting\Tables\ReportData.sql" />
+    <Build Include="Reporting\Views\vwReportData.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_BuildReportData.sql" />
+    <Build Include="Technician\Stored Procedures\usp_SaveProfile.sql" />
+    <Build Include="Security\Technician.sql" />
+    <Build Include="Repair\Tables\PointOfImpacts.sql" />
+    <Build Include="Repair\Tables\OrderPointOfImpacts.sql" />
+    <Build Include="Repair\Stored Procedures\usp_SaveOrderPointsOfImpact.sql" />
+    <Build Include="Billing\Tables\EstimatePlanVehicles.sql" />
+    <Build Include="Billing\Tables\EstimatePlans.sql" />
+    <Build Include="Billing\Stored Procedures\usp_SaveEstimatePlan.sql" />
+    <Build Include="Billing\User Defined Types\udt_EstimateVehiclePlans.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetEstimateReportDataSource.sql" />
+    <Build Include="Scan\Tables\RequestCategoryTypes.sql" />
+    <Build Include="Scan\Tables\RequestCategories.sql" />
+    <Build Include="Inventory\Tables\AirProTools.sql" />
+    <Build Include="Inventory\Tables\AirProToolsArchive.sql" />
+    <Build Include="Security\Inventory.sql" />
+    <Build Include="Technician\Tables\ProfileTimeOffEntries.sql" />
+    <Build Include="Technician\Tables\ProfileSchedules.sql" />
+    <Build Include="Technician\Stored Procedures\usp_SaveProfileTimeOff.sql" />
+    <Build Include="Technician\Stored Procedures\usp_SaveProfileSchedules.sql" />
+    <Build Include="Technician\User Defined Types\udt_TimeOff.sql" />
+    <Build Include="Technician\User Defined Types\udt_Schedules.sql" />
+    <Build Include="Service\Tables\AutoEnginuityUploads.sql" />
+    <Build Include="Diagnostic\Tables\Uploads.sql" />
+    <Build Include="Diagnostic\Tables\UploadFileTypes.sql" />
+    <Build Include="Diagnostic\Tables\Tools.sql" />
+    <Build Include="Diagnostic\Tables\TroubleCodes.sql" />
+    <Build Include="Diagnostic\Tables\Controllers.sql" />
+    <Build Include="Diagnostic\Tables\Results.sql" />
+    <Build Include="Service\Stored Procedures\usp_SaveAutoEnginuityUpload.sql" />
+    <Build Include="Security\Diagnostic.sql" />
+    <Build Include="Billing\Tables\Currencies.sql" />
+    <Build Include="Billing\Tables\ShopInsuranceCompaniesPricing.sql" />
+    <Build Include="Access\Tables\ShopVehicleMakes.sql" />
+    <Build Include="Access\Tables\ShopInsuranceCompanies.sql" />
+    <Build Include="Inventory\Tables\AirProToolSubscriptions.sql" />
+    <Build Include="Inventory\Tables\AirProToolDeposits.sql" />
+    <Build Include="Technician\Stored Procedures\usp_GetWeeklySchedule.sql" />
+    <Build Include="Technician\Stored Procedures\usp_GetQueueConnections.sql" />
+    <Build Include="Scan\Tables\RequestsArchive.sql" />
+    <Build Include="Common\Tables\UploadTypes.sql" />
+    <Build Include="Common\Tables\Uploads.sql" />
+    <Build Include="Access\Tables\UserPreferences.sql" />
+    <Build Include="Repair\Tables\Feedback.sql" />
+    <Build Include="Access\Stored Procedures\usp_SaveUserPreferences.sql" />
+    <Build Include="Support\Stored Procedures\usp_RunNightlyProcess.sql" />
+    <Build Include="Service\Tables\MitchellRequests.sql" />
+    <Build Include="Common\Functions\udf_GetEmptyGuid.sql" />
+    <Build Include="Service\Stored Procedures\usp_SaveMitchellRequest.sql" />
+    <Build Include="Repair\Stored Procedures\usp_GetVehicleMakes.sql" />
+    <Build Include="Access\Stored Procedures\usp_DeleteShop.sql" />
+    <Build Include="Access\Stored Procedures\usp_DeleteAccount.sql" />
+    <Build Include="Inventory\Tables\AirProToolShops.sql" />
+    <Build Include="Inventory\Tables\AirProToolAccounts.sql" />
+    <Build Include="Inventory\Stored Procedures\usp_GetAirProToolStats.sql" />
+    <Build Include="Reporting\Tables\ReportTemplates.sql" />
+    <Build Include="Common\Functions\udf_CommaListToTable.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetShopActivityReport.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetReportTemplates.sql" />
+    <Build Include="Billing\Tables\ShopVehicleMakesPricing.sql" />
+    <Build Include="Access\Tables\UserShopsArchive.sql" />
+    <Build Include="Access\Tables\UsersArchive.sql" />
+    <Build Include="Access\Tables\UserGroupsArchive.sql" />
+    <Build Include="Access\Tables\UserAccountsArchive.sql" />
+    <Build Include="Access\Tables\ShopsArchive.sql" />
+    <Build Include="Access\Tables\GroupsArchive.sql" />
+    <Build Include="Access\Tables\GroupRolesArchive.sql" />
+    <Build Include="Access\Tables\AccountsArchive.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetBillingInvoice.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetBillingInvoiceGrid.sql" />
+    <Build Include="Common\Functions\udf_XmlToTable.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetUsersByRepairId.sql" />
+    <Build Include="Billing\Tables\Cycles.sql" />
+    <Build Include="Common\Functions\udf_GetUserTimeZoneId.sql" />
+    <Build Include="Common\Functions\udf_GetEndOfDay.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetRequestTypeCountByDate.sql" />
+    <Build Include="Billing\Tables\ShopInsuranceCompaniesEstimate.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetVolumeSummaryReport.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetInvoiceSummaryReport.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetStatementNotification.sql" />
+    <Build Include="Inventory\Tables\AirProToolShopsArchive.sql" />
+    <Build Include="Inventory\Tables\AirProToolAccountsArchive.sql" />
+    <Build Include="Service\Stored Procedures\usp_GetMitchellReport.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetTechAvgScansByDayReport.sql" />
+    <Build Include="Scan\Tables\TroubleCodeRecomendations.sql" />
+    <Build Include="Scan\Tables\ReportTroubleCodeRecomendations.sql" />
+    <Build Include="Service\Tables\MitchellReports.sql" />
+    <Build Include="Scan\Tables\ReportDecisions.sql" />
+    <Build Include="Scan\Tables\DecisionVehicleMakes.sql" />
+    <Build Include="Scan\Tables\Decisions.sql" />
+    <Build Include="Scan\Tables\DecisionRequestTypes.sql" />
+    <Build Include="Scan\Tables\DecisionRequestCategories.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetRequestById.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetReportByRequestId.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetDecisionsRanked.sql" />
+    <Build Include="Diagnostic\Tables\ResultTroubleCodes.sql" />
+    <Build Include="Diagnostic\Tables\ResultFreezeFrames.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_SaveDiagnosticResult.sql" />
+    <Build Include="Diagnostic\User Defined Types\udt_ResultTroubleCodes.sql" />
+    <Build Include="Diagnostic\User Defined Types\udt_ResultFreezeFrames.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_GetDiagnosticResults.sql" />
+    <Build Include="Scan\Tables\ReportTroubleCodeOverrides.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_GetControllersSearch.sql" />
+    <Build Include="Scan\Tables\TroubleCodeRecommendations.sql" />
+    <Build Include="Scan\Tables\ReportTroubleCodeRecommendations.sql" />
+    <Build Include="Scan\Tables\ReportOrderTroubleCodes.sql" />
+    <Build Include="Common\Functions\udf_JsonArrayToTable.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetRecommendationSearch.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_GetTroubleCodesSearch.sql" />
+    <Build Include="Scan\User Defined Types\udt_ReportRecommendations.sql" />
+    <Build Include="Scan\User Defined Types\udt_ReportDecisions.sql" />
+    <Build Include="Support\Tables\Connections.sql" />
+    <Build Include="Support\Stored Procedures\usp_SaveConnection.sql" />
+    <Build Include="Support\Stored Procedures\usp_GetConnections.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveReport.sql" />
+    <Build Include="Repair\Stored Procedures\usp_CloseRepairByRequestId.sql" />
+    <Build Include="Backups\Tables\ScanUploadXmls.sql" />
+    <Build Include="Backups\Tables\ScanFFResults.sql" />
+    <Build Include="Backups\Tables\ScanResults.sql" />
+    <Build Include="Backups\Tables\DiagnosticFreezeFrameSensors.sql" />
+    <Build Include="Backups\Tables\DiagnosticFreezeFrameSensorGroups.sql" />
+    <Build Include="Backups\Tables\DiagnosticFreezeFrames.sql" />
+    <Build Include="Backups\Tables\DiagnosticTroubleCodes.sql" />
+    <Build Include="Backups\Tables\DiagnosticControllers.sql" />
+    <Build Include="Security\Backups.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveDecision.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetDecisionsByGridPage.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetDecisionById.sql" />
+    <Build Include="Scan\User Defined Types\udt_DecisionSettings.sql" />
+    <Build Include="Common\Tables\ReleaseNotes.sql" />
+    <Build Include="Common\Tables\ReleaseNoteRoles.sql" />
+    <Build Include="Common\Tables\NoteTypes.sql" />
+    <Build Include="Common\Tables\Notes.sql" />
+    <Build Include="Access\Tables\ShopContacts.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveTroubleCodeRecommendation.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetTroubleCodeRecommendations.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetRepairCountByStatus.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetHourlyVolumeByWeekReport.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetFeedbackReport.sql" />
+    <Build Include="Access\Tables\ShopRequestTypes.sql" />
+    <Build Include="Access\Stored Procedures\usp_SaveShop.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetShops.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetShopDisplayList.sql" />
+    <Build Include="Access\User Defined Types\udt_ShopVehicleMakesPricing.sql" />
+    <Build Include="Access\User Defined Types\udt_ShopInsuranceCompaniesPricingPlans.sql" />
+    <Build Include="Access\User Defined Types\udt_ShopInsuranceCompaniesEstimatePlans.sql" />
+    <Build Include="Access\User Defined Types\udt_ShopContacts.sql" />
+    <Build Include="Scan\Tables\ReportSaveAudit.sql" />
+    <Build Include="Access\Tables\RegistrationUsers.sql" />
+    <Build Include="Access\Tables\RegistrationShops.sql" />
+    <Build Include="Access\Tables\Registrations.sql" />
+    <Build Include="Access\Tables\RegistrationAccounts.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetRegistrationNotification.sql" />
+    <Build Include="Access\Stored Procedures\usp_SaveRegistration.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetRegistrationOptions.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetRegistrationGrid.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetRegistration.sql" />
+    <Build Include="Access\Stored Procedures\usp_CompleteRegistration.sql" />
+    <Build Include="Billing\Stored Procedures\usp_GetPaymentsGrid.sql" />
+    <Build Include="Backups\Tables\ScanReportsArchive_1.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetRegistrationWelcomeNotification.sql" />
+    <Build Include="Scan\Tables\ReportDiagnosticResults.sql" />
+    <Build Include="Diagnostic\Tables\VehicleControllers.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_UpdateVehicleControllers.sql" />
+    <Build Include="Scan\Tables\WorkTypeVehicleMakes.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetWorkTypeSearch.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetWorkTypeDisplayList.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetWorkType.sql" />
+    <Build Include="Service\Tables\MitchellRegistrations.sql" />
+    <Build Include="Service\Stored Procedures\usp_SaveMitchellRegistration.sql" />
+    <Build Include="Service\Stored Procedures\usp_UpdateMitchellRegistration.sql" />
+    <Build Include="Service\Stored Procedures\usp_GetMitchellRegistration.sql" />
+    <Build Include="Technician\Tables\Locations.sql" />
+    <Build Include="Service\Tables\CCCInsuranceCompanies.sql" />
+    <Build Include="Service\Stored Procedures\usp_UpdateCCCInsuranceCompanies.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetAccountShopRepsReport.sql" />
+    <Build Include="Access\Stored Procedures\usp_GetEmployeeDisplayList.sql" />
+    <Build Include="Scan\Tables\CancelReasonTypes.sql" />
+    <Build Include="Notification\Stored Procedures\usp_GetScanToolIssuesNotification.sql" />
+    <Build Include="Scan\Tables\ReportVehicleMakeTools.sql" />
+    <Build Include="Repair\Tables\VehicleMakeTools.sql" />
+    <Build Include="Scan\User Defined Types\udt_VehicleMakeTool.sql" />
+    <Build Include="Billing\Functions\udf_GetPricingPlanIdByOrderId.sql" />
+    <Build Include="Diagnostic\Views\vwUploadQueue.sql" />
+    <Build Include="Diagnostic\Stored Procedures\usp_GetDiagnosticQueueByShop.sql" />
+    <Build Include="Repair\Views\vwOrderDetails.sql" />
+    <Build Include="Storage\AirProSearchCatalog.sql" />
+    <Build Include="FullTextIndexes.sql" />
+    <Build Include="Repair\Tables\OrderStatuses.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetEstimatedOutstandingRevenueReport.sql" />
+    <Build Include="Scan\Views\vwRequestDetails.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetRequestsByUser.sql" />
+    <Build Include="Scan\Tables\ValidationRules.sql" />
+    <Build Include="Scan\Tables\RequestTypeValidationRules.sql" />
+    <Build Include="Scan\Tables\ReportValidationRules.sql" />
+    <Build Include="Scan\Functions\udf_GetValidationRulesByRequestId.sql" />
+    <Build Include="Scan\Stored Procedures\usp_SaveRequestType.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetValidationRuleDisplayList.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetRequestTypes.sql" />
+    <Build Include="Scan\Stored Procedures\usp_GetRequestTypeDisplayList.sql" />
+    <Build Include="Access\Stored Procedures\usp_SaveLoginAttempt.sql" />
+    <Build Include="Reporting\Stored Procedures\usp_GetReportAccess.sql" />
+    <Build Include="Repair\Stored Procedures\usp_GetDecodeVIN.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SqlSchemaCompare.scmp" />
+  </ItemGroup>
+</Project>

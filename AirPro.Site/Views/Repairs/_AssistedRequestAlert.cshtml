@@ -1,0 +1,20 @@
+﻿@model string
+
+<div class="alert alert-danger request-assisted-scan-cnt hide" role="alert">
+    All modules were not read on this Vehicle, recommend an Assisted Scan be perfomed. <a class="request-assisted-scan-link hide" href="#" target="_blank">Request Assisted Scan</a>
+</div>
+
+<script type="text/javascript">
+    function @(Model)showAssistedRequest() {
+        $('#@Model .request-assisted-scan-cnt').removeClass('hide');
+    }
+
+    function @(Model)hideAssistedRequestLink() {
+        $("#@Model .request-assisted-scan-link").addClass('hide');
+    }
+
+    function @(Model)showAssistedRequestLink(orderId) {
+        $("#@Model .request-assisted-scan-link").attr('href', '@Url.Action("RequestScan", "Repairs")/' + orderId);
+        $("#@Model .request-assisted-scan-link").removeClass('hide');
+    }
+</script>

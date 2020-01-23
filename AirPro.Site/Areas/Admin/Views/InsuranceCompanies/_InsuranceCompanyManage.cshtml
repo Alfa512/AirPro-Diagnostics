@@ -1,0 +1,90 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Site.Areas.Admin.Models.InsuranceCompanies.InsuranceCompanyViewModel
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshInsuranceCompanies();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.InsuranceCompanyId)
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceCompanyName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InsuranceCompanyName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InsuranceCompanyName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProgramName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.ProgramName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ProgramName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CccInsuranceCompanyIds, new { @class = "control-label col-sm-3" })
+            <div class="col-sm-9">
+                <div class="checkbox" style="">
+                    <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 145px; overflow-y: auto; position:relative;">
+                        <ul class="selectionList" style="columns: 1; -webkit-columns: 1; -moz-columns: 1; list-style: none; margin: 0; padding-left: 5px;">
+                            @{
+                                int index = 0;
+                            }
+                            @foreach (var company in Model.CccInsuranceCompanies)
+                            {
+                                var selected = Model.CccInsuranceCompanyIds != null ? Model.CccInsuranceCompanyIds.Any(x => x.ToString() == company.Value) : false;
+                                <li>
+                                    <label for="ShopRequestTypes_@index" style="padding-left: 5px;">
+                                        <input type="checkbox" name="CccInsuranceCompanyIds" id="CccInsuranceCompanyIds_@index" value="@company.Value" @(selected || company.Disabled ? "checked=\"checked\"" : "") @(company.Disabled ? "disabled='disabled'" : "")>
+                                        <span style="margin-left: 20px; @(company.Disabled ? "color: gray" : "")">@company.Text</span>
+                                    </label>
+                                </li>
+                                index++;
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DisabledInd, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.DisabledInd, new { htmlAttributes = new { @class = "" } })
+                    @Html.ValidationMessageFor(model => model.DisabledInd, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if ((Model?.InsuranceCompanyId ?? 0) > 0)
+{
+    <hr />
+
+    @Html.UploadControl(UploadType.RepairInsuranceCompanies, Model.InsuranceCompanyId.ToString(), "Uploads")
+}

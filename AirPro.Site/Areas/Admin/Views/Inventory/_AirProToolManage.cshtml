@@ -1,0 +1,587 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@model AirPro.Site.Areas.Admin.Models.Inventory.AirProToolViewModel
+
+@{
+    var canDeviceEdit = (Model.ToolId != null && User.IsInRole(ApplicationRoles.InventoryDeviceEdit.ToString())) || (Model.ToolId == null && User.IsInRole(ApplicationRoles.InventoryDeviceCreate.ToString()));
+    var canDeviceView = User.IsInRole(ApplicationRoles.InventoryDeviceView.ToString());
+    var canAssignmentEdit = User.IsInRole(ApplicationRoles.InventoryAssignmentEdit.ToString());
+    var canAssignmentView = User.IsInRole(ApplicationRoles.InventoryAssignmentView.ToString());
+    var canDepositEdit = User.IsInRole(ApplicationRoles.InventoryDepositEdit.ToString());
+    var canDepositView = User.IsInRole(ApplicationRoles.InventoryDepositView.ToString());
+    var canSubscriptionEdit = User.IsInRole(ApplicationRoles.InventorySubscriptionEdit.ToString());
+    var canSubscriptionView = User.IsInRole(ApplicationRoles.InventorySubscriptionView.ToString());
+}
+
+<style type="text/css">
+    tr.errorRow {
+        background: #ea9a9a !important;
+    }
+
+    .validationMessage {
+        color: red;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    #manageModal .modal-dialog {
+        width: 680px;
+    }
+</style>
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshAirProTools();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@using (Html.BeginForm("ManageAirProTool", "Inventory", FormMethod.Post, new { @id = "frmInventory" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#inventory_device" aria-controls="inventory_device" role="tab" data-toggle="tab">Device</a></li>
+        @if(canDeviceEdit || canDeviceView)
+        {
+        <li role="presentation"><a href="#inventory_hardware" aria-controls="inventory_hardware" role="tab" data-toggle="tab">Hardware</a></li>
+        <li role="presentation"><a href="#inventory_tablet" aria-controls="inventory_tablet" role="tab" data-toggle="tab">Tablet</a></li>
+        }
+        @if (canSubscriptionEdit || canSubscriptionView)
+        {
+            <li role="presentation"><a href="#inventory_subscriptions" aria-controls="inventory_subscriptions" role="tab" data-toggle="tab">Subscriptions</a></li>
+        }
+        @if (canDepositEdit || canDepositView)
+        {
+            <li role="presentation"><a href="#inventory_deposits" aria-controls="inventory_deposits" role="tab" data-toggle="tab">Deposits</a></li>
+        }
+        @if ((Model?.ToolId ?? 0) > 0)
+        {
+            <li role="presentation"><a href="#inventory_attachments" aria-controls="inventory_attachments" role="tab" data-toggle="tab">Attachments</a></li>
+            if (User.IsInRole(ApplicationRoles.InventoryNoteView.ToString()) || User.IsInRole(ApplicationRoles.InventoryNoteEdit.ToString()))
+            {
+                <li role="presentation"><a href="#inventory_notes" aria-controls="inventory_notes" role="tab" data-toggle="tab">Notes</a></li>
+            }
+        }
+    </ul>
+
+    <div class="tab-content">
+    
+    <div role="tabpanel" class="tab-pane in active" id="inventory_device">
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+            @Html.HiddenFor(model => model.ToolId, new {data_bind = "value: toolId"})
+
+            @if ((Model?.ToolId ?? 0) > 0)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ToolName, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8" style="padding-top: 6px;">
+                        @Html.DisplayFor(model => model.ToolName, new {htmlAttributes = new {@class = "form-control", data_bind = "value: toolName"}})
+                    </div>
+                </div>
+            }
+
+            @if (Model?.ToolKey.HasValue ?? false)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ToolKey, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8" style="padding-top: 6px;">
+                        @Model.ToolKey.Value.ToString().ToUpper()
+                    </div>
+                </div>
+            }
+            
+            @if (canDeviceView || canDeviceEdit)
+            {
+                if (canDeviceEdit)
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ToolPassword, new {@class = "control-label col-sm-4"})
+                        <div class="col-sm-8">
+                            @Html.EditorFor(model => model.ToolPassword, new {htmlAttributes = new {@class = "form-control", data_bind = "value: toolPassword"}}).DisableIf(() => !canDeviceEdit)
+                            @Html.ValidationMessageFor(model => model.ToolPassword, "", new {@class = "text-danger"})
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ToolType, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(model => model.ToolType, new SelectList(Model.ToolTypeList, "Key", "Value"), new {@class = "form-control", data_bind = "value: toolType"}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.ToolType, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SelfScanEnabledInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                    <div class="col-xs-2 col-sm-8">
+                        <div class="checkbox">
+                            @Html.EditorFor(model => model.SelfScanEnabledInd, new {htmlAttributes = new {data_bind = "checked: selfScanEnabledInd"}}).DisableIf(() => !canDeviceEdit)
+                            @Html.ValidationMessageFor(model => model.SelfScanEnabledInd, "", new {@class = "text-danger"})
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (canAssignmentEdit || canAssignmentView)
+            {
+                <hr/>
+
+                @Html.AccountMembershipSelectionFor(m => m.AccountAssignments, canAssignmentEdit)
+
+                <hr/>
+
+                @Html.ShopMembershipSelectionFor(m => m.ShopAssignments, canAssignmentEdit)
+            }
+        </div>
+    </div>
+    
+    
+    @if(canDeviceEdit || canDeviceView)
+    {
+    <div role="tabpanel" class="tab-pane in" id="inventory_hardware">
+        <div class="form-horizontal">
+            <div data-bind="with: hardwareTab">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.AutoEnginuityNum, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.AutoEnginuityNum, new {htmlAttributes = new {@class = "form-control", data_bind = "value: autoEnginuityNum"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.AutoEnginuityNum, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.AutoEnginuityVersion, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.AutoEnginuityVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: autoEnginuityVersion"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.AutoEnginuityVersion, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.CarDaqNum, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.CarDaqNum, new {htmlAttributes = new {@class = "form-control", data_bind = "value: carDaqNum"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.CarDaqNum, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.DGNum, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.DGNum, new {htmlAttributes = new {@class = "form-control", data_bind = "value: dgNum"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.DGNum, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.HubModel, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.HubModel, new {htmlAttributes = new {@class = "form-control", data_bind = "value: hubModel"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.HubModel, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.OBD2YConnector, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.OBD2YConnector, new {htmlAttributes = new {@class = "form-control", data_bind = "value: obD2YConnector"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.OBD2YConnector, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.AELatestCode, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.AELatestCode, new {htmlAttributes = new {@class = "form-control", data_bind = "value: aeLatestCode"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.AELatestCode, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HardwareTab.ChargerStyle, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.HardwareTab.ChargerStyle, new {htmlAttributes = new {@class = "form-control", data_bind = "value: chargerStyle"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.HardwareTab.ChargerStyle, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div data-bind="with: j2534Tab">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.J2534Tab.J2534Brand, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(model => model.J2534Tab.J2534Brand, new SelectList(Model.J2534BrandList, "Key", "Value"), "<-- Select Brand -->", new {@class = "form-control", data_bind = "value: j2534Brand"}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.J2534Tab.J2534Brand, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.J2534Tab.J2534Model, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(model => model.J2534Tab.J2534Model, new SelectList(Model.J2534ModelList, "Key", "Value"), "<-- Select Model -->", new {@class = "form-control", data_bind = "value: j2534Model"}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.J2534Tab.J2534Model, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.J2534Tab.J2534Serial, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.J2534Tab.J2534Serial, new {htmlAttributes = new {@class = "form-control", data_bind = "value: j2534Serial"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.J2534Tab.J2534Serial, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane in" id="inventory_tablet">
+        <div class="form-horizontal" data-bind="with: tabletTab">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.TeamViewerId, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.TeamViewerId, new {htmlAttributes = new {@class = "form-control", data_bind = "value: teamViewerId"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.TeamViewerId, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.TeamViewerPassword, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.TeamViewerPassword, new {htmlAttributes = new {@class = "form-control", data_bind = "value: teamViewerPassword"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.TeamViewerPassword, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.TabletModel, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.TabletModel, new {htmlAttributes = new {@class = "form-control", data_bind = "value: tabletModel"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.TabletModel, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WindowsVersion, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WindowsVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: windowsVersion"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WindowsVersion, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.IPV6DisabledInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                <div class="col-xs-2 col-sm-8">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.TabletTab.IPV6DisabledInd, new {htmlAttributes = new {data_bind = "checked: ipV6DisabledInd"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.TabletTab.IPV6DisabledInd, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.OneDriveSyncEnabledInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                <div class="col-xs-2 col-sm-8">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.TabletTab.OneDriveSyncEnabledInd).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.TabletTab.OneDriveSyncEnabledInd, "", new {@class = "text-danger", data_bind = "checked: oneDriveSyncEnabledInd"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.UpdatesServiceInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                <div class="col-xs-2 col-sm-8">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.TabletTab.UpdatesServiceInd, new {htmlAttributes = new {data_bind = "checked: updatesServiceInd"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.TabletTab.UpdatesServiceInd, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.MeteredConnectionInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                <div class="col-xs-2 col-sm-8">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.TabletTab.MeteredConnectionInd, new {htmlAttributes = new {data_bind = "checked: meteredConnectionInd"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.TabletTab.MeteredConnectionInd, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.TabletSerialNumber, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.TabletSerialNumber, new {htmlAttributes = new {@class = "form-control", data_bind = "value: tabletSerialNumber"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.TabletSerialNumber, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WifiCard, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WifiCard, new {htmlAttributes = new {@class = "form-control", data_bind = "value: wifiCard"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WifiCard, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WifiHardwareId, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WifiHardwareId, new {htmlAttributes = new {@class = "form-control", data_bind = "value: wifiHardwareId"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WifiHardwareId, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WifiDriverDate, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WifiDriverDate, new {htmlAttributes = new {@class = "form-control", data_bind = "dateTimePicker: wifiDriverDate, dateTimePickerOptions: { format: 'MM/DD/YYYY' }"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WifiDriverDate, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WifiDriverVersion, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WifiDriverVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: wifiDriverVersion"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WifiDriverVersion, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.WifiMacAddress, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.WifiMacAddress, new {htmlAttributes = new {@class = "form-control", data_bind = "value: wifiMacAddress"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.WifiMacAddress, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.ImageVersion, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.ImageVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: imageVersion"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.ImageVersion, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.CellularActiveInd, new {@class = "control-label col-xs-10 col-sm-4"})
+                <div class="col-xs-2 col-sm-8">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.TabletTab.CellularActiveInd, new {htmlAttributes = new {data_bind = "checked: updatesServiceInd"}}).DisableIf(() => !canDeviceEdit)
+                        @Html.ValidationMessageFor(model => model.TabletTab.CellularActiveInd, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.CellularProvider, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.CellularProvider, new {htmlAttributes = new {@class = "form-control", data_bind = "value: cellularProvider"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.CellularProvider, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TabletTab.CellularIMEI, new {@class = "control-label col-sm-4"})
+                <div class="col-sm-8">
+                    @Html.EditorFor(model => model.TabletTab.CellularIMEI, new {htmlAttributes = new {@class = "form-control", data_bind = "value: cellularIMEI"}}).DisableIf(() => !canDeviceEdit)
+                    @Html.ValidationMessageFor(model => model.TabletTab.CellularIMEI, "", new {@class = "text-danger"})
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (canSubscriptionEdit || canSubscriptionView)
+    {
+        <div role="tabpanel" class="tab-pane in" id="inventory_subscriptions">
+            <div class="form-horizontal" data-bind="with: subscriptionsTab">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubscriptionsTab.HondaVersion, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.SubscriptionsTab.HondaVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: hondaVersion"}}).DisableIf(() => !canSubscriptionEdit)
+                        @Html.ValidationMessageFor(model => model.SubscriptionsTab.HondaVersion, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubscriptionsTab.FJDSVersion, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.SubscriptionsTab.FJDSVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: fjdsVersion"}}).DisableIf(() => !canSubscriptionEdit)
+                        @Html.ValidationMessageFor(model => model.SubscriptionsTab.FJDSVersion, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubscriptionsTab.TechstreamVersion, new {@class = "control-label col-sm-4"})
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.SubscriptionsTab.TechstreamVersion, new {htmlAttributes = new {@class = "form-control", data_bind = "value: techstreamVersion"}}).DisableIf(() => !canSubscriptionEdit)
+                        @Html.ValidationMessageFor(model => model.SubscriptionsTab.TechstreamVersion, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <hr style="margin-bottom: 10px;"/>
+                @if (canSubscriptionEdit)
+                {
+                    <div class="form-group" style="margin-bottom: 0">
+                        <div class="col-sm-12 text-right">
+                            <button data-bind="click: addSubscription" class="btn btn-xs btn-primary">Add</button>
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <table class="table table-striped" style="margin-bottom: 0;">
+                            <colgroup>
+                                <col/>
+                                <col/>
+                                <col/>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                            </tr>
+                            </thead>
+                            <tbody data-bind="foreach: subscriptions">
+                            <tr>
+                                <td>
+                                    <input type="hidden" data-bind="value: toolSubscriptionId, attr: { 'name': 'SubscriptionsTab.Subscriptions[' + $index() + '].ToolSubscriptionId' }"/>
+                                    <input type="text" class="form-control" data-bind="value: vendor, attr: { 'name': 'SubscriptionsTab.Subscriptions[' + $index() + '].Vendor' }" @(!canSubscriptionEdit ? "disabled=\"disabled\"" : "")/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" data-bind="value: username, attr: { 'name': 'SubscriptionsTab.Subscriptions[' + $index() + '].Username' }" @(!canSubscriptionEdit ? "disabled=\"disabled\"" : "")/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" data-bind="value: password, attr: { 'name': 'SubscriptionsTab.Subscriptions[' + $index() + '].Password' }" @(!canSubscriptionEdit ? "disabled=\"disabled\"" : "")/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (canDepositView || canDepositEdit)
+    {
+        <div role="tabpanel" class="tab-pane in" id="inventory_deposits">
+            <div class="form-horizontal" data-bind="with: depositsTab" style="max-height: 450px; overflow-y: auto;">
+                <div class="alert alert-info" role="alert" data-bind="visible: deposits().length == 0" style="display: none; margin-bottom: 5px;">
+                    <strong>No Deposits yet.</strong> Create your first one clicking add button.
+                </div>
+                @if (canDepositEdit)
+                {
+                    <div class="text-right">
+                        <span style="margin-right: 10px; display: none;" data-bind="visible: deposits().length > 0">Total: <b data-bind="text: '$' + total()"></b></span>
+                        <button data-bind="click: addDeposit" class="btn btn-xs btn-primary">Add</button>
+                    </div>
+                }
+                <table class="table table-striped" style="margin-bottom: 0; display: none;" data-bind="visible: deposits().length > 0">
+                    <colgroup>
+                        <col style="width: 130px;"/>
+                        <col/>
+                        <col style="width: 120px;"/>
+                        <col/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        @if (canDepositEdit)
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: deposits">
+                    <tr data-bind="css: { errorRow: deleteInd }">
+                        <td>
+                            <input type="hidden" data-bind="value: toolDepositId, attr: { 'name': 'DepositsTab.Deposits[' + $index() + '].ToolDepositId' }"/>
+                            <input type="hidden" data-bind="value: deleteInd, attr: { 'name': 'DepositsTab.Deposits[' + $index() + '].DeleteInd' }"/>
+                            <input type="text" class="form-control" data-bind="dateTimePicker: date, dateTimePickerOptions: { format: 'YYYY/MM/DD' }, attr: { 'name': 'DepositsTab.Deposits[' + $index() + '].Date', readonly: readOnly }" @(!canDepositEdit ? "disabled=\"disabled\"" : "")/>
+                        </td>
+                        <td>
+                            <textarea data-bind="value: description, attr: { 'name': 'DepositsTab.Deposits[' + $index() + '].Description', readonly: readOnly }" class="form-control" style="resize: none;" rows="1" @(!canDepositEdit ? "disabled=\"disabled\"" : "")></textarea>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input type="text" class="form-control" data-bind="value: amount, attr: { 'name': 'DepositsTab.Deposits[' + $index() + '].Amount', readonly: readOnly }" @(!canDepositEdit ? "disabled=\"disabled\"" : "")/>
+                            </div>
+                        </td>
+                        @if (canDepositEdit)
+                        {
+                            <td>
+                                <button type="button" class="btn btn-xs btn-danger" data-bind="click: $parent.removeDeposit">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    @if ((Model?.ToolId ?? 0) > 0)
+    {
+        <div role="tabpanel" class="tab-pane in" id="inventory_attachments">
+            @Html.UploadControl(UploadType.InventoryAirProTools, Model.ToolId.ToString(), "Attachments")
+        </div>
+        if (User.IsInRole(ApplicationRoles.InventoryNoteView.ToString()))
+        {
+            <div role="tabpanel" class="tab-pane in" id="inventory_notes">
+                @Html.NoteControl(NoteType.Inventory, Model.ToolId.ToString(), "Tool Notes")
+            </div>
+        }
+    }
+    </div>
+        }
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var model = @Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings
+           {
+               ContractResolver = new CamelCasePropertyNamesContractResolver()
+           }));
+
+        var subscriptions = model.subscriptionsTab || {};
+        var deposits = model.depositsTab || {};
+        delete model.subscriptionsTab;
+        delete model.depositsTab;
+
+        window.airProToolViewModel = new AirProToolViewModel(model, subscriptions, deposits);
+        ko.applyBindings(window.airProToolViewModel, document.getElementById('frmInventory'));
+    });
+
+    function membershipIsValid() {
+        return $('#AccountAssignments-Membership [name="isValid"]').val() &&
+            $('#AccountAssignments-Membership [name="isValid"]').val() === 'true' &&
+            $('#ShopAssignments-Membership [name="isValid"]').val() &&
+            $('#ShopAssignments-Membership [name="isValid"]').val() === 'true';
+    }
+</script>

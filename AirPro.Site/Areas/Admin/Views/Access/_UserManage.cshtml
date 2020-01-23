@@ -1,0 +1,274 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Site.Areas.Admin.Models.Access.UserViewModel
+
+@{
+    var groupsList = ViewBag.GroupsSelectList as List<SelectListItem>;
+    var canViewNotes = User.IsInRole(ApplicationRoles.UserNoteView.ToString()) || User.IsInRole(ApplicationRoles.UserNoteEdit.ToString());
+}
+
+<style type="text/css">
+    .notification-checkbox {
+        top: 7px;
+        position: relative;
+    }
+
+    .employee-cnt {
+        height: 20px;
+        margin-top: 10px;
+    }
+
+    .employee-alert {
+        padding: 8px;
+        margin-bottom: 6px;
+        margin-top: -8px;
+    }
+
+    .employee-warning-alert {
+        padding: 8px;
+        margin-bottom: 6px;
+        margin-top: 8px;
+    }
+</style>
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                try {
+                    refreshUsers();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@if (!Model?.AllowEntry ?? true)
+{
+    <script type="text/javascript">
+        disableEntry();
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.UserGuid)
+
+    if (Model.EmployeeInd)
+    {
+        <div class="alert alert-warning employee-alert" role="alert">
+            This User is an AirPro Employee
+        </div>
+    }
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#user_info" aria-controls="user_info" role="tab" data-toggle="tab">Info</a></li>
+        <li role="presentation"><a href="#user_groups" aria-controls="user_groups" role="tab" data-toggle="tab">Groups</a></li>
+        <li role="presentation"><a href="#user_memberships" aria-controls="user_memberships" role="tab" data-toggle="tab">Memberships</a></li>
+        @if (Model?.UserGuid != null && Model.UserGuid != new Guid())
+        {
+            <li role="presentation"><a href="#user_support" aria-controls="user_support" role="tab" data-toggle="tab">Support</a></li>
+            <li role="presentation"><a href="#user_attachments" aria-controls="user_attachments" role="tab" data-toggle="tab">Attachments</a></li>
+            if (canViewNotes)
+            {
+                <li role="presentation"><a href="#user_notes" aria-controls="user_notes" role="tab" data-toggle="tab">Notes</a></li>
+            }
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane in active" id="user_info">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @type = "email", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JobTitle, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.JobTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.JobTitle, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ContactNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.ContactNumber, new { htmlAttributes = new { @class = "form-control inputmask-phone" } })
+                        @Html.ValidationMessageFor(model => model.ContactNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TimeZoneInfoId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @AirPro.Site.Helpers.Selections.TimeZoneSelectionList(Model?.TimeZoneInfoId)
+                        @Html.ValidationMessageFor(model => model.TimeZoneInfoId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ShopReportNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-2">
+                        @Html.CheckBoxFor(model => model.ShopReportNotification, new { @class = "notification-checkbox" })
+                        @Html.ValidationMessageFor(model => model.ShopReportNotification, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.ShopStatementNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-2">
+                        @Html.CheckBoxFor(model => model.ShopStatementNotification, new { @class = "notification-checkbox" })
+                        @Html.ValidationMessageFor(model => model.ShopStatementNotification, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ShopBillingNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.CheckBoxFor(model => model.ShopBillingNotification, new { @class = "notification-checkbox" })
+                        @Html.ValidationMessageFor(model => model.ShopBillingNotification, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="user_groups">
+            <div class="form-horizontal">
+                @if (groupsList != null && groupsList.Any())
+                {
+                    @Html.MultiCheckBoxListFor(m => m.GroupMemberships, groupsList, 2)
+                }
+                else
+                {
+                    <em><strong>No Selections Available.</strong></em>
+                }
+            </div>
+            @if (User.IsInRole(ApplicationRoles.AirProEmployeeAssign.ToString()))
+            {
+                if (Model.EmployeeAssignedInd)
+                 {
+                     <div class="alert alert-warning employee-warning-alert" role="alert">
+                         This User is Assigned to an Active Shop or Account.
+                     </div>
+                 }
+                <div class="form-check employee-cnt">
+                    @Html.CheckBoxFor(model => model.EmployeeInd, new { @class = "form-check-input" }).DisableIf(() => Model.EmployeeAssignedInd)
+                    @Html.LabelFor(model => model.EmployeeInd, htmlAttributes: new { @class = "form-check-label", style="margin-left: 3px; position: relative; top: -1px;" })
+                </div>
+            }
+        </div>
+        <div role="tabpanel" class="tab-pane" id="user_memberships">
+            @Html.AccountMembershipSelectionFor(m => m.AccountMemberships)
+            <hr />
+            @Html.ShopMembershipSelectionFor(m => m.ShopMemberships)
+        </div>
+        @if (Model?.UserGuid != null && Model.UserGuid != new Guid())
+        {
+            <div role="tabpanel" class="tab-pane" id="user_support">
+                <div class="panel-body" style="padding: 0;">
+                    <div class="form-check col-sm-6 col-xs-12">
+                        @Html.CheckBoxFor(model => model.AccountLocked, new { @class = "form-check-input" }).DisableIf(() => !User.IsInRole(ApplicationRoles.UserDelete.ToString()))
+                        @Html.LabelFor(model => model.AccountLocked, htmlAttributes: new { @class = "form-check-label" })
+                    </div>
+
+                    <div class="form-check col-sm-6 col-xs-12">
+                        @Html.DisplayFor(model => model.EmailConfirmed, new { @class = "form-check-input" })
+                        @Html.LabelFor(model => model.EmailConfirmed, htmlAttributes: new { @class = "form-check-label" })
+                    </div>
+
+                    <div class="form-check col-sm-6 col-xs-12">
+                        @Html.DisplayFor(model => model.PhoneNumberConfirmed, new { @class = "form-check-input" })
+                        @Html.LabelFor(model => model.PhoneNumberConfirmed, htmlAttributes: new { @class = "form-check-label" })
+                    </div>
+
+                    <div class="form-check col-sm-6 col-xs-12">
+                        @Html.DisplayFor(model => model.TwoFactorEnabled, new { @class = "form-check-input" })
+                        @Html.LabelFor(model => model.TwoFactorEnabled, htmlAttributes: new { @class = "form-check-label" })
+                    </div>
+                    <div class="form-check col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.AccessFailedCount, htmlAttributes: new { @class = "form-check-label" })
+                        <span style="margin: 0 5px; ;">@Model.AccessFailedCount</span>
+                    </div>
+                </div>
+            </div>
+            if (Model?.UserGuid != null && Model.UserGuid != new Guid())
+            {
+                <div role="tabpanel" class="tab-pane" id="user_attachments">
+                    @Html.UploadControl(UploadType.AccessUsers, Model.UserGuid.ToString(), "User Attachments")
+                </div>
+                if (canViewNotes)
+                {
+                    <div role="tabpanel" class="tab-pane" id="user_notes">
+                        @Html.NoteControl(NoteType.User, Model.UserGuid.ToString(), "User Notes")
+                    </div>
+                }
+            }
+        }
+    </div>
+}
+<script type="text/javascript">
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+
+    function membershipIsValid() {
+        return $('#AccountMemberships-Membership [name="isValid"]').val() &&
+            $('#AccountMemberships-Membership [name="isValid"]').val() === 'true' &&
+            $('#ShopMemberships-Membership [name="isValid"]').val() &&
+            $('#ShopMemberships-Membership [name="isValid"]').val() === 'true';
+    }
+
+    enableInputMasking();
+</script>

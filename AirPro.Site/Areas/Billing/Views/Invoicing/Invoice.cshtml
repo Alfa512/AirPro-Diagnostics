@@ -1,0 +1,527 @@
+﻿@model AirPro.Site.Areas.Billing.Models.InvoiceViewModel
+
+@using System.Web.Mvc.Html
+@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Billing Invoice";
+}
+
+<style>
+    .panel > .table {
+        margin-bottom: 0;
+    }
+
+    td > label {
+        margin-bottom: 0;
+    }
+
+    .work-item {
+        width: 120px;
+        float: right;
+    }
+
+    .total-amount-cnt {
+        margin-top: -5px;
+        margin-bottom: 10px;
+        height: 20px;
+        padding-right: 12px;
+    }
+</style>
+
+@section Scripts {
+    <script src="@Url.Content("~/Content/tinymce/tinymce.min.js")"></script>
+    <script>
+        try {
+            tinymce.init({
+                selector: '.textarea',
+                plugins: "textcolor paste advlist lists",
+                browser_spellcheck: true,
+                height: "150",
+                menubar: false,
+                statusbar: false,
+                toolbar: "undo redo | paste cut copy | bold italic underline strikethrough forecolor | bullist numlist outdent indent | removeformat"
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
+        var confirmed;
+        $(document).ready(function () {
+            confirmed = $('#CustomerVisible').checked;
+        });
+
+        function CompleteConfirm(btn) {
+            $(btn).button('loading');
+            var result = true;
+
+            if ($('#CustomerVisible').checked && !confirmed) {
+                result = confirm('This will send a notification to the customer, are you sure?');
+            }
+
+            if (result === false) {
+                $(btn).button('reset');
+            }
+
+            return result;
+        }
+
+        @if (!User.IsInRole(ApplicationRoles.InvoiceCreate.ToString()) && !User.IsInRole(ApplicationRoles.InvoiceEdit.ToString()))
+        {
+            <text>
+        $(document)
+            .ready(function() {
+                $('form input').prop('disabled', true);
+                $('form select').prop('disabled', true);
+                $('form .textarea').prop('disabled', true);
+                $('form button[type=submit]').css('display', 'none');
+            });
+            </text>
+        }
+    </script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Shop Info
+                </h4>
+            </div>
+            <table class="table table-condensed">
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopPhone)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopPhone)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopFax)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopFax)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopAddress1)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopAddress1)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopAddress2)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopAddress2)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopCity)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopCity)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopState)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopState)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopZip)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopZip)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopNotes)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopNotes)
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title">Repair Info</h4>
+            </div>
+            <table class="table table-condensed">
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.RepairId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.RepairId)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.RepairStatus)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.RepairStatus)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.ShopRoNumber)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.ShopRoNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.InsuranceCompanyName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.InsuranceCompanyName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.InsuranceClaimNumber)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => model.InsuranceClaimNumber)
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title">Vehicle Info</h4>
+            </div>
+            <table class="table table-condensed">
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.VehicleVIN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VehicleVIN)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.VehicleMake)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VehicleMake)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.VehicleModel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VehicleModel)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.VehicleYear)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VehicleYear)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.VehicleTransmission)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VehicleTransmission)
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@using (Html.BeginForm("Invoice", "Invoicing"))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.RepairId)
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Scan Reports
+                    </h4>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table table-striped" style="min-width: 700px; margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 60px;">
+                                    Invoice
+                                </th>
+                                <th>
+                                    Work Perfomed
+                                </th>
+                                <th>
+                                    Requestor
+                                </th>
+                                <th>
+                                    Last Technician
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Invoice Amount
+                                </th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @for (int i = 0; i < Model.LineItems.Count(); i++)
+                                {
+                                    var reportId = Model.LineItems.ElementAt(i).ReportId;
+                                    var isCanceled = Model.LineItems.ElementAt(i).CanceledInd;
+                                    <tr class="scan-request-line scan-request-line-@reportId" data-report-id="@reportId">
+                                        <td class="text-center">
+                                            @Html.Hidden("LineItems.Index", (@i + 10))
+                                            @Html.Hidden("LineItems[" + (@i + 10) + "].ReportId", Model.LineItems.ElementAt(i).ReportId)
+                                            @Html.Hidden("LineItems[" + (@i + 10) + "].RequestId", Model.LineItems.ElementAt(i).RequestId)
+                                            @Html.Hidden("LineItems[" + (@i + 10) + "].CancellationNotes", Model.LineItems.ElementAt(i).CancellationNotes, new { @class = "hidNotes", @data_report_id = reportId })
+                                            @Html.CheckBox("LineItems[" + (@i + 10) + "].InvoicedInd", Model.LineItems.ElementAt(i).InvoicedInd, new { @class = "chkSelect", @data_canceledInd = isCanceled.ToString().ToLower() })
+                                        </td>
+                                        <td>
+                                            @Model.LineItems.ElementAt(i).RequestTypeName.ToString()
+                                        </td>
+                                        <td>
+                                            @Model.LineItems.ElementAt(i).RequestCreatedByName.ToString()
+                                        </td>
+                                        <td>
+                                            @Model.LineItems.ElementAt(i).TechnicianName.ToString()
+                                        </td>
+                                        <td>
+                                            @if (isCanceled)
+                                            {
+                                                <text><span>Canceled&nbsp;<a id="btnInfo" data-report-id="@reportId" href="#" class="btn btn-sm" data-toggle="tooltip" data-html="true" data-placement="top" title="View Notes"><i class="glyphicon glyphicon-info-sign"></i></a></span></text>
+                                            }
+                                            else
+                                            {
+                                                <text><span>Completed</span></text>
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.TextBox("LineItems[" + (@i + 10) + "].InvoicedAmount", Model.LineItems.ElementAt(i).InvoicedAmount.ToString(), new { @class = "form-control input-sm inputmask-currency line-amount" })
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ScanReport", "Repairs", new { Area = "", ID = Model.LineItems.ElementAt(i).RequestId })" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                        </td>
+                                    </tr>
+
+                                var workItems = Model.LineItems.ElementAt(i).WorkItems;
+                                foreach (var workItem in workItems)
+                                {
+                                    var index = workItems.IndexOf(workItem);
+                                    <tr class="sub-item sub-item-@reportId" data-report-id="@reportId">
+                                        <td></td>
+                                        <td colspan="4">
+                                            <div style="width: 60px; display: inline-block;">
+                                                @Html.CheckBox("LineItems[" + (@i + 10) + "].WorkItems[" + index + "].InvoicedInd", workItem.InvoicedInd, new { @class = "chkSelect", @data_canceledInd = isCanceled.ToString().ToLower() })
+                                            </div>
+                                            @Html.Hidden("LineItems[" + (@i + 10) + "].WorkItems[" + index + "].RequestId", workItem.RequestId)
+                                            @Html.Hidden("LineItems[" + (@i + 10) + "].WorkItems[" + index + "].WorkTypeId", workItem.WorkTypeId)
+                                            @workItem.WorkTypeName
+                                        </td>
+                                        <td colspan="2">
+                                            @Html.TextBox("LineItems[" + (@i + 10) + "].WorkItems[" + index + "].InvoicedAmount", workItem.InvoicedAmount.ToString(), new { @class = "form-control input-sm inputmask-currency work-item line-amount" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="total-amount-cnt">
+                    <div class="pull-right">
+                        <b>Total Amount:</b>
+                        <b>
+                            <span class="total-amount"></span>
+                        </b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            Complete Invoice
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.LabelFor(model => model.InvoiceCustomerMemo, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextAreaFor(model => model.InvoiceCustomerMemo, new { @class = "form-control textarea", @rows = "5" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.InvoiceCurrencyId, htmlAttributes: new { @class = "control-label col-sm-4" })
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(model => model.InvoiceCurrencyId, ViewBag.Currencies as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-sm-offset-4">
+                                    @Html.LabelFor(model => model.InvoiceCompleteInd, htmlAttributes: new { @class = "control-label pull-right" })
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <div class="checkbox">
+                                        @if (User.IsInRole(ApplicationRoles.InvoiceCreate.ToString()) || User.IsInRole(ApplicationRoles.InvoiceDelete.ToString()))
+                                        {
+                                            @Html.EditorFor(model => model.InvoiceCompleteInd)
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => model.InvoiceCompleteInd)
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="submit" class="btn btn-primary" @Html.DisableOnSubmit(DisableButtonType.Submit, "Save") onclick="return CompleteConfirm(this);">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+@Html.UploadControl(UploadType.RepairInvoices, Model.RepairId.ToString(), "Invoice Uploads")
+
+@if (User.IsInRole(ApplicationRoles.InvoiceNoteView.ToString()) || User.IsInRole(ApplicationRoles.InvoiceNoteEdit.ToString()))
+{
+    @Html.NoteControl(NoteType.Invoice, Model.RepairId.ToString(), "Invoice Notes")
+}
+<div class="modal fade" id="cancelModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="outDatedLabel">Cancellation Notes</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@Buttons.BackButton()
+<script type="text/javascript">
+    function updateTotalAmount() {
+        var total = 0;
+        $('.scan-request-line').each(function() {
+            var reportId = $(this).data('report-id');
+            var checked = $(this).find('.chkSelect').prop('checked');
+            var selector = '.sub-item-' + reportId;
+
+            if (!checked) {
+                $(selector).find('.chkSelect').prop('disabled', 'disabled');
+                $(selector).find('.line-amount').prop('disabled', 'disabled');
+            } else {
+                $(selector).find('.chkSelect').prop('disabled', '');
+                $(selector).find('.line-amount').prop('disabled', '');
+            }
+        });
+        $('.line-amount').each(function (index) {
+            var item = $(this).parents("tr").find('.chkSelect');
+            var checked = item.prop('checked') && !item.prop('disabled');
+            if (checked) {
+                total += parseFloat($(this).inputmask('unmaskedvalue'));
+            }
+        });
+
+        $('.total-amount').text('$ ' + total.toFixed(2));
+    }
+
+    $(document).ready(function () {
+        $('input[type="checkbox"].chkSelect').on('click',
+            function () {
+                var isCanceled = $(this).attr('data-canceledInd');
+                if (isCanceled === 'true' && $(this).prop('checked')) {
+                    return confirm(
+                        'You are about to bill for an invoice that is canceled, are you sure you want to continue?');
+                }
+            });
+
+        $('a[data-report-id]').on('click',
+            function (e) {
+                var reportId = $(this).attr('data-report-id');
+                var reportNotes = $('.hidNotes[data-report-id="' + reportId + '"]').val();
+                $('#cancelModal .modal-body').html(reportNotes);
+                $('#cancelModal').modal('show');
+
+                e.preventDefault();
+            });
+        updateTotalAmount();
+        $('.chkSelect').change(updateTotalAmount);
+        $('.line-amount').keyup(updateTotalAmount);
+    });
+</script>

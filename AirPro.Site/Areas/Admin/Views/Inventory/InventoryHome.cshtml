@@ -1,0 +1,317 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Inventory Administration";
+
+    var canEditAssignment = User.IsInRole(ApplicationRoles.InventoryAssignmentEdit.ToString());
+    var canViewAssignment = User.IsInRole(ApplicationRoles.InventoryAssignmentView.ToString());
+    var canEdit = User.IsInRole(ApplicationRoles.InventoryDeviceEdit.ToString())
+                  || canEditAssignment
+                  || User.IsInRole(ApplicationRoles.InventoryDepositEdit.ToString())
+                  || User.IsInRole(ApplicationRoles.InventorySubscriptionEdit.ToString());
+    var canView = canEdit
+                  || User.IsInRole(ApplicationRoles.InventoryDeviceView.ToString())
+                  || canViewAssignment
+                  || User.IsInRole(ApplicationRoles.InventoryDepositView.ToString())
+                  || User.IsInRole(ApplicationRoles.InventorySubscriptionView.ToString());
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    td > ul {
+        margin: 0;
+    }
+
+    #airProToolStats th, td {
+        text-align: center;
+    }
+</style>
+
+<hr />
+
+<div id="airProToolStats">
+    <div style="display: none;" data-bind="visible: stats().length > 0">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Inventory Statistics
+            </div>
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Total Count</th>
+                        <th>Assigned Count</th>
+                        <th>Not Assigned Count</th>
+                        <th>Produced This Month</th>
+                        <th>Produced Last Month</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: stats">
+                    <tr>
+                        <td data-bind="text: typeString"></td>
+                        <td data-bind="text: totalCount"></td>
+                        <td data-bind="text: assignedCount"></td>
+                        <td data-bind="text: unAssignedCount"></td>
+                        <td data-bind="text: producedThisMonth"></td>
+                        <td data-bind="text: producedLastMonth"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="manageBody">
+    <div id="airprotools" class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">AirPro Tools Administration</span>&nbsp;@AddButton("manageAirProTool();", "Tool", ApplicationRoles.InventoryDeviceCreate.ToString())</h4>
+        </div>
+        <table id="airprotools-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="toolId" data-identifier="true" data-visible-in-selection="false" data-visible="false" data-width="75">Tool Id</th>
+                    <th data-column-id="toolName" data-visible-in-selection="false" data-visible="true">Tool Name</th>
+                    <th data-column-id="typeAsString" data-visible="false">Tool Type</th>
+                    <th data-column-id="autoEnginuityNum">AE Num</th>
+                    <th data-column-id="autoEnginuityVersion">AE Version</th>
+                    <th data-column-id="carDaqNum" data-visible="false">CarDaq Num</th>
+                    <th data-column-id="dgNum" data-visible="false">DG Num</th>
+                    <th data-column-id="teamViewerId" data-visible="false">Team Viewer Id</th>
+                    <th data-column-id="windowsVersion" data-visible="false">Windows Version</th>
+                    <th data-column-id="tabletModel">Tablet Model</th>
+                    <th data-column-id="shopAssignments" data-sortable="false" data-formatter="shopAssignmentList">Shops</th>
+                    <th data-column-id="hubModel" data-visible="false">Hub Model</th>
+                    <th data-column-id="ipV6DisabledInd" data-converter="bool" data-align="center" data-header-align="center" data-visible="false">IPV6 Disabled</th>
+                    <th data-column-id="oneDriveSyncEnabledInd" data-converter="bool" data-align="center" data-header-align="center" data-visible="false">OneDrive Enabled</th>
+                    <th data-column-id="updatesServiceInd" data-converter="bool" data-align="center" data-header-align="center" data-visible="false">Updates Service</th>
+                    <th data-column-id="meteredConnectionInd" data-converter="bool" data-align="center" data-header-align="center" data-visible="false">Metered Connection</th>
+                    <th data-column-id="selfScanEnabledInd" data-converter="bool" data-align="center" data-header-align="center">Self Scan Enabled</th>
+                    @if (canView)
+                    {
+                        <th data-column-id="editTool" data-visible-in-selection="false" data-formatter="editTool" data-sortable="false" data-align="center" data-width="45"></th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal();" class="btn btn-primary save-btn" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper AddButton(string function, string type, string role)
+{
+    if (User.IsInRole(role))
+    {
+        <a onclick="@function" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add @type</a>
+    }
+}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+@section Scripts {
+    @Scripts.Render("~/admin/inventory/js")
+
+    <script>
+        $("#airprotools-grid").bootgrid({
+            url: '@Url.Action("GetAirProToolsByPage")',
+            multiSort: false,
+            rowCount: [25, 50, 100, -1],
+            formatters: {
+                "editTool": function (column, row) {
+                    return editButtonFormat("AirProTool", row.toolId);
+                },
+                "shopAssignmentList": function (column, row) {
+                    var result = "<ul>";
+                    $.each(row.shopAssignments, function (k, v) {
+                        result += "<li>" + v.value + "</li>";
+                    });
+                    result += "</ul>";
+                    return result;
+                }
+            },
+            converters: {
+                bool: {
+                    to: function (value) { return value ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>" : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>"; }
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid",
+            function (e) {
+                window.airProToolStatsViewModel.load();
+            });
+        var AirProStatsViewModel = function () {
+            var self = this;
+            self.stats = ko.observableArray();
+            self.load = function () {
+                $.post('@Url.Action("GetAirProToolStats")')
+                    .done(function (data) {
+                        if (data) {
+                            self.stats.removeAll();
+                            for (var i = 0; i < data.length; i++) {
+                                var statLine = data[i];
+                                self.stats.push(statLine);
+                            }
+                        }
+                    });
+            };
+        };
+        window.airProToolStatsViewModel = new AirProStatsViewModel();
+        window.airProToolStatsViewModel.load();
+        ko.applyBindings(window.airProToolStatsViewModel, $('#airProToolStats')[0]);
+        $(document).ready(function () {
+            $('#manageModal')
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#manageModalBody').html('Loading...');
+                        $('#manageModal button[type=submit]').css('display', '');
+                    });
+            $('#airprotools-grid-header').appendTo('#airprotools .panel-heading');
+            $('#airprotools .panel-title').appendTo('#airprotools-grid-header .actionBar');
+        });
+        function editButtonFormat(func, id) {
+            return "<div class='btn-group btn-group-sm' role='group'><a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a></div>";
+        }
+        function manageAirProTool(airProToolId) {
+            if (airProToolId) {
+                @if (!canEdit) {
+                    @: $('.save-btn').hide();
+                }
+            }
+            displayModal('AirPro Tool');
+            var url = '@Url.Action("ManageAirProTool", "Inventory")/' + ((airProToolId) ? airProToolId : '');
+            loadModal(url);
+        }
+        function refreshAirProTools() {
+            $('#airprotools-grid').bootgrid("reload");
+        }
+        function displayModal(title) {
+            $('#manageModalLabel').text('Manage ' + title);
+            $('#manageModal').modal('show');
+        }
+        function loadModal(url) {
+            $.get({ url: url, cache: false },
+                    function (data) {
+                        $('#manageModalBody').html(data);
+                    })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+        function postModal() {
+            if (airProToolViewModel && airProToolViewModel.depositsTab() && airProToolViewModel.depositsTab().validate() === false) {
+                return false;
+            }
+            @if (canEditAssignment || canViewAssignment)
+            {
+                <text>
+                if (typeof membershipIsValid == 'function')
+                {
+                    if (!membershipIsValid() && !confirm('Assignment changes have NOT been committed, changes will be LOST, do you wish to continue?')) return false;
+                }
+                </text>
+            }
+            var form = $('#manageModalBody > form');
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function (data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+        function updateComplete(html) {
+            $('#manageBody').prepend(html);
+            $('#manageBody > .alert').fadeTo(3000, 500).slideUp(500, function () {
+                $('#manageBody > .alert').slideUp(500);
+                $('#manageBody > .alert').remove();
+            });
+            $('#manageModal').modal('hide');
+        }
+        // Read a page's GET URL variables and return them as an associative array.
+        function getUrlVars()
+        {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for(var i = 0; i < hashes.length; i++)
+            {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+        var value = getUrlVars()["t"];
+        if (value) {
+            manageAirProTool(value);
+        }
+    </script>
+}

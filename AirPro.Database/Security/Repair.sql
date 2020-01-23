@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [Repair]
+    AUTHORIZATION [dbo];
+

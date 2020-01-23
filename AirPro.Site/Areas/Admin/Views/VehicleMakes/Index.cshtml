@@ -1,0 +1,192 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@{
+    /**/
+
+    ViewBag.Title = "Vehicle Make Management";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .bootgrid-header .actionBar {
+            text-align: left !important;
+        }
+
+        .panel-heading #gridSearch,
+        .panel-heading #addNew {
+            padding-top: 4px;
+        }
+    }
+</style>
+
+<div id="manageBody">
+    <div id="vehicleMakes" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-3 col-lg-2">
+                    <h4 class="panel-title">
+                        <span style="position: relative; top: 2px; white-space: nowrap;">Vehicle Makes</span>
+                    </h4>
+                </div>
+                <div class="col-md-2 col-lg-3" id="addNew">
+                    @Html.AddButton("manageVehicleMake();", "Vehicle Make", ApplicationRoles.VehicleMakeAdmin)
+                </div>
+                <div class="col-md-7" id="gridSearch">
+                </div>
+            </div>
+        </div>
+        <table id="vehicleMakes-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="vehicleMakeName" data-sortable="true">Vehicle Make</th>
+                    <th data-column-id="vehicleMakeTypeName" data-sortable="true">Vehicle Make Type</th>
+                    <th data-column-id="programName" data-sortable="true">Program Name</th>
+                    <th data-column-id="programInstructions" data-sortable="true" data-visible="false">Program Instructions</th>
+                    <th data-column-id="editType" data-visible-in-selection="false" data-formatter="editType" data-sortable="false" data-align="center" data-width="45"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody" style="overflow: auto;">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal()" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+
+    <script type="text/javascript">
+        window.common.gridManage.id = 'vehicleMakes-grid';
+        window.common.gridManage.modal.id = 'manageModal';
+
+        $(document).ready(function () {
+            $('#' + window.common.gridManage.modal.id)
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#' + window.common.gridManage.modal.bodyId).html('Loading...');
+                        $('#' + window.common.gridManage.modal.id + ' button[type=submit]').css('display', '');
+                    });
+
+            window.common.gridManage.setHeaders();
+            window.common.gridManage.modal.title = 'Manage Vehicle Make';
+
+            moveActionMenu();
+            $(window).resize(moveActionMenu);
+        });
+
+        $("#" + window.common.gridManage.id).bootgrid({
+            url: '@Url.Action("GetVehiclesByPage")',
+            multiSort: true,
+            formatters: {
+                "editType": function(column, row) {
+                    return editButtonFormat("VehicleMake", row.vehicleMakeId);
+                }
+            }
+        });
+
+        function moveActionMenu() {
+            var menu = $('.actionBar .actions');
+            if (menu && $(menu).offset().left < 27) {
+                $(menu).find('.dropdown-menu.pull-right').removeClass('pull-right').addClass('pull-left');
+            } else {
+                $(menu).find('.dropdown-menu.pull-left').removeClass('pull-left').addClass('pull-right');
+            }
+        }
+
+        function editButtonFormat(func, id) {
+            return "<div class='btn-group btn-group-sm' role='group'><a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a></div>";
+        }
+
+        function manageVehicleMake(vehicleMakeId) {
+            window.common.gridManage.modal.show();
+            var url = '@Url.Action("ManageVehicleMake", "VehicleMakes")/' +
+                ((vehicleMakeId) ? vehicleMakeId : '');
+            window.common.gridManage.modal.load(url);
+        }
+
+        function refreshVehicleMakes() {
+            $('#' + window.common.gridManage.id).bootgrid("reload");
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            if (!form.valid()) {
+                return;
+            }
+
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function(data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function(err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+    </script>
+}

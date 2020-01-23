@@ -1,0 +1,268 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Site.Areas.Admin.Models.Access.AccountViewModel
+@{
+    var canViewNotes = User.IsInRole(ApplicationRoles.AccountNoteView.ToString()) || User.IsInRole(ApplicationRoles.AccountNoteEdit.ToString());
+}
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshAccounts();
+                    refreshShops();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@if (!Model?.AllowEntry ?? true)
+{
+    <script type="text/javascript">
+        disableEntry();
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active in" role="presentation"><a href="#account_info" aria-controls="account_info" role="tab" data-toggle="tab">Account</a></li>
+        @if (Model?.Users != null)
+        {
+            <li role="presentation"><a href="#account_users" aria-controls="account_users" role="tab" data-toggle="tab">Users</a></li>
+        }
+        @if ((Model?.AccountGuid ?? Guid.Empty) != Guid.Empty)
+        {
+            <li role="presentation"><a href="#account_attachments" aria-controls="account_attachments" role="tab" data-toggle="tab">Attachments</a></li>
+            if (canViewNotes)
+            {
+                <li role="presentation"><a href="#account_notes" aria-controls="account_notes" role="tab" data-toggle="tab">Notes</a></li>
+            }
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane in active" id="account_info">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.AccountGuid)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EmployeeGuid, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.EmployeeGuid, new SelectList(ViewBag.EmployeeSelection, "Key", "Value"), "<-- Select Account Rep -->", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.EmployeeGuid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @if (User.IsInRole(ApplicationRoles.AccountDelete.ToString()) && (!Model?.ActiveInd ?? false))
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ActiveInd, new { @class = "control-label col-sm-3" })
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.ActiveInd)
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(m => m.ActiveInd)
+                }
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address1, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address2, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Zip, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.State, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.State, new SelectList(ViewBag.StateSelection, "Key", "Value"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } })
+                        @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Fax, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Fax, new { htmlAttributes = new { @class = "form-control inputmask-phone" } })
+                        @Html.ValidationMessageFor(model => model.Fax, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @if (User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+                {
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DiscountPercentage, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control", @type = "number", @step = "any", @min = "0", @max = "100", @maxlength = "3" } })
+                            @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <script type="text/javascript">
+                        $('#@Html.IdFor(m => m.DiscountPercentage)').on('keyup',
+                            function() {
+                                if ($(this).val().length && parseFloat($(this).val()) > 100) {
+                                    $(this).val('100');
+                                }
+                            });
+                    </script>
+                }
+            </div>
+        </div>
+        @if (Model.Users != null)
+        {
+            <div role="tabpanel" class="tab-pane" id="account_users">
+                <div class="form-group">
+                    <div class="panel-body" id="account-users" style="padding: 5px 0 0 0;">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title pull-left" style="font-size: 16px;"><span style="position: relative; top: 5px;">Users in Account</span></h4>
+                            </div>
+
+                            <table id="account-users-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="userGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                        <th data-column-id="name">Name</th>
+                                        <th data-column-id="email">Email</th>
+                                        <th data-column-id="editUserGroup" data-visible-in-selection="false" data-formatter="editUserGroup" data-sortable="false" data-align="center" data-width="90"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Users)
+                                    {
+                                        <tr>
+                                            <td>@item.UserGuid</td>
+                                            <td>@(item.FirstName + " " + item.LastName)</td>
+                                            <td>@item.Email</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if ((Model?.AccountGuid ?? Guid.Empty) != Guid.Empty)
+        {
+            <div role="tabpanel" class="tab-pane" id="account_attachments">
+                @Html.UploadControl(UploadType.AccessAccounts, Model.AccountGuid.ToString(), "Account Attachments")
+            </div>
+            if (canViewNotes)
+            {
+                <div role="tabpanel" class="tab-pane" id="account_notes">
+                    @Html.NoteControl(NoteType.Account, Model.AccountGuid.ToString(), "Account Notes")
+                </div>
+            }
+        }
+    </div>
+        }
+
+<script type="text/javascript">
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#@Html.IdFor(m => m.DiscountPercentage)').wrap(
+            '<div class="input-group input-group-sm"></div>').before('<span class="input-group-addon">%</span>');
+
+        $("#account-users-grid").bootgrid({
+            formatters: {
+                "editUserGroup": function(column, row) {
+                    var result = '<div class="btn-group btn-group-sm" role="group">';
+                    @if (User.IsInRole(ApplicationRoles.UserEdit.ToString()))
+                    {
+                        <text>
+                            result += '<a href="#" onclick="manageUser(\'' +
+                                row.userGuid +
+                                '\')" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i></a>';
+                        </text>
+                    }
+
+                    if (allowDeleteMyAccountRelation || row.userGuid !== userId) {
+                        result += '<a href="#" onclick="deleteAccountUserAssociation(\'' +
+                            row.userGuid +
+                            '\', \'' +
+                            '@(Model?.AccountGuid)' +
+                            '\', this)" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a>';
+                    }
+
+                    result += '</div>';
+                    return result;
+                }
+            }
+        });
+
+        $('#account-users-grid-header').prependTo('#account-users .panel-heading');
+        $('#account-users .panel-title').prependTo('#account-users-grid-header .actionBar');
+
+        $('#account-users-grid-header .search .input-group').addClass('form-group-sm');
+        $('#account-users-grid-header .actions .btn-group').addClass('btn-group-sm');
+
+        enableInputMasking();
+    });
+</script>

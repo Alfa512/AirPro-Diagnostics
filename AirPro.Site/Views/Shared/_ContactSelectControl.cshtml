@@ -1,0 +1,54 @@
+﻿@model AirPro.Site.Models.Shared.ContactSelectViewModel
+@{
+    var controlId = Guid.NewGuid().ToString();
+
+    var contactUserGuidIdControlClass = $"contact-user-guid-{controlId}";
+    var contactOtherControlClass = $"contact-other-{controlId}";
+    var contactOtherContainerClass = $"contact-other-container-{controlId}";
+}
+<div class="row form-group">
+    @Html.LabelFor(model => model.ContactUserGuid, htmlAttributes: new { @class = $"control-label col-md-{Model.LabelBootstrapColumn}" })
+    <div class="col-md-@(12 - Model.LabelBootstrapColumn)">
+        @Html.DropDownListFor(model => model.ContactUserGuid, (SelectList)Model.Contacts, "<-- Select Contact -->", new { @class = $"form-control {contactUserGuidIdControlClass}" })
+        @Html.ValidationMessageFor(model => model.ContactUserGuid, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="@contactOtherContainerClass" style="display: @(Model.ContactUserGuid != "other" ? "none" : "block")">
+    <div class="row form-group">
+        @Html.LabelFor(model => model.ContactOtherFirstName, htmlAttributes: new { @class = $"control-label col-md-{Model.LabelBootstrapColumn}" })
+        <div class="col-md-@(12 - Model.LabelBootstrapColumn)">
+            @Html.EditorFor(model => model.ContactOtherFirstName, new { htmlAttributes = new { @class = $"form-control {contactOtherControlClass}" } })
+            @Html.ValidationMessageFor(model => model.ContactOtherFirstName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row form-group">
+        @Html.LabelFor(model => model.ContactOtherLastName, htmlAttributes: new { @class = $"control-label col-md-{Model.LabelBootstrapColumn}" })
+        <div class="col-md-@(12 - Model.LabelBootstrapColumn)">
+            @Html.EditorFor(model => model.ContactOtherLastName, new { htmlAttributes = new { @class = $"form-control {contactOtherControlClass}" } })
+            @Html.ValidationMessageFor(model => model.ContactOtherLastName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row form-group">
+        @Html.LabelFor(model => model.ContactOtherPhone, htmlAttributes: new { @class = $"control-label col-md-{Model.LabelBootstrapColumn}" })
+        <div class="col-md-@(12 - Model.LabelBootstrapColumn)">
+            @Html.EditorFor(model => model.ContactOtherPhone, new { htmlAttributes = new { @class = $"form-control inputmask-phone {contactOtherControlClass}" } })
+            @Html.ValidationMessageFor(model => model.ContactOtherPhone, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(".@contactUserGuidIdControlClass").on('change',
+        function() {
+            if (this.value === "other") {
+                $('.@contactOtherContainerClass').slideDown( "slow" );
+            } else {
+                $('.@contactOtherContainerClass').slideUp();
+                $(".@contactOtherControlClass").val("");
+            }
+        });
+    enableInputMasking();
+</script>

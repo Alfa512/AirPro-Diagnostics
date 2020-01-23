@@ -1,0 +1,467 @@
+﻿@using System.Configuration
+@using AirPro.Common.Enumerations
+
+@helper AppPathHelper()
+{
+    if (!String.IsNullOrEmpty(Request?.ApplicationPath) && Request.ApplicationPath.Length > 1)
+    {
+        @(Request.ApplicationPath)
+    }
+}
+
+@functions
+{
+
+    private bool AllowRepairs()
+    {
+        return User.IsInRole(ApplicationRoles.RepairCreate.ToString()) ||
+               User.IsInRole(ApplicationRoles.RepairEdit.ToString()) ||
+               User.IsInRole(ApplicationRoles.RepairView.ToString());
+    }
+
+    private bool AllowAccessManagement()
+    {
+        return User.IsInRole(ApplicationRoles.AccountCreate.ToString())
+               || User.IsInRole(ApplicationRoles.AccountEdit.ToString())
+               || User.IsInRole(ApplicationRoles.AccountDelete.ToString())
+               || User.IsInRole(ApplicationRoles.AccountView.ToString())
+
+               || User.IsInRole(ApplicationRoles.ShopCreate.ToString())
+               || User.IsInRole(ApplicationRoles.ShopEdit.ToString())
+               || User.IsInRole(ApplicationRoles.ShopDelete.ToString())
+               || User.IsInRole(ApplicationRoles.ShopView.ToString())
+
+               || User.IsInRole(ApplicationRoles.GroupCreate.ToString())
+               || User.IsInRole(ApplicationRoles.GroupEdit.ToString())
+               || User.IsInRole(ApplicationRoles.GroupDelete.ToString())
+               || User.IsInRole(ApplicationRoles.GroupView.ToString())
+
+               || User.IsInRole(ApplicationRoles.UserCreate.ToString())
+               || User.IsInRole(ApplicationRoles.UserEdit.ToString())
+               || User.IsInRole(ApplicationRoles.UserDelete.ToString())
+               || User.IsInRole(ApplicationRoles.UserView.ToString());
+    }
+
+    private bool AllowInvoicing()
+    {
+        return User.IsInRole(ApplicationRoles.InvoiceCreate.ToString())
+                || User.IsInRole(ApplicationRoles.InvoiceDelete.ToString())
+                || User.IsInRole(ApplicationRoles.InvoiceEdit.ToString())
+                || User.IsInRole(ApplicationRoles.InvoiceView.ToString());
+    }
+
+    private bool AllowPayments()
+    {
+        return User.IsInRole(ApplicationRoles.PaymentCreate.ToString())
+                || User.IsInRole(ApplicationRoles.PaymentView.ToString());
+    }
+
+    private bool AllowPricingPlan()
+    {
+        return User.IsInRole(ApplicationRoles.PricingPlanCreate.ToString())
+               || User.IsInRole(ApplicationRoles.PricingPlanEdit.ToString())
+               || User.IsInRole(ApplicationRoles.PricingPlanView.ToString());
+    }
+
+    private bool AllowEstimatePlan()
+    {
+        return User.IsInRole(ApplicationRoles.EstimatePlanCreate.ToString())
+               || User.IsInRole(ApplicationRoles.EstimatePlanEdit.ToString())
+               || User.IsInRole(ApplicationRoles.EstimatePlanView.ToString());
+    }
+
+    private bool AllowRegistration()
+    {
+        return User.IsInRole(ApplicationRoles.RegistrationCreate.ToString())
+               || User.IsInRole(ApplicationRoles.RegistrationEdit.ToString())
+               || User.IsInRole(ApplicationRoles.RegistrationView.ToString());
+    }
+
+    private bool AllowAdmin()
+    {
+        return User.IsInRole(ApplicationRoles.SystemDashboardView.ToString())
+               || User.IsInRole(ApplicationRoles.SystemReportingView.ToString())
+               || User.IsInRole(ApplicationRoles.NotificationAdmin.ToString())
+               || User.IsInRole(ApplicationRoles.RequestTypeAdmin.ToString())
+               || User.IsInRole(ApplicationRoles.WorkTypeAdmin.ToString())
+               || User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString())
+               || User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString())
+               || User.IsInRole(ApplicationRoles.SignatureGenerator.ToString())
+               || AllowDecisionManagement()
+               || AllowReleaseNoteAdmin()
+               || AllowInventoryAdmin()
+               || AllowSupport();
+    }
+
+    private bool AllowDecisionManagement()
+    {
+        return User.IsInRole(ApplicationRoles.DecisionManageEdit.ToString())
+               || User.IsInRole(ApplicationRoles.DecisionManageView.ToString());
+    }
+
+    private bool AllowRecommendationManagement()
+    {
+        return User.IsInRole(ApplicationRoles.RecommendationManageEdit.ToString())
+               || User.IsInRole(ApplicationRoles.RecommendationManageView.ToString());
+    }
+
+    private bool AllowInventoryAdmin()
+    {
+        return User.IsInRole(ApplicationRoles.InventoryDeviceCreate.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryDeviceView.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryDeviceEdit.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryAssignmentView.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryAssignmentEdit.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryDepositView.ToString())
+               || User.IsInRole(ApplicationRoles.InventoryDepositEdit.ToString())
+               || User.IsInRole(ApplicationRoles.InventorySubscriptionView.ToString())
+               || User.IsInRole(ApplicationRoles.InventorySubscriptionEdit.ToString());
+    }
+
+    private bool AllowReleaseNoteAdmin()
+    {
+        return User.IsInRole(ApplicationRoles.ReleaseNoteCreate.ToString())
+               || User.IsInRole(ApplicationRoles.ReleaseNoteEdit.ToString())
+               || User.IsInRole(ApplicationRoles.ReleaseNoteView.ToString());
+    }
+
+    private bool AllowReporting()
+    {
+        return User.IsInRole(ApplicationRoles.SystemDashboardView.ToString())
+               || User.IsInRole(ApplicationRoles.SystemReportingView.ToString());
+    }
+
+    private bool AllowSupport()
+    {
+        return User.IsInRole(ApplicationRoles.SupportMoveRequest.ToString())
+               || User.IsInRole(ApplicationRoles.SupportChangeRepairVin.ToString());
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>AirPro Diagnostics - @ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript">
+        var appPath = "@AppPathHelper()";
+    </script>
+
+    @Styles.Render("~/site/css")
+    @Scripts.Render("~/site/js")
+    
+    @Scripts.Render("~/knockout/js")
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <!--Reference the autogenerated SignalR hub script. -->
+        <script src="~/signalr/hubs"></script>
+        @Scripts.Render("~/user/js")
+    }
+
+    @RenderSection("Styles", required: false)
+
+    <style type="text/css">
+        #site-nav .navbar-brand {
+            padding: 5px 5px;
+        }
+
+            #site-nav .navbar-brand > img {
+                max-width: 165px;
+            }
+
+        footer {
+            padding: 10px;
+            margin-top: 25px;
+            background-color: lightgray;
+            border-top: solid 1px #0d60da
+        }
+
+            footer > div {
+                text-align: center;
+            }
+
+                footer > div > img {
+                    max-height: 42px;
+                    vertical-align: bottom;
+                }
+
+                footer > div > span {
+                    font-size: 30px;
+                    font-weight: bold;
+                    color: gray;
+                    padding-left: 20px;
+                }
+
+        @@media (max-width: 991px) {
+            .navbar-header {
+                float: none;
+            }
+
+            .navbar-left,
+            .navbar-right {
+                float: none !important;
+            }
+
+            .navbar-toggle {
+                display: block;
+            }
+
+            .navbar-collapse {
+                border-top: 1px solid transparent;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+            }
+
+            .navbar-fixed-top {
+                top: 0;
+                border-width: 0 0 1px;
+            }
+
+            .navbar-collapse.collapse {
+                display: none !important;
+            }
+
+            .navbar-nav {
+                float: none !important;
+                margin-top: 7.5px;
+            }
+
+                .navbar-nav > li {
+                    float: none;
+                }
+
+                    .navbar-nav > li > a {
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                    }
+
+            .collapse.in {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body style="padding-bottom: 0;">
+    <div id="site-nav" class="navbar navbar-fixed-top" style="border-bottom: solid 3px #0d60da; background-color: white;">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"><i class="glyphicon glyphicon-menu-hamburger" style="color: #0d60da"></i></span>
+                </button>
+                <a class="navbar-brand" href="@Url.Action("Index", "Home", new { area = "" })"><img alt="AirPro Diagnostics" src="@Url.Content("~/Images/AirProLogoSmall.png")" /></a>
+            </div>
+            <div class="navbar-collapse collapse">
+                @if (User.Identity.IsAuthenticated)
+                {
+                <ul class="nav navbar-nav">
+                    @if (User.IsInRole(ApplicationRoles.Administrator.ToString()) || AllowRepairs())
+                    {
+                        <li>@Html.ActionLink("Repairs", "Dashboard", "Repairs", new { area = "" }, null)</li>
+                    }
+                    @if (User.IsInRole(ApplicationRoles.Administrator.ToString()) || User.IsInRole(ApplicationRoles.Technician.ToString()))
+                    {
+                        <li>@Html.ActionLink("Requests", "Queue", "Request", new { area = "" }, null)</li>
+                    }
+                    @if (AllowInvoicing() || AllowPayments() || AllowPricingPlan() || AllowEstimatePlan())
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Billing <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                @if (AllowInvoicing())
+                                {
+                                    <li>@Html.ActionLink("Invoicing", "Dashboard", "Invoicing", new { area = "Billing" }, null)</li>
+                                }
+                                @if (AllowPayments())
+                                {
+                                    <li>@Html.ActionLink("Payments", "Dashboard", "Payments", new { area = "Billing" }, null)</li>
+                                }
+
+                                @if (AllowPricingPlan() || AllowEstimatePlan())
+                                {
+                                    <li role="separator" class="divider"></li>
+                                }
+
+                                @if (AllowEstimatePlan())
+                                {
+                                    <li>@Html.ActionLink("Estimate Plans", "Index", "EstimatePlans", new { area = "Billing" }, null)</li>
+                                }
+                                @if (AllowPricingPlan())
+                                {
+                                    <li>@Html.ActionLink("Pricing Plans", "Index", "PricingPlans", new { area = "Billing" }, null)</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (AllowReporting())
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reporting <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                @if (User.IsInRole(ApplicationRoles.SystemDashboardView.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Dashboard", "Index", "Dashboard", new { area = "Reporting" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.SystemReportingView.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Data Extract", "Index", "Extract", new { area = "Reporting" }, null)</li>
+                                    <li>@Html.ActionLink("Report Templates", "Index", "Templates", new { area = "Reporting" }, null)</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (AllowAdmin() || AllowAccessManagement())
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administration <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                @if (AllowAccessManagement())
+                                {
+                                    <li>@Html.ActionLink("Access Management", "Index", "Access", new { area = "Admin" }, null)</li>
+                                }
+                                @if (AllowRegistration())
+                                {
+                                    <li>@Html.ActionLink("Registration Management", "Index", "Registration", new { area = "Admin" }, null)</li>
+                                }
+                                @if (AllowInventoryAdmin())
+                                {
+                                    <li>@Html.ActionLink("Inventory Management", "Index", "Inventory", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.TechProfileAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Technician Profiles", "Index", "TechProfile", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.Administrator.ToString()) || User.IsInRole(ApplicationRoles.Technician.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Request Dashboard", "Dashboard", "Request", new { area = "" }, null)</li>
+                                }
+
+                                @if (User.IsInRole(ApplicationRoles.NotificationAdmin.ToString())
+                                     || User.IsInRole(ApplicationRoles.RequestTypeAdmin.ToString())
+                                     || User.IsInRole(ApplicationRoles.WorkTypeAdmin.ToString())
+                                     || User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString())
+                                     || User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString())
+                                     || AllowDecisionManagement())
+                                {
+                                    <li role="separator" class="divider"></li>
+                                }
+
+                                @if (AllowDecisionManagement())
+                                {
+                                    <li>@Html.ActionLink("Decision Management", "Management", "Decision", new { area = "Admin" }, null)</li>
+                                }
+                                @if (AllowRecommendationManagement())
+                                {
+                                    <li>@Html.ActionLink("Recommendation Management", "Management", "Recommendation", new { area = "Admin" }, null)</li>
+                                }
+
+                                @if (User.IsInRole(ApplicationRoles.InsuranceCoAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Insurance Companies", "Index", "InsuranceCompanies", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.NotificationAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Notification Templates", "Index", "Templates", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.RequestTypeAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Request Types", "Index", "RequestType", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.VehicleMakeAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Vehicle Makes", "Index", "VehicleMakes", new { area = "Admin" }, null)</li>
+                                }
+                                @if (User.IsInRole(ApplicationRoles.WorkTypeAdmin.ToString()))
+                                {
+                                    <li>@Html.ActionLink("Work Types", "Index", "WorkTypes", new { area = "Admin" }, null)</li>
+                                }
+
+                                @if (User.IsInRole(ApplicationRoles.SignatureGenerator.ToString()) || AllowReleaseNoteAdmin() || AllowSupport())
+                                {
+                                    <li role="separator" class="divider"></li>
+                                }
+
+                                @if (User.IsInRole(ApplicationRoles.SignatureGenerator.ToString()))
+                                {
+                                    <li>@Html.ActionLink("API Signature Generator", "SignatureGenerator", "Home", new { area = "" }, null)</li>
+                                }
+                                @if (AllowReleaseNoteAdmin())
+                                {
+                                    <li>@Html.ActionLink("Release Notes", "Index", "ReleaseNotes", new { area = "Admin" }, null)</li>
+                                }
+                                @if (AllowSupport())
+                                {
+                                    <li>@Html.ActionLink("Support", "Index", "Support", new { area = "Admin" }, null)</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Release Notes", "Index", "Help", new { area = "" }, null)</li>
+                        </ul>
+                    </li>
+                </ul>
+                }
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @if ((ConfigurationManager.AppSettings["ApplicationWarning"]?.Length ?? 0) > 0)
+        {
+            <div class="alert alert-danger" style="margin-top: 10px; text-align: center; font-weight: bolder; font-size: 18px;">
+                @ConfigurationManager.AppSettings["ApplicationWarning"]
+            </div>
+        }
+        @RenderBody()
+    </div>
+
+    <footer>
+        <div>
+            <img src="@Url.Content("~/Images/RobotHeadSmall.png")" alt="" />
+            <span>Need Assistance?  (904) 717-1711</span>
+        </div>
+    </footer>
+
+    <div style="text-align: center; margin-top: 10px;">
+        <div>Copyright &copy; 2016-2019 AirPro Diagnostics LLC</div>
+        <div>Software Solution by&nbsp;<img src="@Url.Content("~/Images/UniMatrixBannerSmall.png")" alt="UniMatrix Designs LLC" style="max-height: 28px; cursor: pointer;" onclick="window.open('http://unimatrixdesigns.com', 'UniMatrixDesigns');" /></div>
+    </div>
+
+    @if (User.IsInRole(ApplicationRoles.SystemDebug.ToString()))
+    {
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-default btn-sm pull-left" id="debugModelButton" style="border: 1px solid #808080; margin: 10px;" data-toggle="modal" data-target="#debugModal">
+            <i class="glyphicon glyphicon-qrcode"></i>
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="debugModal" tabindex="-1" role="dialog" aria-labelledby="debugModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="debugModalLabel">Debug Info</h4>
+                    </div>
+                    <div class="modal-body">
+                        @Html.Raw(MvcApplication.BuildInfo)
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @RenderSection("Scripts", required: false)
+
+    @Html.Partial("~/Views/Shared/_GoogleAnalytics.cshtml")
+
+</body>
+</html>

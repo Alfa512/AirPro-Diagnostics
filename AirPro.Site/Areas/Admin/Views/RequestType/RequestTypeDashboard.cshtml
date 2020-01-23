@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Request Types";
+}
+
+@section Styles {
+    <style>
+        #requestTypeEditModal .row {
+            margin: 10px 0;
+        }
+
+            #requestTypeEditModal .row label {
+                padding-top: 5px;
+            }
+
+            #requestTypeEditModal .row input[type="checkbox"] {
+                margin-top: 10px;
+            }
+
+            #requestTypeEditModal .row .well {
+                margin: 0;
+                padding: 5px;
+                background-image: none;
+                background-color: white;
+            }
+
+                #requestTypeEditModal .row .well > ul {
+                    margin: 0;
+                    padding: 0 10px;
+                }
+
+                    #requestTypeEditModal .row .well > ul > li {
+                        list-style: none;
+                        margin-bottom: 3px;
+                    }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h2 class="panel-title">
+            Request Types
+            <button class="btn btn-xs btn-success pull-right" data-bind="click: loadRequestTypes" style="margin-top: -3px"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Refresh</button>
+        </h2>
+    </div>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Type Id</th>
+                <th>Type Name</th>
+                <th>Sort Order</th>
+                <th>Default Price</th>
+                <th>Active</th>
+                <th>Billable</th>
+                <th>Updated By</th>
+                <th>Updated</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: { data: requestTypes, as: 'rt' }">
+            <tr>
+                <td data-bind="text: rt.requestTypeId"></td>
+                <td data-bind="text: rt.requestTypeName"></td>
+                <td data-bind="text: rt.sortOrder"></td>
+                <td data-bind="text: formatCurrency(rt.defaultPrice())"></td>
+                <td data-bind="html: formatBool(rt.activeFlag())"></td>
+                <td data-bind="html: formatBool(rt.billableFlag())"></td>
+                <td data-bind="text: rt.updatedByDisplayName()"></td>
+                <td data-bind="text: rt.updatedDisplayDate()"></td>
+                <td><button class="btn btn-xs btn-warning" data-bind="click: $root.editRequestType"><i class="glyphicon glyphicon-edit"></i></button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="requestTypeEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Request Type Manage</h4>
+            </div>
+            <div class="modal-body" data-bind="with: requestTypeEdit">
+                <div data-bind="with: updateResult">
+                    <div class="alert" data-bind="css: { 'alert-success': success(), 'alert-danger': !success() }">
+                        <span data-bind="text: message"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Type Id</label>
+                    </div>
+                    <div class="col-sm-9"><label data-bind="text: requestTypeId"></label></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Type Name</label>
+                    </div>
+                    <div class="col-sm-9"><input class="form-control input-sm" maxlength="100" data-bind="value: requestTypeName" /></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Categories</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label data-bind="click: togglePreScan" style="cursor: pointer;">
+                            <i class="glyphicon" data-bind="css: { 'glyphicon-check': preScanEnabled(), 'glyphicon-unchecked': !preScanEnabled() }"></i>&nbsp;Pre-Scan
+                        </label>
+                    </div>
+                    <div class="col-sm-5">
+                        <label data-bind="click: togglePostScan" style="cursor: pointer;">
+                            <i class="glyphicon" data-bind="css: { 'glyphicon-check': postScanEnabled(), 'glyphicon-unchecked': !postScanEnabled() }"></i>&nbsp;Post-Scan
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Sort Order</label>
+                    </div>
+                    <div class="col-sm-9"><input class="form-control input-sm" type="number" data-bind="value: sortOrder" /></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Instructions</label>
+                    </div>
+                    <div class="col-sm-9"><textarea class="form-control input-sm" rows="4" maxlength="800" data-bind="value: instructions"></textarea></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Default Price</label>
+                    </div>
+                    <div class="col-sm-9"><input class="form-control input-sm" type="number" data-bind="value: defaultPrice" /></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Invoice Memo</label>
+                    </div>
+                    <div class="col-sm-9"><textarea class="form-control input-sm" rows="4" maxlength="800" data-bind="value: invoiceMemo"></textarea></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Settings</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label data-bind="click: toggleActive" style="cursor: pointer;">
+                            <i class="glyphicon" data-bind="css: { 'glyphicon-check': activeFlag(), 'glyphicon-unchecked': !activeFlag() }"></i>&nbsp;Active
+                        </label>
+                    </div>
+                    <div class="col-sm-5">
+                        <label data-bind="click: toggleBillable" style="cursor: pointer;">
+                            <i class="glyphicon" data-bind="css: { 'glyphicon-check': billableFlag(), 'glyphicon-unchecked': !billableFlag() }"></i>&nbsp;Billable
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Validation Rules</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="well" style="padding-top: 10px;">
+                            <ul data-bind="foreach: { data: validationRulesDisplay, as: 'r' }">
+                                <li style="cursor: pointer;" data-bind="click: $parent.toggleValidationRule"><i class="glyphicon" data-bind="css: { 'glyphicon-check': r.validationRuleSelected(), 'glyphicon-unchecked': !r.validationRuleSelected() }"></i>&nbsp;<span data-bind="text: r.validationRuleText()"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="click: $root.saveRequestType">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/admin/requesttype/js")
+
+    <script>
+        $(document).ready(function () {
+            var options = {
+                loadUrl: '@Url.Action("GetRequestTypes")',
+                saveUrl: '@Url.Action("SaveRequestType")',
+                rulesUrl: '@Url.Action("GetValidationRules")'
+            };
+
+            window.requestTypeDashboardViewModel = new RequestTypeDashboardViewModel(options);
+            window.requestTypeDashboardViewModel.loadRequestTypes();
+
+            ko.applyBindings(window.requestTypeDashboardViewModel);
+
+            window.requestTypeDashboardViewModel.requestTypeEdit.subscribe(function(e) {
+                if (e) {
+                    $('#requestTypeEditModal').modal('show');
+                }
+            });
+
+            $('#requestTypeEditModal').on('hidden.bs.modal',
+                function() {
+                    window.requestTypeDashboardViewModel.loadRequestTypes();
+                });
+        });
+    </script>
+}

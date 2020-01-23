@@ -1,0 +1,251 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+
+@model AirPro.Site.Models.Shared.MembershipControlViewModel
+
+<style>
+    #@Model.PropertyName-Membership .panel > select {
+        border: 0;
+    }
+    #@Model.PropertyName-Membership .search-input {
+        margin-top: -3px;
+    }
+    #@Model.PropertyName-Membership .search-input {
+        max-width: 250px;
+    }
+
+    #@Model.PropertyName-Membership .search-input input, #@Model.PropertyName-Membership .search-input .icon {
+        height: 25px;
+    }
+    #@Model.PropertyName-Membership .search-input .icon {
+        font-size: 11px;
+        padding: 4px 7px;
+        top: 0px;
+    }
+
+    #@Model.PropertyName-Membership .panel-heading > div {
+        margin-top: 1px;
+    }
+    #@Model.PropertyName-Membership .panel-heading {
+        padding: 5px 10px;
+    }
+
+    #@Model.PropertyName-Membership .panel-heading .title-label {
+        padding-top: 3px;
+        float: left;
+    }
+
+    #@Model.PropertyName-Membership .panel-heading .assignment-validation {
+        margin: 5px 0 0 0;
+        padding: 2px 5px;
+    }
+</style>
+
+<div data-bind="allowBindings: false" id="@Model.PropertyName-Membership" class="memberships">
+    
+    <div id="desktopDisplay" style="display: none;" data-bind="visible: !displayMobile()">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 50%;">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            Assigned @Model.MembershipTypeName<text>(s)</text>
+                            <div class="alert alert-danger assignment-validation" data-bind="visible: oldItem() && oldItem().length> 0">
+                                <strong>Please Click the - button to Remove your Selection.</strong>
+                            </div>
+                        </div>
+                        <select data-bind="foreach: selectedList(), value: oldItem" size="5" class="form-control" @(!Model.CanEdit ? "disabled=\"disabled\"" : "")>
+                            <option data-bind="value: key, text: value, attr: {title: value}"></option>
+                        </select>
+                    </div>
+                </td>
+                <td style="padding: 0 10px;">
+                    <div class="btn-group-vertical btn-group-sm" role="group" aria-label="...">
+                        <button type="button" class="btn btn-success" data-bind="enable: newItem(), event: { click: add }"><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class="btn btn-warning" data-bind="enable: oldItem(), event: { click: remove }"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class="btn btn-default" title="Mobile Display" data-bind="event: { click: toggleMobile }"><i class="glyphicon glyphicon-option-horizontal"></i></button>
+                    </div>
+                </td>
+                <td style="width: 50%;">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="title-label">
+                                Available @Model.MembershipTypeName<text>(s)</text>
+                            </div>
+
+                            <div class="input-group pull-right search-input">
+                                <span class="icon glyphicon input-group-addon glyphicon-search"></span>
+                                <input type="text" class="search-field form-control" placeholder="Search" data-bind="value: searchQuery, valueUpdate:'keyup'">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="alert alert-danger assignment-validation" data-bind="visible: newItem() && newItem().length> 0">
+                                <strong>Please Click the + button to Assign your Selection.</strong>
+                            </div>
+                        </div>
+                        <select data-bind="foreach: availableList(), value: newItem" size="5" class="form-control" @(!Model.CanEdit ? "disabled=\"disabled\"" : "")>
+                            <option data-bind="value: key, text: value, attr: {title: value}"></option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="mobileDisplay" style="display: none;" data-bind="visible: displayMobile()">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        Assigned @Model.MembershipTypeName<text>(s)</text>
+                        <div class="alert alert-danger assignment-validation" data-bind="visible: oldItem() && oldItem().length> 0">
+                            <strong>Please Click the - button to Remove your Selection.</strong>
+                        </div>
+                    </div>
+                    <select data-bind="foreach: selectedList(), value: oldItem" size="5" class="form-control" @(!Model.CanEdit ? "disabled=\"disabled\"" : "")>
+                        <option data-bind="value: key, text: value, attr: {title: value}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 text-center" style="padding: 10px 0;">
+                <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <button type="button" class="btn btn-success" data-bind="enable: newItem(), event: { click: add }"><i class="glyphicon glyphicon-plus"></i></button>
+                    <button type="button" class="btn btn-warning" data-bind="enable: oldItem(), event: { click: remove }"><i class="glyphicon glyphicon-minus"></i></button>
+                    <button type="button" class="btn btn-default" title="Desktop Display" data-bind="enable: !mobileViewport(), event: { click: toggleMobile }"><i class="glyphicon glyphicon-option-vertical"></i></button>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <div class="title-label">
+                            Available @Model.MembershipTypeName<text>(s)</text>
+                        </div>
+
+                        <div class="input-group pull-right search-input">
+                            <span class="icon glyphicon input-group-addon glyphicon-search"></span>
+                            <input type="text" class="search-field form-control" placeholder="Search" data-bind="value: searchQuery, valueUpdate:'keyup'">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="alert alert-danger assignment-validation" data-bind="visible: newItem() && newItem().length> 0">
+                            <strong>Please Click the + button to Assign your Selection.</strong>
+                        </div>
+                    </div>
+                    <select data-bind="foreach: availableList(), value: newItem" size="5" class="form-control" @(!Model.CanEdit ? "disabled=\"disabled\"" : "")>
+                        <option data-bind="value: key, text: value, attr: {title: value}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-bind="foreach: selectedItems">
+        <input type="hidden" name="@Model.PropertyName" data-bind="value: $data" />
+    </div>
+    
+    <input type="hidden" name="isValid" data-bind="value: isValid()" />
+
+</div>
+
+<script type="text/javascript">
+    ko.bindingHandlers.allowBindings = {
+        init: function(elem, valueAccessor) {
+            // Let bindings proceed as normal *only if* my value is false
+            var shouldAllowBindings = ko.unwrap(valueAccessor());
+            return { controlsDescendantBindings: !shouldAllowBindings };
+        }
+    };
+
+    $(document).ready(function() {
+        var data = @Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings
+           {
+               ContractResolver = new CamelCasePropertyNamesContractResolver()
+           }));
+
+        var model = new MembershipModel(data);
+        var control = document.getElementById('@Model.PropertyName-Membership');
+
+        $(window).resize(function() {
+            model.mobileViewport($(window).width() < 768);
+        });
+
+        ko.applyBindingsToDescendants(model, control);
+        model.mobileViewport($(window).width() < 768);
+    });
+
+    var MembershipModel = function(data) {
+        var self = this;
+        ko.mapping.fromJS(data, {}, self);
+
+        self.mobileViewport = ko.observable(false);
+
+        self.mobileView = ko.observable(false);
+        self.toggleMobile = function() {
+            self.mobileView(!self.mobileView());
+        };
+
+        self.displayMobile = ko.pureComputed(function () {
+            return self.mobileView() || self.mobileViewport();
+        });
+
+        if (!self.selectionList())
+            self.selectionList = ko.observableArray();
+
+        if (!self.selectedItems())
+            self.selectedItems = ko.observableArray();
+
+        self.newItem = ko.observable('');
+        self.oldItem = ko.observable('');
+
+        self.isValid = ko.pureComputed(function() {
+            return !(self.newItem() && self.newItem().length > 0 || self.oldItem() && self.oldItem().length > 0);
+        });
+
+        function search(selectionListItem) {
+            return self.selectedItems().filter(function (selectedItem) { return selectedItem === selectionListItem.key(); }).length > 0;
+        }
+
+        self.selectedList = ko.pureComputed(function () {
+            if (self.selectedItems() && self.selectionList())
+                return self.selectionList().filter(search);
+
+            return [];
+        });
+
+        self.searchQuery = ko.observable();
+        self.availableList = ko.pureComputed(function () {
+            if (self.selectionList()) {
+                var result = self.selectionList();
+
+                if (self.searchQuery()) {
+                    var query = self.searchQuery().toLowerCase();
+                    result = result.filter(function (selectedItem) {
+                        return selectedItem
+                            .value()
+                            .toLowerCase()
+                            .indexOf(query) > -1;
+                    });
+                }
+
+                if (self.selectedItems())
+                    return result.filter(function (s) { return !search(s); });
+
+
+                return result;
+            }
+            return [];
+        });
+
+        self.add = function() {
+            if (self.newItem()) {
+                self.selectedItems.push(self.newItem());
+                self.newItem('');
+            }
+        };
+
+        self.remove = function() {
+            if (self.oldItem()) {
+                self.selectedItems.remove(self.oldItem());
+                self.oldItem('');
+            }
+        };
+    };
+</script>

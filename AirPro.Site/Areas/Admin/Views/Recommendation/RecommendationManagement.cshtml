@@ -1,0 +1,354 @@
+﻿@using AirPro.Common.Enumerations
+
+@{
+    ViewBag.Title = "Recommendation Management";
+}
+
+@section Styles {
+    <style>
+        .bootgrid-header {
+            margin: 0;
+        }
+
+            .bootgrid-header .actionBar {
+                padding: 0;
+            }
+
+        .panel-heading {
+            padding: 5px 10px;
+        }
+
+        .panel-title {
+            margin: 2px;
+            font-size: 20px;
+        }
+
+            .panel-title > .btn {
+                color: black;
+            }
+
+        .dropdown-item {
+            color: black;
+        }
+
+        a.column-header-anchor {
+            color: gray !important;
+            text-decoration: none;
+        }
+
+        td.text-left > ul {
+            padding-left: 10px;
+        }
+    </style>
+
+    <style>
+        /* Page Specific Styles */
+        .validationMessage {
+            color: red;
+        }
+
+        #recommendation-modal .row {
+            margin: 4px 0;
+        }
+
+        #recommendation-modal hr {
+            margin: 10px 0;
+        }
+
+        #recommendation-usage-table {
+            margin: 0;
+        }
+
+            #recommendation-usage-table tbody,
+            #recommendation-usage-table thead {
+                display: block;
+            }
+
+            #recommendation-usage-table tbody {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+
+            #recommendation-usage-table td {
+                white-space: normal;
+            }
+
+            #recommendation-usage-table th {
+                padding: 4px;
+            }
+
+            #recommendation-usage-table .top-row > td {
+                border-bottom: none;
+                padding-bottom: 2px;
+            }
+
+            #recommendation-usage-table .bottom-row > td {
+                border-top: none;
+                padding-top: 2px;
+            }
+
+            #recommendation-usage-table td:nth-child(1),
+            #recommendation-usage-table th:nth-child(1) {
+                min-width: 125px;
+            }
+
+            #recommendation-usage-table td:nth-child(2),
+            #recommendation-usage-table th:nth-child(2) {
+                width: 100%;
+            }
+
+            #recommendation-usage-table th:nth-child(3) {
+                min-width: 85px;
+            }
+
+            #recommendation-usage-table .top-row td:nth-child(3) {
+                min-width: 65px;
+            }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div id="recommendation-management" class="panel panel-primary">
+    <div class="panel-heading">
+        <h4 class="panel-title pull-left">
+            <span style="position: relative; top: 2px;">Recommendations</span>
+            <button class="btn btn-default btn-sm" style="margin-left: 20px; display: none;" data-bind="visible: allowEdit()" onclick="loadRecommendation(0)"><i class="glyphicon glyphicon-plus"></i>Add Recommendation</button>
+        </h4>
+    </div>
+    <div style="overflow-y: auto;">
+        <div style="min-width: 700px;">
+            <table id="recommendation-management-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                <thead>
+                    <tr>
+                        <th data-column-id="troubleCodeRecommendationId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="75">ID</th>
+                        <th data-column-id="troubleCodeRecommendationText">Recommendation Text</th>
+                        <th data-column-id="activeInd" data-width="75" data-align="center" data-header-align="center" data-converter="bool">Active</th>
+                        <th data-column-id="createdByUserDisplay" data-visible="false">Created By</th>
+                        <th data-column-id="createdDt" data-converter="date" data-visible="false">Created Date</th>
+                        <th data-column-id="updatedByUserDisplay" data-visible="false">Updated By</th>
+                        <th data-column-id="updatedDt" data-converter="date" data-visible="false">Updated Date</th>
+                        <th data-column-id="recommendationMenu" data-visible-in-selection="false" data-formatter="recommendationMenu" data-sortable="false" data-align="center" data-width="45"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="recommendation-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Recommendation Manage</h4>
+            </div>
+            <div class="modal-body" data-bind="with: recommendationManageViewModel">
+                <div data-bind="with: updateResult">
+                    <div class="alert" data-bind="css: { 'alert-success': success(), 'alert-danger': !success() }">
+                        <span data-bind="text: message"></span>
+                    </div>
+                </div>
+                <div class="row" data-bind="visible: troubleCodeRecommendationId() > 0">
+                    <div class="col-sm-4">
+                        <label>Recommendation Id</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <span data-bind="text: troubleCodeRecommendationId"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Recommendation Text</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <textarea data-bind="textInput: troubleCodeRecommendationText, enable: $root.allowEdit()" class="form-control" placeholder="Enter Recommendation Text"></textarea>
+                        <span data-bind='visible: troubleCodeRecommendationText.hasError, text: troubleCodeRecommendationText.validationMessage'> </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Active</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="checkbox" data-bind="checked: activeInd, enable: $root.allowEdit()" />
+                    </div>
+                </div>
+                <!-- ko if: troubleCodeRecommendationId() && troubleCodeRecommendationId() > 0 -->
+                <hr />
+                <div class="row">
+                    <div class="col-sm-12" style="padding: 0 10px;">
+                        <!-- ko if: recommendationUsage() && recommendationUsage().length > 0 && recommendationUsage()[0] -->
+                        <table id="recommendation-usage-table" class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Make/Code
+                                    </th>
+                                    <th>
+                                        Controller/Desc
+                                    </th>
+                                    <th class="text-center">
+                                        Usage
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: recommendationUsage, as: 'u' }">
+                                <tr class="top-row">
+                                    <td data-bind="text: u.vehicleMakeName"></td>
+                                    <td data-bind="text: u.controllerName"></td>
+                                    <td data-bind="text: u.usageCount" class="text-center"></td>
+                                </tr>
+                                <tr class="bottom-row">
+                                    <td data-bind="text: u.troubleCode"></td>
+                                    <td colspan="2" data-bind="text: u.troubleCodeDescription"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- /ko -->
+                        <em data-bind="visible: !recommendationUsage() || recommendationUsage().length == 0 || !recommendationUsage()[0]" style="padding-left: 4px;">No Usage Found.</em>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-6" data-bind="visible: createdByUserDisplay()">
+                        <label>Created</label>
+                        <div data-bind="text: createdByUserDisplay"></div>
+                        <div data-bind="text: formatDateDisplay(createdDt())"></div>
+                    </div>
+                    <div class="col-sm-6" data-bind="visible: updatedByUserDisplay()">
+                        <label>Updated</label>
+                        <div data-bind="text: updatedByUserDisplay"></div>
+                        <div data-bind="text: formatDateDisplay(updatedDt())"></div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveRecommendation, visible: allowEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#recommendation-management-grid-header').appendTo('#recommendation-management .panel-heading');
+            $('#recommendation-management .panel-title').appendTo('#recommendation-management-grid-header .actionBar');
+
+            var RecommendationManagementViewModel = function() {
+                var self = this;
+                self.allowEdit = ko.observable(@User.IsInRole(ApplicationRoles.RecommendationManageEdit.ToString()).ToString().ToLower());
+                self.recommendationManageViewModel = ko.observable(null);
+            };
+            window.recommendationManagementViewModel = new RecommendationManagementViewModel();
+            ko.applyBindings(window.recommendationManagementViewModel);
+        });
+
+        $("#recommendation-management-grid").bootgrid({
+            url: '@Url.Action("GetRecommendationsByGridPage")',
+            rowCount: [10, 25],
+            searchSettings: {
+                delay: 400,
+                characters: 3
+            },
+            formatters: {
+                "recommendationMenu": function (column, row) {
+                    @if (User.IsInRole(ApplicationRoles.RecommendationManageEdit.ToString()))
+                    {
+                        <text>
+                            return '<button class="btn btn-warning btn-xs" onclick="loadRecommendation(' +
+                                row.troubleCodeRecommendationId +
+                                ')"><i class="glyphicon glyphicon-edit"></i></button>';
+                        </text>
+                    }
+                    else if (User.IsInRole(ApplicationRoles.RecommendationManageView.ToString()))
+                    {
+                        <text>
+                            return '<button class="btn btn-info btn-xs" onclick="loadRecommendation(' +
+                                row.troubleCodeRecommendationId +
+                                ')"><i class="glyphicon glyphicon-info-sign"></i></button>';
+                        </text>
+                    }
+
+                }
+            },
+            converters: {
+                bool: {
+                    to: function(value) {
+                        return value
+                            ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                            : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+                    }
+                },
+                date: {
+                    to: function (value) { return formatDateDisplay(value); }
+                }
+            }
+        });
+
+        function formatDateDisplay(date) {
+            return moment(date, moment.HTML5_FMT.DATETIME_LOCAL_MS).format('MM/DD/YYYY h:mm:ss A');
+        }
+
+        var RecommendationManageViewModel = function(data) {
+            var self = this;
+            ko.mapping.fromJS(data, {}, self);
+
+            self.troubleCodeRecommendationText.extend({ required: { message: 'Recommendation Text is Required.' } });
+
+            self.validate = function() {
+                var result = ko.validation.group(self, { deep: true });
+                if (result().length > 0) {
+                    result.showAllMessages(true);
+                    alert("Please fix all errors before saving.");
+                    return false;
+                }
+                return true;
+            };
+        };
+
+        function loadRecommendation(recommendationId) {
+            $.post('@Url.Action("GetRecommendationById")',
+                    { recommendationId },
+                    function (data) {
+                        var manage = new RecommendationManageViewModel(data);
+                        window.recommendationManagementViewModel.recommendationManageViewModel(manage);
+                        $('#recommendation-modal').modal('show');
+                    })
+                .fail(function (e) {
+                    console.log(e);
+                    alert('There was an unknown error loading, please reload the page.');
+                });
+        }
+
+        function saveRecommendation() {
+            var viewModel = window.recommendationManagementViewModel.recommendationManageViewModel();
+            if (viewModel && viewModel.validate()) {
+                var update = ko.mapping.toJS(viewModel, { ignore: "updateResult" });
+                $.post('@Url.Action("SaveRecommendation")',
+                        { Recommendation: update },
+                        function (data) {
+                            console.log(data);
+                            var manage = new RecommendationManageViewModel(data);
+                            window.recommendationManagementViewModel.recommendationManageViewModel(manage);
+
+                            if (manage.updateResult && manage.updateResult.success()) {
+                                setTimeout(function() { $('#recommendation-modal').modal('hide'); }, 2000);
+                            }
+                        })
+                    .fail(function(e) {
+                        console.log(e);
+                        alert('There was an unknown error saving, please reload the page.');
+                    })
+                    .always(function() {
+                        $('#recommendation-management-grid').bootgrid("reload");
+                    });
+            }
+        }
+    </script>
+}

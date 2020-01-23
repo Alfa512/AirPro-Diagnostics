@@ -1,0 +1,94 @@
+﻿CREATE TRIGGER [Inventory].[trgAirProToolArchive] ON [Inventory].[AirProTools] 
+FOR UPDATE, DELETE
+    AS
+	    INSERT INTO Inventory.AirProToolsArchive
+	    (
+		    ToolId
+		    ,ToolKey
+		    ,ToolPassword
+		    ,AutoEnginuityNum
+		    ,AutoEnginuityVersion
+		    ,CarDaqNum
+		    ,DGNum
+		    ,TeamViewerId
+		    ,TeamViewerPassword
+		    ,WindowsVersion
+		    ,TabletModel
+		    ,HubModel
+		    ,IPV6DisabledInd
+		    ,OneDriveSyncEnabledInd
+		    ,UpdatesServiceInd
+		    ,MeteredConnectionInd
+		    ,SelfScanEnabledInd
+		    ,CreatedByUserGuid
+		    ,CreatedDt
+		    ,UpdatedByUserGuid
+		    ,UpdatedDt
+		    ,OBD2YConnector
+		    ,AELatestCode
+		    ,ChargerStyle
+		    ,TabletSerialNumber
+		    ,WifiCard
+		    ,WifiHardwareId
+		    ,WifiDriverDate
+		    ,WifiDriverVersion
+		    ,ImageVersion
+		    ,HondaVersion
+		    ,FJDSVersion
+		    ,TechstreamVersion
+		    ,CellularActiveInd
+		    ,CellularProvider
+		    ,CellularIMEI
+		    ,WifiMacAddress
+		    ,J2534Brand
+		    ,J2534Model
+		    ,J2534Serial
+		    ,Type
+	    )
+	    SELECT
+		    ToolId
+		    ,ToolKey
+		    ,ToolPassword
+		    ,AutoEnginuityNum
+		    ,AutoEnginuityVersion
+		    ,CarDaqNum
+		    ,DGNum
+		    ,TeamViewerId
+		    ,TeamViewerPassword
+		    ,WindowsVersion
+		    ,TabletModel
+		    ,HubModel
+		    ,IPV6DisabledInd
+		    ,OneDriveSyncEnabledInd
+		    ,UpdatesServiceInd
+		    ,MeteredConnectionInd
+		    ,SelfScanEnabledInd
+		    ,CreatedByUserGuid
+		    ,CreatedDt
+		    ,UpdatedByUserGuid
+		    ,UpdatedDt
+		    ,OBD2YConnector
+		    ,AELatestCode
+		    ,ChargerStyle
+		    ,TabletSerialNumber
+		    ,WifiCard
+		    ,WifiHardwareId
+		    ,WifiDriverDate
+		    ,WifiDriverVersion
+		    ,ImageVersion
+		    ,HondaVersion
+		    ,FJDSVersion
+		    ,TechstreamVersion
+		    ,CellularActiveInd
+		    ,CellularProvider
+		    ,CellularIMEI
+		    ,WifiMacAddress
+		    ,J2534Brand
+		    ,J2534Model
+		    ,J2534Serial
+		    ,Type
+	    FROM DELETED
+GO
+
+ALTER TABLE [Inventory].[AirProTools] ENABLE TRIGGER [trgAirProToolArchive]
+GO

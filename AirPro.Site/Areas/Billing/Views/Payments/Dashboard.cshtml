@@ -1,0 +1,389 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Payments Dashboard";
+
+    var statusSelectList = new SelectList(new SelectListItem[]
+    {
+new SelectListItem() {Text = "Invoiced", Value = "1"},
+new SelectListItem() {Text = "Payments", Value = "0"}
+    }, "Value", "Text");
+}
+
+@section Styles {
+    <style type="text/css">
+        ul.pagination {
+            margin: 10px;
+        }
+
+        .dataGrid {
+            margin-top: 10px;
+        }
+
+        .panel-heading > .bootgrid-header {
+            margin: 0;
+        }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+        .panel-heading {
+            padding: 5px 10px;
+            margin-top: -1px;
+            padding-top: 7px;
+        }
+
+        .panel-title {
+            margin: 2px;
+            font-size: 20px;
+        }
+
+            .panel-title > .btn {
+                color: black;
+            }
+
+        #status {
+            width: 125px;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .accept-payment-btn {
+            margin-left: 15px;
+        }
+
+        #gridSearch {
+            width: 470px;
+        }
+
+            #gridSearch > .bootgrid-header {
+                margin: 0;
+            }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+        .invoiceMenu, .paymentMenu {
+            overflow: visible !important;
+        }
+
+        #invoiced-grid-header, #payments-grid-header {
+            float: left;
+        }
+
+        .actionBar {
+            color: black;
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+@if (ViewBag.ErrorNotice != null)
+{
+    <div class="alert alert-danger" style="margin-top: 10px;">
+        @ViewBag.ErrorNotice
+    </div>
+}
+
+<hr />
+
+@if (User.IsInRole(ApplicationRoles.PaymentCreate.ToString()) || User.IsInRole(ApplicationRoles.PaymentView.ToString()))
+{
+    if (User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-5">
+                        <h4 class="panel-title pull-left">
+                            <span style="position: relative; top: 2px;" class="grid-title">Invoiced Repairs</span>
+                        </h4>
+
+
+                        @if (User.IsInRole(ApplicationRoles.PaymentCreate.ToString()))
+                        {
+                            <button class="btn btn-sm btn-default pull-left accept-payment-btn">
+                                <i class="glyphicon glyphicon-plus"></i>&nbsp;Accept Payment
+                            </button>
+                        }
+                    </div>
+                    <div class="col-md-7">
+                        <div id="gridSearch" class="pull-right">
+                            @Html.DropDownList("status", statusSelectList, new { @class = "form-control input-sm pull-left" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="overflow-y: auto; overflow: visible;">
+                <div style="min-width: 700px;">
+                    <div id="invoiced-grid-cnt" class="hide">
+                        <table id="invoiced-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="invoiceId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="90">Invoice ID</th>
+                                    <th data-column-id="shopRO">Shop RO</th>
+                                    <th data-column-id="shopName">Shop Name</th>
+                                    <th data-column-id="invoiceDateTime" data-converter="date">Invoiced</th>
+                                    <th data-column-id="invoiceReportCount">Report Count</th>
+                                    <th data-column-id="invoiceTotalAmount" data-converter="currency">Invoice Total</th>
+                                    <th data-column-id="paymentsCount">Payments Applied</th>
+                                    <th data-column-id="paymentsTotalAmount" data-converter="currency">Payments</th>
+                                    <th data-column-id="invoiceBalanceAmount" data-converter="currency">Balance</th>
+                                    <th data-column-id="invoiceMenu" data-visible-in-selection="false" data-formatter="invoiceMenu" data-sortable="false" data-align="center" data-css-class="invoiceMenu" data-width="65"></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="payments-grid-cnt" class="hide">
+                        <table id="payments-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="paymentId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="90">Payment ID</th>
+                                    <th data-column-id="shopName">Shop Name</th>
+                                    <th data-column-id="paymentTypeName">Type</th>
+                                    <th data-column-id="paymentReferenceNumber">Ref Number</th>
+                                    <th data-column-id="paymentAmount" data-converter="currency">Payment</th>
+                                    <th data-column-id="paymentCreatedBy">Entered By</th>
+                                    <th data-column-id="paymentCreatedDateTime" data-converter="date">Entered Date</th>
+                                    <th data-column-id="paymentMenu" data-visible-in-selection="false" data-formatter="paymentMenu" data-sortable="false" data-align="center" data-css-class="invoiceMenu" data-width="120"></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accept Payment Modal -->
+        <div class="modal fade" id="acceptPayment" tabindex="-1" role="dialog" aria-labelledby="acceptPaymentLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)>&times;</span></button>
+                        <h4 class="modal-title" id="acceptPaymentLabel">Accept Payment</h4>
+                    </div>
+                    @using (Html.BeginForm("AcceptPayment", "Payments", new { @id = "frmPayment" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal-body">
+                            Loading...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                            <button id="btnSavePayment" type="submit" class="btn btn-primary" onclick="return CompleteConfirm();" disabled="disabled" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#invoiced-grid-header').appendTo('#gridSearch');
+                $('#payments-grid-header').appendTo('#gridSearch');
+
+                $('.panel-heading .btn-group').addClass('btn-group-sm');
+                $('.panel-heading .input-group').addClass('input-group-sm');
+            });
+
+            function bootgrid(selector, url, action) {
+                $(selector).bootgrid({
+                    url: url,
+                    rowCount: [10, 25, 50, 100],
+                    searchSettings: {
+                        delay: 500,
+                        characters: 2
+                    },
+                    formatters: {
+                        "invoiceMenu": function(column, row) {
+                            return invoiceMenu(row);
+                        },
+                        "paymentMenu": function (column, row) {
+                            return paymentMenu(row);
+                        }
+                    },
+                    converters: {
+                        date: {
+                            to: function(value) {
+                                var date = moment(value);
+                                if (date && date.isValid())
+                                    return moment(value).format('MM/DD/YYYY');
+                                else
+                                    return '<em>Not Set</em>';
+                            }
+                        },
+                        currency: {
+                            to: function(value) {
+                                return '$' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }).on("loaded.rs.jquery.bootgrid",
+                    function (e) {
+                        $('.tooltip').hide();
+                        $("[data-toggle='tooltip']").tooltip({
+                            container: 'body'
+                        });
+                        action();
+
+                        $('.dropdown-toggle').dropdown();
+                    });
+            }
+
+            bootgrid('#invoiced-grid', '@Url.Action("GetOutstandingInvoicesByPage")', function () {
+                $('.accept-payment-btn').on('click',
+                function() {
+                    var invoiceid = $(this).data('invoiceid');
+                    acceptPayment(invoiceid);
+                });
+            });
+            bootgrid('#payments-grid', '@Url.Action("GetRecentPaymentsByPage")', function () {
+                $('.void-payment-btn').on('click',
+                function () {
+                    var paymentid = $(this).data('paymentid');
+                    voidPayment(paymentid);
+                });
+            });
+
+            function refreshOutstandingInvoices() {
+                $('#invoiced-grid').bootgrid("reload");
+            }
+
+            function refreshRecentPayments() {
+                $('#payments-grid').bootgrid("reload");
+            }
+
+            var btn =
+                "<a href='{3}' class='btn btn-{0} {4}' data-toggle='tooltip' data-html='true' data-placement='top' title='{2}' {5}><i class='glyphicon glyphicon-{1}'></i></a>";
+            function invoiceMenu(invoice) {
+                var result = "<div id='grpActions' class='btn-group btn-group-xs pull-right' role='group'>";
+                result += btn.format('success',
+                    'usd',
+                    'Invoice',
+                    '@Url.Action("Invoice", "Repairs", new {Area = ""})/' + invoice.invoiceId, '', '');
+                result += btn.format('primary', 'credit-card', 'Payment', '#', 'accept-payment-btn', 'data-invoiceId="' + invoice.invoiceId + '"');
+                result += "</div>";
+                return result;
+            }
+
+            function paymentMenu(payment) {
+                var result = "<div id='grpActions' class='btn-group btn-group-xs pull-right' role='group'>";
+                result +=
+                    `<div class="btn-group" role="group" data-toggle="tooltip" data-placement="top" title="" data-original-title="Invoices">
+                    <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="glyphicon glyphicon-usd"></i>
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">`;
+                for (var i = 0; i < payment.invoiceIds.length; i++) {
+                    var invoiceId = payment.invoiceIds[i];
+                    result += '<li><a href="@Url.Action("Invoice", "Download", new { Area = "" })/' + invoiceId + '" style="color: black;">Invoice (' + invoiceId + ')</a></li>';
+                }
+                result += '</ul></div>';
+                result += btn.format('primary',
+                    'list-alt',
+                    'Statement',
+                    '@Url.Action("Statement", "Download", new {Area = ""})/' + payment.paymentId, '', '');
+                @if (User.IsInRole(ApplicationRoles.PaymentDelete.ToString()))
+                {
+                    @: result += btn.format('danger', 'ban-circle', 'Void', '#', 'void-payment-btn', 'data-paymentid="' + payment.paymentId + '"');
+                }
+                    result += "</div>";
+                    return result;
+                }
+
+
+            function acceptPayment(invoiceId) {
+                $('#acceptPayment').modal('show');
+                var currencyId = $('#CurrencyId').val();
+
+                $.get("@Url.Action("AcceptPayment")/?id=" + (invoiceId || "") + "&currencyId=" + (currencyId || "1"),
+                        function(data) {
+                            $('#acceptPayment .modal-body').html(data);
+                        })
+                    .fail(function(err) {
+                        console.log(err);
+                        $('#acceptPayment').modal('hide');
+                        alert('An Error has Occurred, please refresh the page and try again.');
+                    });
+            }
+
+            function CompleteConfirm() {
+                var result = confirm('Are you sure you wish to apply this payment?');
+
+                $('button[type="submit"]').button('loading');
+                return result;
+            }
+        </script>
+    }
+    
+    @section Scripts {
+        <script type="text/javascript">
+            function updateGridVisibility(statusElement) {
+                $('.tooltip').hide();
+                if (statusElement.val() == "1") {
+                    $('.grid-title').text('Invoiced Repairs');
+                    $("#invoiced-grid-cnt").removeClass('hide');
+                    $('#invoiced-grid-header').removeClass('hide');
+                    $("#payments-grid-cnt").addClass('hide');
+                    $("#payments-grid-header").addClass('hide');
+                } else {
+                    $('.grid-title').text('Recent Payments');
+                    $("#invoiced-grid-cnt").addClass('hide');
+                    $("#payments-grid-cnt").removeClass('hide');
+                    $('#invoiced-grid-header').addClass('hide');
+                    $("#payments-grid-header").removeClass('hide');
+                }
+            }
+
+            $(document)
+                .ready(function () {
+                    $('#status').on('change',
+                        function() {
+                            updateGridVisibility($(this));
+                        });
+                    updateGridVisibility($('#status'));
+                });
+            
+            var lastRefresh = new Date();
+            hub.on('invoiceCompleted',
+                function() {
+                    // Restrict event refreshes to 1 per second.
+                    if (((new Date() - lastRefresh) / 1000) > 1) {
+                        lastRefresh = new Date();
+                        refreshOutstandingInvoices();
+                    }
+                });
+
+            @if (User.IsInRole(ApplicationRoles.PaymentDelete.ToString()))
+            {
+                <text>
+
+            function voidPayment(paymentId) {
+                if (confirm('WARNING: This will VOID Payment ' + paymentId + '!\n\nThis action can NOT be reversed!\n\nContinue?')) {
+                    $.get('@Url.Action("VoidPayment")/' + paymentId,
+                            function () {
+                                refreshOutstandingInvoices();
+                                refreshRecentPayments();
+                            })
+                        .fail(function () {
+                            alert('There was an Error Voiding Payment ' + paymentId + '.\n\nPlease refresh the page and try again.');
+                        });
+                }
+            }
+
+                </text>
+            }
+        </script>
+    }
+}
+else
+{
+    <div class="alert alert-danger" style="margin-top: 10px;">
+        <em>You do not have access to this page.</em>
+    </div>
+}

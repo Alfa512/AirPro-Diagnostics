@@ -1,0 +1,1637 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using Microsoft.AspNet.Identity
+@model AirPro.Site.Models.Request.RequestViewModel
+
+@{
+    ViewBag.Title = "Technician Report";
+}
+
+@section Styles {
+    <style>
+        /* Drop Down Menus */
+        .large-text-dropdown .dropdown-menu > li {
+            min-width: 400px;
+            max-width: 700px;
+            padding: 4px 10px;
+        }
+
+            .large-text-dropdown .dropdown-menu > li > div {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                cursor: pointer;
+            }
+        /* Recommendation Selection */
+        .recommendation-select-text {
+            white-space: initial !important;
+            overflow: initial !important;
+            text-overflow: initial !important;
+            border-bottom: solid 1px silver;
+            padding-bottom: 5px
+        }
+        /* Request Type Selection */
+        .request-type-error {
+            background: #e7c3c3;
+        }
+
+            .request-type-error > li > a {
+                color: #a94442 !important;
+                font-weight: bold;
+            }
+        /* Decision Drop Down */
+        .decision-select-percent {
+            font-weight: bold;
+            font-size: 12px;
+            padding-top: 2px;
+        }
+
+        .decision-select-text {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 600px;
+        }
+        /* Font Colors */
+        .success {
+            color: #419641;
+        }
+
+        .warning {
+            color: #eb9316;
+        }
+
+        .danger {
+            color: #c12e2a;
+        }
+        /* Recommendation Severity Options */
+        select.text-severity option[value="0"] {
+            background: white;
+            color: black;
+        }
+
+        .text-severity-success,
+        select.text-severity option[value="1"] {
+            background: #419641;
+            color: white;
+        }
+
+        .text-severity-warning,
+        select.text-severity option[value="2"] {
+            background: #eb9316;
+            color: white;
+        }
+
+        .text-severity-danger,
+        select.text-severity option[value="3"] {
+            background: #c12e2a;
+            color: white;
+        }
+        /* Fieldset Overrides */
+        fieldset {
+            margin-bottom: 15px;
+        }
+
+        legend {
+            margin-bottom: 10px;
+        }
+        /* Multi Select List */
+        .multi-select-list {
+            margin: 0;
+            padding: 0;
+            background: none;
+            height: 250px;
+            overflow-y: auto;
+        }
+
+            .multi-select-list ul {
+                columns: 1;
+                -webkit-columns: 1;
+                -moz-columns: 1;
+                list-style: none;
+                margin: 0;
+                padding-left: 10px;
+            }
+
+            .multi-select-list > .group-header {
+                background-color: lightgray;
+                margin-bottom: 4px;
+                padding: 2px 5px;
+            }
+        /* Missing Controllers List */
+        .missing-controllers-list {
+            columns: 3;
+            -webkit-columns: 3;
+            -moz-columns: 3;
+            list-style: none;
+            margin: 0;
+            padding-left: 10px;
+        }
+
+            .missing-controllers-list li {
+                padding: 2px;
+            }
+        /* Report Table Styles */
+        .report-table > thead > tr > th {
+            padding: 0;
+        }
+
+        .active-report-row > td {
+            padding: 4px !important;
+        }
+
+            .active-report-row > td span {
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+        .previous-report-row {
+            background-color: #ECF0F1;
+        }
+
+            .previous-report-row a {
+                color: dimgray;
+            }
+        /* Report Menu */
+        @@media (min-width: 991px) {
+            .report-menu .navbar-text.navbar-right {
+                margin: 5px;
+                margin-right: 30px;
+            }
+        }
+
+        @@media (max-width: 991px) {
+            .report-menu .navbar-nav {
+                margin-left: 15px;
+            }
+
+            .navbar-brand > i {
+                margin-top: 8px;
+                margin-left: 15px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .report-menu .navbar-nav {
+                margin-left: 0;
+            }
+
+            .navbar-brand > i {
+                margin-top: 8px;
+                margin-left: -14px;
+            }
+        }
+        /* Report Text Fields */
+        .readonly-text {
+            height: 125px;
+            overflow-y: auto;
+        }
+        /* Tooltip Text Wrap */
+        .tooltip-inner {
+            white-space: pre-wrap;
+            max-width: none;
+        }
+        /* XS Input Control */
+        .input-xs {
+            width: auto;
+            height: 21px;
+            padding: 2px 6px;
+            font-size: 13px;
+        }
+        /* AirPro Tool Modal */
+        #airpro-tool fieldset {
+            margin: 0;
+            font-size: 16px;
+        }
+        /* Vehicle Info Button */
+        .panel-info .btn-default > .badge {
+            color: #31708f;
+            background-color: #d9edf7;
+        }
+        /* Decision Severity Indicator */
+        .severity-indicator {
+            height: 15px;
+            width: 15px;
+            border: solid 1px gray;
+            background-color: white;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+            .severity-indicator.success {
+                background-color: #419641;
+            }
+
+            .severity-indicator.warning {
+                background-color: #eb9316;
+            }
+
+            .severity-indicator.danger {
+                background-color: #c12e2a;
+            }
+
+        .cancel-reason-heading {
+            height: 36px;
+            font-size: 16px !important;
+        }
+
+        .cancel-reason-types {
+            width: 200px;
+            display: inline-block;
+            margin-top: -5px;
+        }
+
+        .vehicleMakeToolCheckboxCnt {
+            margin-bottom: 5px;
+        }
+
+        .version-input {
+            position: relative;
+            top: -4px;
+        }
+    </style>
+
+    <style>
+        a, a:hover {
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .panel-heading {
+            padding: 5px 10px;
+        }
+
+        td > label {
+            margin: 0;
+        }
+
+        .panel td {
+            padding: 2px 4px !important;
+            max-width: 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .panel table {
+            margin: 0;
+        }
+
+        .panel-heading > .btn-xs {
+            position: relative;
+            bottom: 1px;
+        }
+
+        .jumbotron {
+            margin-bottom: 20px;
+        }
+
+        .invalid-vin {
+            color: #a94442;
+            background-color: #f2dede !important;
+            border-color: #ebccd1;
+        }
+
+        .include-scan-queue {
+            height: 21px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        #upload-panel {
+            margin-bottom: 20px !important;
+        }
+    </style>
+}
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-8">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                @Html.DisplayFor(model => model.RequestCategoryName)&nbsp;@Html.DisplayFor(model => model.RequestTypeName)&nbsp;(@Html.DisplayFor(model => model.RequestId))&nbsp;-&nbsp;@Html.DisplayFor(model => model.ShopName)&nbsp;
+                @if (!string.IsNullOrWhiteSpace(Model.ShopContact))
+                {
+                    @: Shop #&nbsp;@Html.DisplayFor(model => model.ShopContact)
+                }
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.RepairId)</td>
+                            <td>@Html.DisplayFor(model => model.RepairId)&nbsp;(@Html.DisplayFor(model => model.RepairStatusName))</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.Contact)</td>
+                            <td><span class="multi-line-display">@Html.DisplayFor(model => model.Contact)</span></td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.ShopRONumber)</td>
+                            <td>@Html.DisplayFor(model => model.ShopRONumber)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.InsuranceCompanyDisplay)</td>
+                            <td>@Html.DisplayFor(model => model.InsuranceCompanyDisplay)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.InsuranceReferenceNumber)</td>
+                            <td>@Html.DisplayFor(model => model.InsuranceReferenceNumber)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="vehicleDetails">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <button type="button" class="btn btn-default btn-xs pull-right" style="display: none;" data-toggle="modal" data-target="#vehicleDetailsModal" data-bind="visible: Count() > 0"><span class="badge" data-bind="text: Count()">0</span></button>
+                    @Html.DisplayFor(model => model.VehicleYear)&nbsp;@Html.DisplayFor(model => model.VehicleMakeName)&nbsp;@Html.DisplayFor(model => model.VehicleModelName)
+                </div>
+                <table class="table">
+                    <tr>
+                        <td>@Html.LabelFor(model => model.VehicleVIN)</td>
+                        <td>@Html.DisplayFor(model => model.VehicleVIN)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.VehicleTransmission)</td>
+                        <td>@Html.DisplayFor(model => model.VehicleTransmission)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.Odometer)</td>
+                        <td>@Html.DisplayFor(model => model.Odometer)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding: 0 !important;">
+                            <table class="table">
+                                <tr>
+                                    <td class="text-center">@Html.LabelFor(model => model.AirBagsDeployed)</td>
+                                    <td class="text-center">@Html.LabelFor(model => model.DrivableInd)</td>
+                                    <td class="text-center">@Html.LabelFor(model => model.SeatRemovedInd)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">@Html.Raw(Model.AirBagsDeployed ? "Yes" : "No")</td>
+                                    <td class="text-center">@Html.Raw(Model.DrivableInd ? "Yes" : "No")</td>
+                                    <td class="text-center">@Html.Raw(Model.SeatRemovedInd ? "Yes" : "No")</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="modal fade" id="vehicleDetailsModal" tabindex="-1" role="dialog" aria-labelledby="vehicleDetailsModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="vehicleDetailsModalLabel">Vehicle Lookup Details</h4>
+                    </div>
+                    <div class="modal-body" data-bind="visible: Count() == 0">
+                        <em>There are no Details to Display.</em>
+                    </div>
+                    <div style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-bordered table-striped table-responsive" style="margin-bottom: 0" data-bind="visible: Count() > 0">
+                            <tr>
+                                <th>Variable&nbsp;Id</th>
+                                <th>Variable</th>
+                                <th>Value&nbsp;Id</th>
+                                <th>Value</th>
+                            </tr>
+                            <tbody data-bind="foreach: ValueResults">
+                                <tr>
+                                    <td data-bind="text: VariableId"></td>
+                                    <td data-bind="text: Variable"></td>
+                                    <td data-bind="text: ValueId"></td>
+                                    <td data-bind="text: Value"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <button id="toggleAccidentDetails" class="btn btn-default btn-xs pull-right"><i class="glyphicon glyphicon-minus"></i></button>
+                Accident Information
+            </div>
+            <div id="viewAccidentDetails" class="panel-body" style="padding: 5px;">
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.ProblemDescription)
+                        <div>
+                            @Html.DisplayFor(model => model.ProblemDescription)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.Notes)
+                        <div>
+                            @Html.DisplayFor(model => model.Notes)
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Point of Impacts</label>
+                                <table class="table table-striped">
+                                    @foreach (var impact in Model.PointsOfImpact)
+                                    {
+                                        <tr>
+                                            <td>@((PointOfImacts)impact)</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Warning Indicators</label>
+                                <table class="table table-striped">
+                                    @foreach (var indicator in Model.WarningIndicators)
+                                    {
+                                        <tr>
+                                            <td>@indicator</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.OtherWarningInfo)
+                                <div>
+                                    @Html.DisplayFor(model => model.OtherWarningInfo)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.UploadControl(UploadType.RepairOrders, Model.RepairId.ToString(), "Repair Attachments")
+
+@helper ReportMenu()
+{
+    <nav class="navbar navbar-default report-menu">
+        <div class="container">
+            <span class="navbar-brand" data-bind="attr: { 'data-original-title': reportStateTitle }" data-toggle="tooltip" data-placement="bottom">
+                <i data-bind="css: reportStateCss"></i>
+            </span>
+            <div class="nav navbar-nav">
+                @if (!string.IsNullOrEmpty(@Model.ReturnUrl))
+                {
+                    <a class="navbar-btn btn btn-default" data-bind="css: { 'disabled': hasChanges() }" href="@Model.ReturnUrl" data-toggle="tooltip" data-placement="bottom" title="Queue">
+                        <i class="glyphicon glyphicon-arrow-left"></i>
+                    </a>
+                }
+                <button class="navbar-btn btn btn-info" data-bind="visible: !hasChanges(), enable: !loadingData(), click: function() { $('#report-preview').modal('show'); }" data-toggle="tooltip" data-placement="bottom" title="Report Preview">
+                    <i class="glyphicon glyphicon-file"></i>
+                </button>
+                <button class="navbar-btn btn btn-success" data-bind="click: save, enable: allowSave() && hasChanges()" data-toggle="tooltip" data-placement="bottom" title="Save">
+                    <i class="glyphicon glyphicon-floppy-open"></i>
+                </button>
+                <button class="navbar-btn btn btn-info" data-bind="click: refresh" data-toggle="tooltip" data-placement="bottom" title="Refresh">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                </button>
+                <!-- ko if: completeReport() -->
+                <button class="navbar-btn btn btn-success" data-bind="enable: allowEdit(), click: completeReportToggle" data-toggle="tooltip" data-placement="bottom" title="Re-Open">
+                    <i class="glyphicon glyphicon-folder-close"></i>
+                </button>
+                <!-- /ko -->
+                <!-- ko ifnot: completeReport() -->
+                <button class="navbar-btn btn btn-default" data-bind="enable: allowEdit() && !hasChanges(), click: completeReportToggle" data-toggle="tooltip" data-placement="bottom" title="Complete">
+                    <i class="glyphicon glyphicon-folder-open"></i>
+                </button>
+                <!-- /ko -->
+                <!-- ko if: completeReport() && cancelReport()-->
+                <button class="navbar-btn btn btn-danger" data-bind="enable: allowEdit(), click: cancelReportToggle" data-toggle="tooltip" data-placement="bottom" title="Restore">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                </button>
+                <!-- /ko -->
+                <!-- ko if: completeReport() && !cancelReport() -->
+                <button class="navbar-btn btn btn-default" data-bind="enable: allowEdit(), click: cancelReportToggle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                </button>
+                <!-- /ko -->
+            </div>
+            <div class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input type="text" class="form-control" style="background: white;" data-bind="textInput: responsibleTech" placeholder="Not Assigned" readonly>
+                    <span class="input-group-btn">
+                        <!-- ko if: !loadingData() && !repairComplete() -->
+                        <!-- ko if: allowEdit() -->
+                        <button class="btn btn-danger" type="button" data-bind="enable: allowSave(), click: responsibilityToggle" data-toggle="tooltip" data-placement="bottom" title="Release">
+                            <i class="glyphicon glyphicon-warning-sign"></i>
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko ifnot: allowEdit() -->
+                        <button class="btn btn-warning" type="button" data-bind="enable: allowSave(), click: responsibilityToggle" data-toggle="tooltip" data-placement="bottom" title="Accept">
+                            <i class="glyphicon glyphicon-flag"></i>
+                        </button>
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: allowEdit() -->
+                        <button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="bottom" title="Tool Info" data-bind="click: function() { $('#airpro-tool').modal('show'); }">
+                            <i class="glyphicon glyphicon-phone"></i>
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: responsibilityHistory() && responsibilityHistory().length -->
+                        <button class="btn btn-default" type="button" data-bind="click: function() { $('#responsibility-history').modal('show'); }" data-toggle="tooltip" data-placement="bottom" title="History">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </button>
+                        <!-- /ko -->
+                    </span>
+                </div>
+            </div>
+            <div class="navbar-text" data-bind="visible: !allowEdit()">
+                <span data-bind="text: requestCategoryDisplayName"></span>
+            </div>
+            <ul class="nav navbar-nav" data-bind="visible: allowEdit()">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span data-bind="text: requestCategoryDisplayName"></span>&nbsp;<span class="caret"></span></a>
+                    <ul class="dropdown-menu" data-bind="foreach: { data: requestCategorySelectionDisplay, as: 'c' }">
+                        <li><a href="#" data-bind="text: c.requestCategoryName, click: $root.requestCategorySelectionChange"></a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="navbar-text" data-bind="visible: !allowEdit()">
+                <span data-bind="text: requestTypeDisplayName"></span>
+            </div>
+            <ul class="nav navbar-nav" data-bind="visible: allowEdit(), css: { 'request-type-error': !$root.requestTypeId() }">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span data-bind="text: requestTypeDisplayName"></span>&nbsp;<span class="caret"></span></a>
+                    <ul class="dropdown-menu" data-bind="foreach: { data: requestTypeSelectionDisplay, as: 't' }">
+                        <li><a href="#" data-bind="text: t.requestTypeName, click: $root.requestTypeSelectionChange"></a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="navbar-text navbar-right">
+                <div>
+                    Saved:&nbsp;<span style="font-weight: bold;" data-bind="text: updatedDtDisplay"></span>
+                </div>
+                <div>
+                    Loaded:&nbsp;<span style="font-weight: bold;" data-bind="text: loadedDtDisplay"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="alert update-result-alert" style="display: none; font-size: 16px;" role="alert" data-bind="visible: updateResult(), css: { 'alert-danger': !updateResult() || !updateResult().success(), 'alert-success': updateResult() && updateResult().success() }, with: updateResult()">
+        <i class="glyphicon" data-bind="css: { 'glyphicon-alert': !success(), 'glyphicon-ok': success() }"></i>&nbsp;
+        <strong data-bind="visible: !success()">Processing Error:&nbsp;</strong>
+        <span data-bind="text: message"></span>
+    </div>
+
+    <div class="panel panel-danger" data-bind="visible: cancelReport()">
+        <div class="panel-heading cancel-reason-heading">
+            Report Cancel Reason
+            <div class="pull-right">
+                <span>Type</span>
+                <select class="form-control input-sm cancel-reason-types" data-bind="value: cancelReasonTypeId, optionsCaption: '<-- Select Reason Type -->', options: cancelReasonTypes, optionsText: 'name', optionsValue: 'cancelReasonTypeId'">
+                    <option data-bind="value: c.cancelReasonTypeId, text: c.name"></option>
+                </select>
+            </div>
+        </div>
+        <div class="panel-body" style="padding: 5px; padding-bottom: 0">
+            <textarea placeholder="Cancel Reason" style="width: 100%; height: 100px; resize: none;" data-bind="textInput: cancelNotes, visible: allowEdit()"></textarea>
+            <div class="readonly-text" style="height: 100px; white-space: pre-wrap;" data-bind="text: cancelNotes, visible: !allowEdit()"></div>
+            <span class="danger" data-bind="visible: !cancelNotes() || cancelNotes().length === 0"><em>Cancel Reason and Type are Required.</em></span>
+        </div>
+    </div>
+}
+
+<div id="scanReport">
+
+    <div id="reportLoading" class="jumbotron" style="padding: 10px 20px">
+        <h4>
+            <i class="fa fa-spinner fa-spin"></i>&nbsp;Report Loading...
+        </h4>
+    </div>
+
+    <div id="reportLoadError" class="alert alert-danger" style="display: none;">
+        <h4><i class="glyphicon glyphicon-warning-sign"></i>&nbsp;Report Load Error</h4>
+        There was an error loading your Report, please refresh the page and try again.
+    </div>
+
+    <div id="reportDisplay" data-bind="visible: displayReport" style="display: none;">
+
+        @ReportMenu()
+
+        <div class="row" data-bind="if: vehicleInstructions() || vehicleMakeTools().length > 0">
+            <div class="col-md-12">
+                <div class="panel" data-bind="css: oemCertifiedInd() ? 'panel-danger' : 'panel-warning' ">
+                    <div class="panel-heading" data-bind="text: oemCertifiedInd() ? 'Shop OEM Certifications' : 'OEM Tools' "></div>
+                    <div id="viewShopOemCertifications" class="panel-body" style="padding: 5px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Instructions:</label>
+                                <div>
+                                    <textarea data-bind="text: vehicleInstructions" class="form-control" disabled="disabled" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.VehicleMakeTools)
+                                <div data-bind="foreach: vehicleMakeTools">
+
+                                    <div class="row vehicleMakeToolCheckboxCnt">
+                                        <span class="col-md-7 check" data-toggle="tooltip" data-placement="bottom" data-bind="">
+                                            <i data-bind="css: checkedIndCss, click: checkedIndToggle"></i>
+                                            <span data-bind="text: name"></span>
+                                        </span>
+                                        <div class="col-md-5" data-bind="css: {'has-error': versionHasError}">
+                                            <input type="text" placeholder="Version #" class="form-control pull-right input-sm version-input" data-bind="value: toolVersion, enable: checkedInd, valueUpdate: 'keyup'" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div data-bind="if: vehicleMakeTools().length == 0">No Tools for Seletion.</div>
+
+                                <span class="danger" data-bind="visible: !anyToolSelected() && oemCertifiedInd()" style=""><em>Tool Selection is Required.</em></span>
+                                <span class="danger" data-bind="visible: !versionEnteredForSelectedTools() && anyToolSelected()" style=""><em>Version for selected tool is Required.</em></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <a class="btn btn-success input-xs pull-right" data-bind="visible: allowEdit()" data-toggle="modal" data-target="#diagnostic-upload" @Html.DisableOnAjax(DisableButtonType.Dismiss, "Processing")><i class="glyphicon glyphicon-cloud-upload"></i>&nbsp;Upload</a>
+                <div class="label label-info pull-right include-scan-queue" data-bind="click: diagnosticResultIncludeQueueToggle, visible: allowEdit() && (diagnosticResultQueueCount() && diagnosticResultQueueCount() > 0)">
+                    <span style="font-size: 13px;"><i class="glyphicon" data-bind="css: { 'glyphicon-unchecked': !diagnosticResultIncludeQueueSelections(), 'glyphicon-check': diagnosticResultIncludeQueueSelections() }"></i>&nbsp;Include Scan Queue&nbsp;</span>
+                    <span class="badge" style="margin-bottom: 3px;" data-bind="text: diagnosticResultQueueCount"></span>
+                </div>
+                Scan Upload Selection
+            </div>
+            <div style="max-height: 400px; overflow-x: auto;" data-bind="visible: diagnosticResultSelectionsDisplay() && diagnosticResultSelectionsDisplay().length > 0">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>VIN</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th class="text-center">Controllers</th>
+                            <th class="text-center">DTC</th>
+                            <th>Performed</th>
+                            <th>Uploaded</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: { data: diagnosticResultSelectionsDisplay, as: 'diag' }">
+                        <tr data-bind="css: { 'invalid-vin': !diag.vinMatchInd() }">
+                            <td><input type="checkbox" data-bind="checked: diag.selectedForReportInd, enable: $root.allowEdit()" /></td>
+                            <td data-bind="text: diag.vehicleVIN"></td>
+                            <td data-bind="text: diag.vehicleMake"></td>
+                            <td data-bind="text: diag.vehicleModel"></td>
+                            <td data-bind="text: diag.vehicleYear"></td>
+                            <td data-bind="text: diag.controllerCount" class="text-center"></td>
+                            <td data-bind="text: diag.troubleCodeCount" class="text-center"></td>
+                            <td data-bind="text: new moment(diag.scanPerformedDt()).format('MM/DD/YY HH:mm')"></td>
+                            <td data-bind="text: new moment(diag.scanUploadedDt()).format('MM/DD/YY HH:mm')"></td>
+                            <td style="width: 135px;">
+                                <div class="btn-group btn-group-xs pull-right" role="group" data-bind="visible: $root.allowEdit() && !diag.selectedForReportInd()">
+                                    <a data-bind="click: function() { showDiag(diag.resultId()); }" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Details">
+                                        <i class="glyphicon glyphicon-barcode"></i>
+                                    </a>
+                                    <a data-bind="click: $root.diagnosticResultAssignmentToggle, css: { 'btn-warning': diag.assignedToRequestInd(), 'btn-primary': !diag.assignedToRequestInd() }, attr: { 'data-original-title': diag.assignedToRequestInd() ? 'Remove' : 'Assign' }" class="btn btn-sm" data-toggle="tooltip" data-placement="top">
+                                        <i class="glyphicon" data-bind="css: { 'glyphicon-remove-circle': diag.assignedToRequestInd(), 'glyphicon-import': !diag.assignedToRequestInd() }"></i>
+                                    </a>
+                                    <a data-bind="click: $root.diagnosticResultDelete" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </a>
+                                </div>
+                                <a data-bind="visible: !$root.allowEdit() || diag.selectedForReportInd(), click: function() { showDiag(diag.resultId()); }" class="btn btn-xs btn-primary pull-right" data-toggle="tooltip" data-placement="top" title="Details">
+                                    <i class="glyphicon glyphicon-barcode"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-bind="visible: !diagnosticResultSelectionsDisplay() || diagnosticResultSelectionsDisplay().length <= 0" style="display: none; margin: 10px;">
+                <em>No Uploads Selected</em>
+            </div>
+        </div>
+
+        @Html.UploadControl(UploadType.AELogs, Model.RequestId.ToString(), "AE Log Attachments")
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel" data-bind="css: { 'panel-danger': possibleMissingControllers() && possibleMissingControllers().length > 0, 'panel-success': !possibleMissingControllers() || possibleMissingControllers().length <= 0 }">
+                    <div class="panel-heading">
+                        Possible Controllers Missing
+                    </div>
+                    <div class="panel-body" data-bind="visible: possibleMissingControllers() && possibleMissingControllers().length > 0">
+                        <ul class="missing-controllers-list" data-bind="foreach: { data: possibleMissingControllers, as: 'ctrl' }">
+                            <li><span data-bind="text: ctrl.controllerName(), style: { cursor: $root.allowEdit() ? 'pointer' : '' }, click: function() { $root.addMissingController(ctrl.controllerId(), ctrl.controllerName()); }"></span></li>
+                        </ul>
+                    </div>
+                    <div data-bind="visible: !possibleMissingControllers() || possibleMissingControllers().length <= 0" style="display: none; margin: 10px;">
+                        <em>No Controllers Missing</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <button class="btn btn-success btn-xs pull-right" data-bind="visible: allowEdit(), click: addControllerTroubleCode"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add New DTC</button>
+                        <div class="label label-info pull-right include-scan-queue" data-bind="click: viewHistoryToggle">
+                            <span style="font-size: 13px;"><i class="glyphicon" data-bind="css: { 'glyphicon-unchecked': !viewHistory(), 'glyphicon-check': viewHistory() }"></i>&nbsp;View History&nbsp;</span>
+                        </div>
+                        Trouble Code Recommendations
+                    </div>
+                    <div data-bind="visible: !troubleCodeRecommendations() || troubleCodeRecommendations().length <= 0" style="display: none; margin: 10px;">
+                        <em>No Trouble Codes Found</em>
+                    </div>
+                    <div class="table-responsive" data-bind="visible: troubleCodeRecommendations() && troubleCodeRecommendations().length > 0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    <th>Controller</th>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: troubleCodeRecommendations, as: 'tc' }">
+                                <tr data-bind="css: tc.troubleCodeRowCss" class="active-report-row">
+                                    <td>
+                                        <span data-toggle="tooltip" data-placement="right" title="Edit DTC">
+                                            <i class="glyphicon glyphicon-edit clickable" data-bind="click: $root.selectControllerTroubleCode, visible: tc.allowEdit()"></i>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: tc.controllerName"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: tc.troubleCode"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: tc.troubleCodeDescription"></span>
+                                    </td>
+                                    <td>
+                                        <span data-toggle="tooltip" data-placement="left" data-bind="visible: tc.troubleCodeRowChanged(), attr: { title: tc.troubleCodeRowOrigDisplay }"><i class="glyphicon glyphicon-time warning"></i></span>
+                                    </td>
+                                    <td>
+                                        <span data-toggle="tooltip" data-placement="left" data-bind="visible: tc.overrideUserDisplay() && tc.overrideUserDisplay().length > 0, attr: { title: tc.overrideUserDisplay }"><i class="glyphicon glyphicon-user"></i></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" style="padding: 0 !important;">
+                                        <div style="margin-left: 20px;">
+                                            <table class="table report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 75px;">Req Id</th>
+                                                        <th style="width: 75px;" class="text-center">Cat.</th>
+                                                        <th style="width: 75px;" class="text-center">Type</th>
+                                                        <th>Recommendation / Note</th>
+                                                        <th style="width: 75px;" class="text-center">Inf Cust</th>
+                                                        <th style="width: 75px;" class="text-center">Acc Rel</th>
+                                                        <th style="width: 75px;" class="text-center">Exclude</th>
+                                                        <th style="width: 75px;" class="text-center">Cleared</th>
+                                                        <th style="width: 50px;" class="text-center">Diag</th>
+                                                        <th style="width: 50px;" class="text-center">Info</th>
+                                                        <th style="width: 50px;" class="text-center">Tech</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-bind="foreach: { data: tc.recommendations, as: 'r' }">
+                                                    <tr data-bind="css: { 'previous-report-row': !r.currentRequestInd() }, visible: r.currentRequestInd() || $root.viewHistory()" style="overflow: visible !important;">
+                                                        <td style="font-weight: bold;">
+                                                            <!-- ko if: r.currentRequestInd() -->
+                                                            <i class="glyphicon glyphicon-chevron-right" style="font-size: 11px;"></i><span data-bind="text: r.requestId"></span>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: !r.currentRequestInd() -->
+                                                            <a data-bind="text: r.requestId, attr: { href: '@Url.Action("Report", "Request", new { id = "" })/' + r.requestId() }" target="_blank"></a>
+                                                            <!-- /ko -->
+                                                            <i class="glyphicon glyphicon-remove" style="color: red" data-bind="visible: requestCanceleInd(), attr: { title: requestCancelNotes }" data-toggle="tooltip" data-placement="right" title="Canceled"></i>
+                                                        </td>
+                                                        <td data-bind="text: r.requestCategoryDisplay" class="text-center"></td>
+                                                        <td data-bind="text: r.requestTypeDisplay" class="text-center"></td>
+
+                                                        <td>
+                                                            <span data-bind="html: r.troubleCodeRecommendationTextDisplay, click: $root.selectTroubleCodeRecommendation, visible: !r.troubleCodeRecommendationTextEdit(), css: r.troubleCodeRecommendationTextCss"></span>
+                                                            <span data-bind="visible: r.troubleCodeRecommendationTextEdit()"><em>Editing...</em></span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <i data-bind="css: r.informCustomerIndCss, click: r.informCustomerIndToggle"></i>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <i data-bind="css: r.accidentRelatedIndCss, click: r.accidentRelatedIndToggle, style: { color: r.accidentRelatedInd() === null ? 'darkgray' : 'inherit' }"></i>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <i data-bind="css: r.excludeFromReportIndCss, click: r.excludeFromReportIndToggle"></i>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <i data-bind="css: r.codeClearedIndCss, click: r.codeClearedIndToggle"></i>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span data-toggle="tooltip" data-placement="bottom" data-bind="attr: { title: r.resultTroubleCodeId() ? 'Matched' : 'Not Found' }">
+                                                                <i data-bind="css: r.diagnosticResultCss" class="glyphicon"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span data-toggle="tooltip" data-placement="left" data-bind="visible: r.troubleCodeInformationDisplay() && r.troubleCodeInformationDisplay().length > 0, attr: { title: r.troubleCodeInformationDisplay }, click: troubleCodeInformationCopy, css: { 'clickable': r.allowEdit() }"><i class="glyphicon glyphicon-info-sign"></i></span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span data-toggle="tooltip" data-placement="left" data-bind="visible: r.recommendationUserDisplay() && r.recommendationUserDisplay().length > 0, attr: { title: r.recommendationUserDisplay }"><i class="glyphicon glyphicon-user"></i></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr data-bind="css: { 'previous-report-row': !r.currentRequestInd() }, visible: r.currentRequestInd() || $root.viewHistory()">
+                                                        <td colspan="3">&nbsp;</td>
+                                                        <td>
+                                                            <div data-bind="html: r.troubleCodeNoteTextDisplay, click: r.troubleCodeNoteTextEditToggle, visible: !r.troubleCodeNoteTextEdit(), css: { 'clickable': r.allowEdit() }" style="white-space: pre;"></div>
+                                                            <textarea data-bind="textInput: r.troubleCodeNoteText, visible: r.troubleCodeNoteTextEdit()" class="form-control"></textarea>
+                                                        </td>
+                                                        <td colspan="7">&nbsp;</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <input class="form-control input-xs pull-right" data-bind="textInput: decisionSearch" placeholder="Search" />
+                        Report Decision Selection
+                    </div>
+                    <div class="well well-sm multi-select-list" style="padding-top: 5px;" data-bind="style: { 'height': allowEdit() ? '215px' : '' }">
+                        <ul data-bind="foreach: { data: $root.decisionSelectionsDisplay, as: 'decision' }">
+                            <li>
+                                <input type="checkbox" data-bind="checked: decision.decisionSelected, enable: $root.allowEdit" />&nbsp;
+                                <span class="severity-indicator" data-toggle="tooltip" data-placement="top" title="Severity" data-bind="click: $root.decisionSeverityClick, css: { 'clickable': $root.allowEdit() && decisionSelected(), 'success': decisionTextSeverity() == 1, 'warning': decisionTextSeverity() == 2, 'danger': decisionTextSeverity() == 3 }"></span>&nbsp;
+                                <label><span data-bind="text: decision.decisionText" style="position: relative; bottom: 2px;"></span></label>
+                            </li>
+                        </ul>
+                        <div data-bind="visible: !decisionSelectionsDisplay() || decisionSelectionsDisplay().length <= 0" style="display: none; margin: 10px;">
+                            <em>No Decisions Found</em>
+                        </div>
+                    </div>
+                    <div class="panel-footer" style="padding: 2px 3px;" data-bind="visible: $root.allowEdit()">
+                        <div class="dropdown large-text-dropdown">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" placeholder="Add Decision" data-bind="textInput: decisionAddText, event: { keydown: decisionAddTextEnter }">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-success" type="button" data-bind="enable: decisionAddText() && decisionAddText().length > 0, click: decisionAddSelectText">Add</button>
+                                </span>
+                            </div>
+                            <ul class="dropdown-menu" data-bind="foreach: decisionAddSelectionsDisplay, style: { display: decisionAddSelectionsDisplay() && decisionAddSelectionsDisplay().length > 0 ? 'block' : 'none' }">
+                                <li>
+                                    <div data-bind="click: $root.decisionAddSelect">
+                                        <div class="pull-right decision-select-percent" data-bind="text: $root.decisionPercentageDisplay($data)"></div>
+                                        <div class="decision-select-text" data-bind="text: decisionText"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <input class="form-control input-xs pull-right" data-bind="textInput: workTypeSearch" placeholder="Search" />
+                        Work Type Selection
+                    </div>
+                    <div class="well well-sm multi-select-list">
+                        <!-- ko foreach: { data: workTypeGroups, as: 'group' } -->
+                        <div class="group-header" data-bind="text: $data"></div>
+                        <ul data-bind="foreach: { data: $root.workTypeSelectionsDisplay, as: 'type' }">
+                            <!-- ko if: type.workTypeGroupName() === group -->
+                            <li>
+                                <label>
+                                    <input type="checkbox" data-bind="checked: type.workTypeSelected, enable: $root.allowEdit()" />&nbsp;<span data-bind="text: type.workTypeName" style="position: relative; bottom: 2px;"></span>
+                                </label>
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                        <!-- /ko -->
+                        <div data-bind="visible: !workTypeSelectionsDisplay() || workTypeSelectionsDisplay().length <= 0" style="display: none; margin: 10px;">
+                            <em>No Work Types Found</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <button class="btn btn-default btn-xs pull-right" style="margin-left: 10px" data-bind="visible: allowEdit() && (!technicianNotes() || technicianNotes().Length < 1), click: toggleNotes">
+                    <i class="glyphicon" data-bind="css: { 'glyphicon-minus': notesVisible(), 'glyphicon-plus': !notesVisible() }"></i>
+                </button>
+                <button class="btn btn-info btn-xs pull-right" data-toggle="modal" data-target="#internal-note-history" data-bind="visible: internalNoteHistory() && internalNoteHistory().length > 0"><i class="glyphicon glyphicon-time"></i></button>
+                Internal Notes
+            </div>
+            <div class="panel-body" style="padding: 5px; padding-bottom: 0; display: none;" data-bind="visible: notesVisible()">
+                <textarea style="width: 100%; height: 100px; resize: none;" data-bind="textInput: technicianNotes, visible: allowEdit()"></textarea>
+                <div class="readonly-text" style="height: 100px; white-space: pre-wrap;" data-bind="text: technicianNotes, visible: !allowEdit()"></div>
+            </div>
+        </div>
+
+        <div class="panel panel-primary" style="overflow: hidden;">
+            <div class="panel-heading">
+                <button class="btn btn-default btn-xs pull-right" data-bind="visible: allowEdit() && (!reportHeaderHTML() || reportHeaderHTML().Length < 1), click: toggleHeader">
+                    <i class="glyphicon" data-bind="css: { 'glyphicon-minus': headerVisible(), 'glyphicon-plus': !headerVisible() }"></i>
+                </button>
+                Report Header
+            </div>
+            <div data-bind="visible: headerVisible()" style="display: none;">
+                <div data-bind="visible: allowEdit()">
+                    <textarea id="reportNotes" class="tinymce" data-bind="textInput: reportHeaderHTML"></textarea>
+                </div>
+                <div class="panel-body readonly-text" data-bind="visible: !allowEdit()">
+                    <span data-bind="html: reportHeaderHTML"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-primary" style="overflow: hidden;">
+            <div class="panel-heading">
+                <button class="btn btn-default btn-xs pull-right" data-bind="visible: allowEdit() && (!reportFooterHTML() || reportFooterHTML().Length < 1), click: toggleFooter">
+                    <i class="glyphicon" data-bind="css: { 'glyphicon-minus': footerVisible(), 'glyphicon-plus': !footerVisible() }"></i>
+                </button>
+                Report Footer
+            </div>
+            <div data-bind="visible: footerVisible()" style="display: none;">
+                <div data-bind="visible: allowEdit()">
+                    <textarea class="tinymce" data-bind="textInput: reportFooterHTML"></textarea>
+                </div>
+                <div class="panel-body readonly-text" data-bind="visible: !allowEdit()">
+                    <span data-bind="html: reportFooterHTML"></span>
+                </div>
+            </div>
+        </div>
+
+        @Html.UploadControl(UploadType.ScanRequests, Model.RequestId.ToString(), "Report Attachments")
+
+        @ReportMenu()
+
+    </div>
+
+    <!-- Controller/Trouble Code Add/Edit -->
+    <div class="modal fade" id="controller-edit" data-bind="with: currentControllerTroubleCode">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-bind="visible: troubleCodeUpdateIsValid() || !reportOrderTroubleCodeId()"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span data-bind="text: reportOrderTroubleCodeId() ? 'Edit' : 'Add'"></span>&nbsp;Controller/Trouble Code</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <legend>Controller</legend>
+                        <!-- ko if: reportOrderTroubleCodeId() -->
+                        <p>
+                            <label for="origControllerName">Original Value</label>
+                            <input id="origControllerName" type="text" class="form-control" data-bind="textInput: controllerNameOrig" readonly />
+                        </p>
+                        <!-- /ko -->
+                        <p>
+                            <label for="currControllerName">Current Value</label>
+                            <input id="currControllerName" type="text" class="form-control" data-bind="textInput: controllerName" readonly />
+                        </p>
+                        <div>
+                            <label>New Value</label>
+                            <div class="dropdown large-text-dropdown">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search Controller Name" data-bind="textInput: controllerSearchText">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default btn-success" type="button" data-bind="click: controllerUpdate, enable: controllerSearchText() && controllerSearchText().length > 0"><i class="glyphicon glyphicon-ok"></i></button>
+                                    </div>
+                                </div>
+                                <ul class="dropdown-menu" role="menu" data-bind="foreach: { data: controllerSelections, as: 'cs' }, style: { display: controllerSelections() && controllerSelections().length > 0 ? 'block' : 'none' }">
+                                    <li>
+                                        <div data-bind="text: cs.controllerName, click: $parent.controllerSelect"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Trouble Code</legend>
+                        <!-- ko if: reportOrderTroubleCodeId() -->
+                        <p>
+                            <label>Original Value</label>
+                            <input type="text" class="form-control" data-bind="textInput: troubleCodeOrig" readonly />
+                            <textarea type="text" rows="4" class="form-control" data-bind="textInput: troubleCodeDescriptionOrig" readonly></textarea>
+                        </p>
+                        <!-- /ko -->
+                        <p>
+                            <label>Current Value&nbsp;<i class="glyphicon glyphicon-edit clickable" data-bind="click: troubleCodeTextEditToggle"></i></label>
+                            <!-- ko ifnot: troubleCodeTextEdit() -->
+                            <input type="text" class="form-control" data-bind="textInput: troubleCode" readonly />
+                            <textarea type="text" rows="4" class="form-control" data-bind="textInput: troubleCodeDescription" readonly></textarea>
+                            <!-- /ko -->
+                            <!-- ko if: troubleCodeTextEdit() -->
+                            <input type="text" placeholder="Trouble Code" class="form-control" maxlength="20" data-bind="textInput: troubleCode" />
+                            <textarea type="text" placeholder="Description" rows="4" class="form-control" maxlength="1000" data-bind="textInput: troubleCodeDescription"></textarea>
+                            <span class="danger" style="margin-top: 5px;" data-bind="visible: !troubleCodeDescription() || troubleCodeDescription().length <= 0">Description is Required.</span>
+                            <!-- /ko -->
+                        </p>
+                        <div>
+                            <label>New Value</label>
+                            <div class="dropdown large-text-dropdown">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" maxlength="20" placeholder="Search Trouble Codes" data-bind="textInput: troubleCodeSearchText">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default btn-success" type="button" data-bind="click: troubleCodeUpdate, enable: troubleCodeSearchText() && troubleCodeSearchText().length > 0"><i class="glyphicon glyphicon-ok"></i></button>
+                                    </div>
+                                </div>
+                                <ul class="dropdown-menu" role="menu" data-bind="foreach: { data: troubleCodeSelections, as: 'tcs' }, style: { display: troubleCodeSelections() && troubleCodeSelections().length > 0 ? 'block' : 'none' }">
+                                    <li>
+                                        <div data-bind="text: $parent.troubleCodeSelectDisplay(tcs), click: $parent.troubleCodeSelect"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="enable: troubleCodeUpdateIsValid, click: $root.saveControllerTroubleCode">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendation Add/Edit -->
+    <div class="modal fade" id="recommendation-edit" data-bind="with: currentTroubleCodeRecommendation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-bind="click: troubleCodeRecommendationTextEditCancel"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span data-bind="text: troubleCodeRecommendationId() ? 'Edit' : 'Add'"></span>&nbsp;Recommendation</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset style="margin: 0;">
+                        <div>
+                            <label>Frequent</label>
+                            <table class="table table-striped" data-bind="visible: $root.frequentRecommendationSelectionDisplay() && $root.frequentRecommendationSelectionDisplay().length > 0">
+                                <tbody data-bind="foreach: $root.frequentRecommendationSelectionDisplay" style="display: block; max-height: 300px; overflow-y: auto; border-bottom: 1px solid #ddd;">
+                                    <tr>
+                                        <td data-bind="text: troubleCodeRecommendationText, click: $root.frequentRecommendationSelect" class="clickable"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div data-bind="visible: !$root.frequentRecommendationSelectionDisplay() || $root.frequentRecommendationSelectionDisplay().length === 0" style="margin: 0 0 15px;">
+                                <em>No Recent Recommendations</em>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Search</label>
+                            <div class="dropdown large-text-dropdown">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" maxlength="20" placeholder="Search Recommendations" data-bind="textInput: troubleCodeRecommendationSearchText">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default btn-danger" type="button" data-bind="click: troubleCodeRecommendationTextEditCancel, enable: troubleCodeRecommendationSearchText() && troubleCodeRecommendationSearchText().length > 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </div>
+                                </div>
+                                <ul class="dropdown-menu" role="menu" data-bind="foreach: { data: troubleCodeRecommendationTextSelections, as: 'tcr' }, style: { display: troubleCodeRecommendationTextSelections() && troubleCodeRecommendationTextSelections().length > 0 ? 'block' : 'none' }">
+                                    <li>
+                                        <div class="recommendation-select-text" data-bind="text: tcr.troubleCodeRecommendationText, click: $parent.troubleCodeRecommendationTextSelect"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p style="margin: 15px 0;">
+                            <label>Current Value&nbsp;<i class="glyphicon glyphicon-edit clickable" data-bind="click: troubleCodeRecommendationTextEditToggle"></i></label>
+                            <!-- ko ifnot: troubleCodeRecommendationTextEdit() -->
+                            <textarea type="text" class="form-control" rows="5" data-bind="textInput: troubleCodeRecommendationText" readonly></textarea>
+                            <!-- /ko -->
+                            <!-- ko if: troubleCodeRecommendationTextEdit() -->
+                            <textarea id="troubleCodeRecommendationText" type="text" placeholder="Recommendation" rows="5" class="form-control" data-bind="textInput: troubleCodeRecommendationText"></textarea>
+                            <span class="danger" style="margin-top: 5px;" data-bind="visible: !troubleCodeRecommendationText() || troubleCodeRecommendationText().length <= 0">Recommendation is Required.</span>
+                            <!-- /ko -->
+                        </p>
+                        <div>
+                            <label>Severity</label>
+                            <select class="form-control text-severity" data-bind="value: recommendationTextSeverity, css: recommendationTextSeverityCss">
+                                @foreach (var s in Enum.GetValues(typeof(ReportTextSeverity)))
+                                {
+                                    <option value="@Convert.ToInt32(s)">@s</option>
+                                }
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="enable: troubleCodeRecommendationIsValid, click: troubleCodeRecommendationTextEditCancel">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsibility History Display -->
+    <div class="modal fade" id="responsibility-history">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Responsibility History</h4>
+                </div>
+                <div style="height: 400px; overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Technician</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: { data: responsibilityHistory, as: 'h' }">
+                            <tr>
+                                <td data-bind="text: h.responsibleTech()"></td>
+                                <td data-bind="text: formatDateDisplay(h.responsibleStartDt())"></td>
+                                <td data-bind="text: formatDateDisplay(h.responsibleEndDt()), visible: h.responsibleEndDt()"></td>
+                                <td data-bind="visible: !h.responsibleEndDt()"><em>Current</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Internal Note History Display -->
+    <div class="modal fade" id="internal-note-history">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Internal Note History</h4>
+                </div>
+                <div>
+                    <div style="height: 400px; overflow-y: auto; overflow-x: hidden;">
+                        <div data-bind="foreach: { data: internalNoteHistory, as: 'h' }">
+                            <div style="border-top: solid 1px gray; border-bottom: solid 1px gray; padding: 10px;">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Request Id:</label>&nbsp;<span data-bind="text: requestId"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Notes:</label>
+                                        <div style="margin-bottom: 5px;" data-bind="text: technicianNotes, visible: technicianNotes()"></div>
+                                        <span data-bind="visible: !technicianNotes()"><em>No Notes Entered</em></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label>Technician:</label>&nbsp;<span data-bind="text: updatedByUserDisplay"></span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label>Updated:</label>&nbsp;<span data-bind="text: formatDateDisplay(h.updatedDt())"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AirPro Tool Display/Selection -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="airpro-tool">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Tool Info</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <p>
+                            <label>Tool Name:</label>
+                            <select class="form-control" data-bind="options: airProToolSelections, optionsText: 'airProToolName', optionsValue: 'airProToolId', value: airProToolId"></select>
+                        </p>
+                        <p>
+                            <label>Password:</label>
+                            <span data-bind="text: airProToolPassword"></span>
+                            <span data-bind="visible: !airProToolPassword()"><em>No Password Set</em></span>
+                        </p>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Preview -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="report-preview">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Report Preview</h4>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;" data-bind="html: reportPreviewHtml">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Validation Modal -->
+    <div class="modal fade" id="report-validation" tabindex="-1" role="dialog" aria-labelledby="report-validation-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="report-validation-label">Report Validation</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-condensed" data-bind="visible: validationRules() && validationRules().length > 0">
+                        <thead>
+                            <tr>
+                                <th>Validation Rule</th>
+                                <th style="width: 100px; text-align: center;">Result</th>
+                                <th style="width: 100px; text-align: center;">Reviewed</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: { data: validationRules, as: 'r' }">
+                            <tr data-bind="css: r.resultCss">
+                                <td data-bind="text: r.validationRuleText"></td>
+                                <td style="text-align: center;" data-bind="text: r.resultText"></td>
+                                <td style="text-align: center;"><input type="checkbox" data-bind="enable: !r. validationRuleResultInd(), checked: r.resultAcknowledgedInd" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div data-bind="visible: !validationRules() || validationRules().length === 0" style="margin-bottom: 15px;">
+                        <em>No Validation Rules</em>
+                    </div>
+                    <div>
+                        <input id="auto-close-bypass" type="checkbox" data-bind="checked: autoRepairCloseBypass" />&nbsp;
+                        <label for="auto-close-bypass">Additional Scans Required? (Bypass Auto Repair Close)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bind="enable: validationPassInd, click: completeValidationToggle" data-dismiss="modal">Complete</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Go Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diagnostic View Modal -->
+<div class="modal fade" id="diagnostic-results">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, "")><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Diagnostic Results</h4>
+            </div>
+            <div class="modal-body" id="diagnostic-results-body">
+                <i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnSubmit(DisableButtonType.Cancel, "Loading")>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diagnostic Upload Modal -->
+<div class="modal fade" id="diagnostic-upload" tabindex="-1" role="dialog" aria-labelledby="diagnostic-upload-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="diagnostic-upload-label">Diagnostic Upload</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="DiagnosticToolId">Diagnostic Tool:</label>
+                    @Html.DropDownList("DiagnosticToolId", ViewBag.DiagnosticToolSelection as List<SelectListItem>, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label for="diagnostic-file">Diagnostic File:</label>
+                    <input type="file" name="file" id="diagnostic-file" />
+                    <div id="progress-wrp" style="display: none; margin-top: 10px;">
+                        <div class="progress-bar"></div>
+                        <div class="status">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Out Dated Modal -->
+<div class="modal fade" id="outDatedModal" tabindex="-1" role="dialog" aria-labelledby="outDatedModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="outDatedLabel">Report Changed</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" style="margin-bottom: 0;">
+                    <h4 style="margin-top: 10px;">The Report you are looking at has changed.</h4>
+                    <br />
+                    <h4>Please refresh and try again.</h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Refresh</button>
+                <button type="button" id="btnDashboard" class="btn btn-success"><i class="glyphicon glyphicon-home"></i>&nbsp;Request Queue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="@Url.Content("~/Content/tinymce/tinymce.min.js")"></script>
+    <script src="@Url.Content("~/Content/tinymce/jquery.tinymce.min.js")"></script>
+
+    @Scripts.Render("~/request/js")
+
+    <script>
+        /* Initialize */
+        $('#toggleAccidentDetails').click(function (e) {
+            $('#viewAccidentDetails').toggle();
+            var btn = $('#toggleAccidentDetails > i');
+            btn.removeClass('glyphicon-minus').removeClass('glyphicon-plus');
+            if ($('#viewAccidentDetails').is(':visible'))
+                btn.addClass('glyphicon-minus');
+            else
+                btn.addClass('glyphicon-plus');
+        });
+    </script>
+
+    <script>
+        /* Outdated Scan Functionality */
+        $(document).ready(function() {
+            hub.on('updateAllOutdatedScans',
+                function(param) {
+                    if (window.scanReportViewModel.requestId() === param) {
+                        displayOutDatedScan();
+                    }
+                });
+            $('#outDatedModal').on('hide.bs.modal',
+                function() {
+                    window.scanReportViewModel.isValid(false);
+                    window.scanReportViewModel.refresh();
+                });
+            $('#btnDashboard').one('click',
+                function() {
+                    window.location.replace('@Model.ReturnUrl');
+                });
+            $('.modal').on('show.bs.modal',
+                function() {
+                    $('.tooltip').hide();
+                });
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        function displayOutDatedScan() {
+            if (!$('#outDatedModal').hasClass('in')) {
+                $('.modal:visible').modal('hide');
+                $('#outDatedModal').modal('show');
+            }
+        }
+    </script>
+
+    <script>
+        /* Diagnostic File Upload */
+        $('#diagnostic-file').on('change',
+            function(e) {
+                // Load File.
+                var file = $(this)[0].files[0];
+                // Check File.
+                if (!file) return;
+                // Validate File.
+                if (file.size >= 104857600) {
+                    alert('File size exceeds limit of 100 MB.');
+                    $(this).val('');
+                    return;
+                }
+                // Upload.
+                DiagnosticFileUpload(file);
+            });
+        function DiagnosticFileUpload(file) {
+            // Upload Display.
+            DiagnosticFileUploadToggleStatus(true);
+            // Load Form Data.
+            var formData = new FormData();
+            formData.append("file", file, file.name);
+            formData.append("requestId", "@Model.RequestId");
+            formData.append("diagnosticToolId", $('#DiagnosticToolId').val());
+            // Upload.
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UploadDiagnosticResult")',
+                xhr: function() {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.addEventListener('progress',
+                            function(e) {
+                                DiagnosticFileUploadProgress(e);
+                            },
+                            false);
+                    }
+                    return myXhr;
+                },
+                success: function(data) {
+                    window.setTimeout(function() {
+                            $("#diagnostic-upload #progress-wrp > .progress-bar").css('background-color', 'lightgreen');
+                        },
+                        500);
+                    window.scanReportViewModel.refresh();
+                    console.log(data);
+                },
+                error: function(error) {
+                    alert(error.statusText);
+                    $("#diagnostic-upload #progress-wrp > .progress-bar").css('background-color', 'lightcoral');
+                    console.log(error);
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000
+            }).done(function(e) {
+                window.setTimeout(function() {
+                        DiagnosticFileUploadToggleStatus(false);
+                    },
+                    3000);
+            });
+        }
+        function DiagnosticFileUploadProgress(event) {
+            // Get Progress.
+            var percent = 0;
+            var position = event.loaded || event.position;
+            var total = event.total;
+            var progressBarId = "#diagnostic-upload #progress-wrp";
+            if (event.lengthComputable) {
+                percent = Math.ceil(position / total * 100);
+            }
+            // Change Text Color.
+            if (percent > 55) $(progressBarId + " .status").css("color", "white");
+            // Update Progress Bar.
+            $(progressBarId + " .progress-bar").css("width", + percent + "%");
+            $(progressBarId + " .status").text(percent + "%");
+        }
+        function DiagnosticFileUploadToggleStatus(show) {
+            if (show) {
+                $("#diagnostic-upload #diagnostic-file").css('display', 'none');
+                $("#diagnostic-upload #progress-wrp").css('display', '');
+            } else {
+                $("#diagnostic-upload #diagnostic-file").val('');
+                $("#diagnostic-upload #diagnostic-file").css('display', '');
+                $("#diagnostic-upload #progress-wrp").css('display', 'none');
+                $("#diagnostic-upload #progress-wrp .progress-bar").css('background-color', 'lightskyblue');
+            }
+        }
+        function showDiag(diagId) {
+            $('#diagnostic-results-body').html('<i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...');
+            $('#diagnostic-results').modal('show');
+            $('#diagnostic-results-body').load('@Url.Action("LoadDiagnosticResults")/' + diagId);
+        }
+    </script>
+
+    @if (!string.IsNullOrEmpty(Model?.VehicleLookupInfo))
+    {
+        <script>
+            try {
+                var infoModel = {};
+                ko.mapping.fromJS(@Html.Raw(Model?.VehicleLookupInfo), {}, infoModel);
+                infoModel.ValueResults = ko.pureComputed(function() {
+                    if (!infoModel.Results)
+                        return [];
+                    return infoModel.Results().filter(function(item) {
+                        return item && item.Value() && item.Value().length > 0;
+                    });
+                });
+                infoModel.Count = ko.pureComputed(function() {
+                    return infoModel.ValueResults().length;
+                });
+                if (infoModel.Count()) {
+                    window.vehicleInfoViewModel = infoModel;
+                    ko.applyBindings(window.vehicleInfoViewModel, $('#vehicleDetails')[0]);
+                }
+            } catch (e) {
+                console.log('Error Processing Vehicle Info.');
+                console.log(e);
+            }
+        </script>
+    }
+    <script>
+        /* Display Scan Report */
+        var options = {
+            userGuid: '@User.Identity.GetUserId()',
+            loadReportUrl: '@Url.Action("LoadScanReport", "Request", new {id = Model.RequestId})',
+            saveReportUrl: '@Url.Action("SaveScanReport", "Request")',
+            searchDecisionsUrl: '@Url.Action("SearchDecisions", "Request")',
+            searchControllersUrl: '@Url.Action("SearchControllers", "Request")',
+            searchTroubleCodesUrl: '@Url.Action("SearchTroubleCodes", "Request")',
+            searchRecommendationsUrl: '@Url.Action("SearchRecommendations", "Request")',
+            deleteDiagnosticUrl: '@Url.Action("DeleteDiagnosticResult", "Request")'
+        };
+        try {
+            $.post(options.loadReportUrl,
+                    function(data) {
+                        if (!data) {
+                            console.log('Error: Scan Report JSON is Empty!');
+                            return;
+                        }
+                        ko.onError = function (error) {
+                            console.log(error);
+                            $('#reportDisplay').hide();
+                            $('#reportLoading').hide();
+                            $('#reportLoadError').show();
+                        };
+                        var report = new ScanReportViewModel(options, data);
+                        window.scanReportViewModel = report;
+                        ko.applyBindings(window.scanReportViewModel, $('#scanReport')[0]);
+                        initTinyMce();
+                        window.scanReportViewModel.displayReport(true);
+                        $('#reportLoading').hide();
+                        window.onbeforeunload = function() {
+                            return window.scanReportViewModel.hasChanges() && window.scanReportViewModel.isValid()
+                                ? "Changes have not been saved, navigate away?"
+                                : null;
+                        }
+                    })
+                .fail(function(error) {
+                    console.log(error);
+                    $('#reportDisplay').hide();
+                    $('#reportLoading').hide();
+                    $('#reportLoadError').show();
+                });
+        } catch (e) {
+            console.log(e);
+            $('#reportDisplay').hide();
+            $('#reportLoading').hide();
+            $('#reportLoadError').show();
+        }
+        function initTinyMce() {
+            tinymce.init({
+                selector: '.tinymce',
+                plugins: "textcolor paste advlist lists",
+                paste_use_dialog: false,
+                paste_auto_cleanup_on_paste: true,
+                paste_convert_headers_to_strong: false,
+                paste_strip_class_attributes: "all",
+                paste_remove_spans: true,
+                paste_remove_styles: true,
+                paste_retain_style_properties: "",
+                browser_spellcheck: true,
+                height: "75",
+                menubar: false,
+                statusbar: false,
+                fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+                toolbar:
+                    "newdocument | undo redo | paste cut copy | fontsizeselect bold italic underline strikethrough forecolor | bullist numlist outdent indent | removeformat",
+                setup: function(editor) {
+                    editor.on('change keyup',
+                        function() {
+                            $(editor.targetElm).val(editor.getContent());
+                            $(editor.targetElm).trigger("change");
+                        });
+                }
+            });
+        }
+    </script>
+}

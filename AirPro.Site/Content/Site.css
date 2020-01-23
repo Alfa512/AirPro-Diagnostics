@@ -1,0 +1,99 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+a {
+    color: #0d60da;
+}
+
+.grid-header-title * {
+    color: gray;
+    text-decoration: none;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set padding to display errors that occur during databinding */
+.padding-error {
+    padding-top: 20px;
+}
+
+/* Fix checkbox alignment */
+.checkbox input[type="checkbox"] {
+    margin-left: 0;
+}
+
+.multi-line-display {
+    white-space: pre;
+}
+
+@media only screen and (max-width: 767px) {
+    .nofloat {
+        float: none;
+        padding: 10px 15px;
+    }
+}
+
+.modal-body .panel:last-child,
+.modal-body .form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Point of Impact CSS */
+/* Small devices and XS Devices (tablets, 0px - 992px) */
+img.poi-image {
+    width: 106px;
+    height: 109px;
+}
+
+table#ImpactPoints-Map {
+    margin-top: 10px;
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) {
+    img .poi-image {
+        width: 100px;
+        height: 89px;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+    img.poi-image {
+        width: 150px;
+        height: 139px;
+    }
+}
+
+.bootgrid-table tbody > tr:hover {
+    background-color: rgba(13, 96, 218, 0.8);
+    color: white;
+}
+
+    .bootgrid-table tbody > tr:hover .btn-group:first-child {
+        border-radius: 3px;
+        border: solid 1px white;
+    }
+
+.step-form {
+    border: darkgrey solid 2px;
+    padding: 15px;
+    border-radius: 7px;
+}
+
+span.validationMessage {
+    color: red;
+}

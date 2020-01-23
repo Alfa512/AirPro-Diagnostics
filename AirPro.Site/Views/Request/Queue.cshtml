@@ -1,0 +1,300 @@
+﻿@using Newtonsoft.Json
+@model List<AirPro.Site.Models.Request.RequestViewModel>
+
+@{
+    var slaTimeoutMinutes = 8;
+    ViewBag.Title = "Request Queue";
+}
+
+<style type="text/css">
+    .panel-body {
+        padding: 10px;
+        padding-bottom: 0;
+    }
+
+    .panel {
+        margin-bottom: 10px;
+    }
+
+    .card table td {
+        width: 25% !important;
+        text-align: center;
+    }
+
+        .card table td:first-child {
+            text-align: left;
+        }
+
+    .panel.panel--styled {
+        background: #F4F2F3;
+    }
+
+    .card-yellow {
+        background-color: #faebcc;
+    }
+
+    .card-green {
+        background-color: #d6e9c6;
+    }
+
+    .card-red {
+        background-color: #ebccd1;
+    }
+
+    .cardTitle {
+        font-size: 18px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-family: inherit;
+        font-weight: 500;
+        line-height: 1.1;
+    }
+
+    .tooltip {
+        white-space: pre;
+    }
+</style>
+
+<div id="technicianStats">
+    <div>
+        <div class="pull-right">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleModal">Scheduled&nbsp;<span id="scheduleBadge" class="badge" data-bind="text: schedules().length">?</span></button>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#onlineModal">Online&nbsp;<span id="onlineBadge" class="badge" data-bind="text: onlineBadge()">?</span></button>
+            </div>
+            <h4 class="pull-left">Technicians:&nbsp;</h4>
+        </div>
+        <h2>@ViewBag.Title</h2>
+    </div>
+
+    <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="scheduleModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scheduleModalLabel">Technicians Scheduled</h4>
+                </div>
+                <div class="modal-body" data-bind="visible: schedules().length == 0">
+                    <em>No Technicians are currently Scheduled.</em>
+                </div>
+                <table class="table table-bordered table-responsive" style="margin-bottom: 0" data-bind="visible: schedules().length > 0">
+                    <tr>
+                        <th>Login</th>
+                        <th>Full Name</th>
+                        <th>Profile Name</th>
+                        <th>Start</th>
+                        <th>Stop</th>
+                    </tr>
+                    <tbody data-bind="foreach: schedules">
+                        <tr>
+                            <td data-bind="text: userEmail"></td>
+                            <td data-bind="text: userFullName"></td>
+                            <td data-bind="text: profileDisplayName"></td>
+                            <td data-bind="text: new moment(startTime()).format('MM/DD/YY HH:mm')"></td>
+                            <td data-bind="text: new moment(endTime()).format('MM/DD/YY HH:mm')"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="onlineModal" tabindex="-1" role="dialog" aria-labelledby="onlineModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="onlineModalLabel">Technicians Online</h4>
+                </div>
+                <div class="modal-body" data-bind="visible: online().length == 0">
+                    <em>No Technicians are currently Online.</em>
+                </div>
+                <table class="table table-bordered table-responsive" style="margin-bottom: 0" data-bind="visible: online().length > 0">
+                    <tr>
+                        <th>Login</th>
+                        <th>Full Name</th>
+                        <th>Profile Name</th>
+                        <th>Connection Start</th>
+                    </tr>
+                    <tbody data-bind="foreach: online">
+                        <tr>
+                            <td data-bind="text: userEmail"></td>
+                            <td data-bind="text: userFullName"></td>
+                            <td data-bind="text: profileDisplayName"></td>
+                            <td data-bind="text: new moment(connectionStartDt()).format('MM/DD/YY HH:mm:ss')"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div id="technicianScans">
+    <input type="text" placeholder="Filter Requests" class="form-control" data-bind="value: searchQuery, valueUpdate:'keyup'" />
+    <hr />
+    <div class="alert alert-danger text-center" data-bind="visible: alertScans().length > 0">
+        <h4 style="margin-bottom: 0"><span data-bind="text: alertScans().length"></span> Request(s) Over @slaTimeoutMinutes Minutes!</h4>
+    </div>
+    <div class="row" data-bind="foreach: scanGroups">
+        <div class="col-md-12">
+            <h4 style="margin: 0;">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <span data-bind="text: name, tooltip: phone, tooltipOptions: { placement: 'right' }"></span>
+            </h4>
+            <hr style="margin: 5px 0; border-top-style: dashed; border-top-width: 2px;" />
+        </div>
+        <div data-bind="foreach: $root.filteredScans().index.assignedTech()[name()]">
+            <div class="col-md-12">
+                <div class="panel panel-default panel--styled card">
+                    <div class="panel-body" data-bind="css: cardClass">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <a data-bind="attr: { 'href': '@Url.Action("Report", "Request")/' + requestId() }, text: title"
+                                   class="cardTitle"></a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <b data-bind="text: shop" style="font-size: 14px;"></b>
+                            </div>
+                            <div class="col-xs-4 text-right">
+                                <span style="font-size: 14px;">
+                                    Requested: <b><span data-bind="text: requestDate().format('MM/DD/YY HH:mm')"></span>&nbsp;(<em data-bind="text: aging()"></em>)</b>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <p data-bind="text: problem"></p>
+                        </div>
+                        <div class="panelBottom">
+                            <div class="table-responsive">
+                                <table class="table table-stripped" style="margin-bottom: 0;">
+                                    <tbody>
+                                        <tr>
+                                            <td data-bind="text: vehicle.vin"></td>
+                                            <td data-bind="text: vehicle.makeName"></td>
+                                            <td data-bind="text: vehicle.model"></td>
+                                            <td data-bind="text: vehicle.year"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-bind="visible: !scanGroups() || scanGroups().length === 0" class="alert alert-success">
+        <h3 style="margin: 10px;"><i class="glyphicon glyphicon-ok"></i>&nbsp;No Requests in Queue</h3>
+    </div>
+</div>
+
+@Scripts.Render("~/request/js")
+
+<script type="text/javascript">
+    var scanRequestHub = $.connection.scanRequestHub;
+    $.connection.hub.start();
+
+    window.scanRequestViewModel = new ScanRequestViewModel({ scans: [] }, @slaTimeoutMinutes);
+
+    var scansFromServer = @Html.Raw(JsonConvert.SerializeObject(Model));
+    var userOffset = "@Html.Raw(ViewBag.UserOffset)";
+    for (var i = 0; i < scansFromServer.length; i++) {
+        var scan = scansFromServer[i];
+        addScanRequest(scan);
+    }
+    window.scanRequestViewModel.sortAscending();
+
+    ko.applyBindings(window.scanRequestViewModel, $('#technicianScans')[0]);
+
+    window.techStatViewModel = new TechStatViewModel();
+    window.techStatViewModel.loadSchedules();
+    window.techStatViewModel.loadOnline();
+    ko.applyBindings(window.techStatViewModel, $('#technicianStats')[0]);
+
+    scanRequestHub.client.addScanRequest = function (scan) {      
+        if (addScanRequest(scan)) {
+            window.scanRequestViewModel.sortAscending();
+            playNotify();
+        }
+    };
+
+    scanRequestHub.client.updateScanRequest = function (scan) {
+        var item = ko.utils.arrayFirst(window.scanRequestViewModel.scans(),
+            function(item) {
+                return item.requestId() === scan.RequestId;
+            });
+
+        if (item) {
+            var momentDt = scan.ScanUploadDt !== null
+                ? moment.utc(scan.ScanUploadDt).local()
+                : null;
+
+            item.requestTypeId(scan.RequestTypeId);
+            item.requestTypeName(scan.RequestTypeName);
+            if (scan.TechnicianName) {
+                item.assignedTech(scan.TechnicianName);
+                item.assignedTechContactNumber(scan.TechnicianContactNumber);
+                item.assignedTechMobileNumber(scan.TechnicianMobileNumber);
+                item.uploadDate(scan.ScanUploadDt);
+
+                window.scanRequestViewModel.searchQuery.valueHasMutated();
+            }
+            item.uploadDate(momentDt);
+        }
+    };
+
+    scanRequestHub.client.removeScanRequest = function (scan) {
+        var item = ko.utils.arrayFirst(window.scanRequestViewModel.scans(),
+            function(item) {
+                return item.requestId() === scan.RequestId;
+            });
+
+        if (item) {
+            window.scanRequestViewModel.scans.remove(item);
+        }
+    };
+
+    function addScanRequest(scan) {
+        var item = ko.utils.arrayFirst(window.scanRequestViewModel.scans(),
+            function (item) {
+                return item.requestId() === scan.RequestId;
+            });
+
+        if (!item) {
+            var scanRequest = new ScanRequest(scan.RequestId,
+                scan.RepairId,
+                scan.RequestTypeId,
+                scan.RequestTypeName,
+                scan.RequestCategoryId,
+                scan.RequestCategoryName,
+                scan.Notes,
+                scan.ProblemDescription,
+                scan.ShopName,
+                scan.RequestCreateDtUtc,
+                scan.RequestCreateDt,
+                scan.ScanUploadDt,
+                scan.TechnicianName,
+                scan.TechnicianContactNumber,
+                scan.TechnicianMobileNumber,
+                {
+                    vin: scan.VehicleVIN,
+                    makeName: scan.VehicleMakeName,
+                    model: scan.VehicleModelName,
+                    year: scan.VehicleYear
+                },
+                @slaTimeoutMinutes);
+
+            window.scanRequestViewModel.scans.push(scanRequest);
+        }
+        return !item;
+    }
+</script>

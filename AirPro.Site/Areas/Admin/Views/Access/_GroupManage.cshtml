@@ -1,0 +1,152 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using UniMatrix.Common.Extensions;
+@model AirPro.Site.Areas.Admin.Models.Access.GroupViewModel
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                try {
+                    refreshGroups();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@if (!Model?.AllowEntry ?? true)
+{
+    <script type="text/javascript">
+        disableEntry();
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active in" role="presentation"><a href="#groups_info" aria-controls="groups_info" role="tab" data-toggle="tab">Group</a></li>
+        @if (Model?.Users != null)
+        {
+            <li role="presentation"><a href="#group_users" aria-controls="group_users" role="tab" data-toggle="tab">Users</a></li>
+        }
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane in active" id="groups_info">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.GroupGuid)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RoleGuids, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.PermissionSelect(model => model.RoleGuids)
+                        @Html.ValidationMessageFor(model => model.RoleGuids, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="group_users">
+            @if (Model.Users != null)
+            {
+                <div class="form-group">
+                    <div class="panel-body" id="groups-users" style="padding: 5px 0 0 0;">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title pull-left" style="font-size: 16px;"><span style="position: relative; top: 5px;">Users in Group</span></h4>
+                            </div>
+
+                            <table id="groups-users-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="userGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                        <th data-column-id="name">Name</th>
+                                        <th data-column-id="email">Email</th>
+                                        <th data-column-id="editUserGroup" data-visible-in-selection="false" data-formatter="editUserGroup" data-sortable="false" data-align="center" data-width="45"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Users)
+                                    {
+                                        <tr>
+                                            <td>@item.UserGuid</td>
+                                            <td>@(item.FirstName + " " + item.LastName)</td>
+                                            <td>@item.Email</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+</script>
+
+<script type="text/javascript">
+    $("#groups-users-grid").bootgrid({
+        formatters: {
+            "editUserGroup": function(column, row) {
+                var result = '';
+                @if (User.IsInRole(ApplicationRoles.UserEdit.ToString()))
+                {
+                    <text>
+                        result = '<div class="btn-group btn-group-sm" role="group"><a href="#" onclick="manageUser(\'' +
+                            row.userGuid +
+                            '\')" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i></a></div>';
+                    </text>
+                }
+
+                return result;
+            }
+        }
+        });
+
+    $('input[type="checkbox"][Name="RoleGuids"]').rules('add', {
+        required: true,
+        messages: {
+            required: 'The Roles field is required.'
+        }
+    });
+
+    $('#groups-users-grid-header').prependTo('#groups-users .panel-heading');
+    $('#groups-users .panel-title').prependTo('#groups-users-grid-header .actionBar');
+
+    $('#groups-users-grid-header .search .input-group').addClass('form-group-sm');
+    $('#groups-users-grid-header .actions .btn-group').addClass('btn-group-sm');
+</script>

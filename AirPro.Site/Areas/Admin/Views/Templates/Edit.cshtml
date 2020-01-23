@@ -1,0 +1,187 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Library.Models.Concrete.TemplateEditViewModel
+
+@{
+    ViewBag.Title = "Edit Template";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.TemplateID)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p class="form-control-static">@Html.DisplayFor(model => model.Name)</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @SubjectFieldMenu(Model.Fields)
+                @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control email-subject", @maxlength = "200" } })
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailBody, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailBody, new { htmlAttributes = new { @class = "form-control email-body" } })
+                @Html.ValidationMessageFor(model => model.EmailBody, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TextMessage, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @TextFieldMenu(Model.Fields)
+                @Html.EditorFor(model => model.TextMessage, new { htmlAttributes = new { @class = "form-control text-body", @maxlength = "160", @onkeyup = "textCount();" } })
+                <div id="textCount" style="font-weight: bold; font-size: 10px; color: dimgray"></div>
+                @Html.ValidationMessageFor(model => model.TextMessage, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @if (Model != null && Model.UpdatedBy != null && !String.IsNullOrWhiteSpace(Model.UpdatedBy))
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.UpdatedBy, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <p class="form-control-static">@Html.DisplayFor(model => model.UpdatedBy)</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UpdatedDt, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <p class="form-control-static">@Html.DisplayFor(model => model.UpdatedDt)</p>
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" id="btnSave" class="btn btn-primary" @Html.DisableOnSubmit(DisableButtonType.Submit, "Save") onclick="$(this).button('loading')">Save</button>
+            </div>
+        </div>
+    </div>
+}
+<hr />
+<div>
+    @AirPro.Site.Helpers.Buttons.BackButton()
+</div>
+
+@helper TextFieldMenu(string fields)
+{
+if (fields?.Length > 0)
+{
+        <div class='btn-group btn-group-sm' role='group'>
+            @foreach (var menu in fields.Split(','))
+            {
+                <text>
+                    <a onclick="addTextField('@menu');" class='btn btn-default'>@menu</a>
+                </text>
+            }
+        </div>
+}
+}
+
+@helper SubjectFieldMenu(string fields)
+{
+if (fields?.Length > 0)
+{
+        <div class='btn-group btn-group-sm' role='group'>
+            @foreach (var menu in fields.Split(','))
+            {
+                <text>
+                    <a onclick="addSubjectField('@menu');" class='btn btn-default'>@menu</a>
+                </text>
+            }
+        </div>
+}
+}
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+    <script src="@Url.Content("~/Content/tinymce/tinymce.min.js")"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: 'textarea.email-body',
+            plugins: "textcolor paste advlist lists",
+            paste_use_dialog: false,
+            paste_auto_cleanup_on_paste: true,
+            paste_convert_headers_to_strong: false,
+            paste_strip_class_attributes: "all",
+            paste_remove_spans: true,
+            paste_remove_styles: true,
+            paste_retain_style_properties: "",
+            browser_spellcheck: true,
+            height: "200",
+            menubar: false,
+            statusbar: false,
+            fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt",
+            toolbar: "newdocument | undo redo | paste cut copy | fontsizeselect bold italic underline strikethrough forecolor | bullist numlist outdent indent | removeformat | fields"
+            @if (Model.Fields?.Length > 0)
+                {
+                    <text>
+                , setup: function (editor) {
+                    editor.addButton('fields', {
+                        type: 'menubutton',
+                        text: 'Fields',
+                        icon: false,
+                        menu: [
+                            @foreach(var x in Model.Fields?.Split(','))
+                        {
+                                <text>
+                                {
+                                    text: '@x',
+                                    onclick: function () {
+                                        editor.insertContent('{@x}');
+                                    }
+                                },
+                                </text>
+                    }
+                        ]
+                    });
+                }
+            </text>
+                }
+        });
+
+        function addSubjectField(field) {
+            var subj = $('input.email-subject');
+            var available = 200 - subj.val().length - field.length - 2;
+
+            if (available >= 0)
+                subj.val(subj.val() + '{' + field + '}');
+        }
+
+        $(document).ready(function () {
+            textCount();
+        });
+
+        function textCount() {
+            var count = $('textarea.text-body').val().length;
+            $('#textCount').text(count + ' of 160 Characters Allowed');
+        }
+
+        function addTextField(field) {
+            var body = $('textarea.text-body');
+            var available = 160 - body.val().length - field.length - 2;
+
+            if (available >= 0)
+                body.val(body.val() + '{' + field + '}');
+
+            textCount();
+        }
+    </script>
+}

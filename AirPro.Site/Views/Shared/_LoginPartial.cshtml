@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a id="userNav" href="@Url.Action("Index", "Manage", new {Area = ""})" title="Manage">Hello @StatusIndicator() @User.Identity.GetUserName()!
+                    <span id="btnMute" style="margin-left: 7px" title="Click to toggle mute">
+                        <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+                    </span>
+                </a>
+            </li>
+            <li><a href="javascript:sessionStorage.removeItem('accessToken');$('#logoutForm').submit();">Log off</a></li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { Area = "" }, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}
+
+@helper StatusIndicator() {
+    <span id="onlineStatusIndicator" class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Unknown" style="border-radius: 1em; font-size: 7px; position: relative; bottom: 2px;">&nbsp;</span>
+}

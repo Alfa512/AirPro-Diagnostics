@@ -1,0 +1,36 @@
+﻿@model AirPro.Site.Models.Help.ReleaseNoteInfoViewModel
+<style>
+    .release-note-item {
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .release-note-item:last-of-type {
+        border-bottom: none;
+        margin-bottom: -15px;
+    }
+
+        .release-note-item:first-of-type {
+            margin-top: -15px;
+        }
+
+        .release-note-item h4 {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+    .release-note-item h4 {
+        margin-top: 15px;
+    }
+
+        .release-note-item p {
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+</style>
+@foreach (var releaseNote in Model.ReleaseNotes)
+{
+<div class="release-note-item">
+    <h4>@releaseNote.DevelopmentId - @releaseNote.Summary</h4>
+    <p>@releaseNote.ReleaseNote</p>
+</div>
+}

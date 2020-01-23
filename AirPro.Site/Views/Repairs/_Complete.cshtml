@@ -1,0 +1,246 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+<div class="modal fade" id="divRepairComplete" tabindex="-1" role="dialog" style="display: none;" data-bind="modal: showDialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="globalModalLabel" data-bind="text: dialogTitle">Complete Repair</h4>
+            </div>
+            <div class="modal-body">
+                <div data-bind="if: incomplete">
+                    Are you sure?
+                </div>
+                <div id="frmComplete" class="form-horizontal" data-bind="ifnot: incomplete">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p style="margin: 0; font-weight: bold;">Please tell us how we did with your Repair.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <table style="width: 100%; margin-bottom: 0" class="table table-striped">
+                                <colgroup>
+                                    <col style="width: 50%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th class="text-center"><em>Great</em><br />5</th>
+                                        <th class="text-center">4</th>
+                                        <th class="text-center">3</th>
+                                        <th class="text-center">2</th>
+                                        <th class="text-center"><em>Poor</em><br />1</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Response Time</td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ResponseTimeRate" value="5" data-bind="checked: responseTimeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ResponseTimeRate" value="4" data-bind="checked: responseTimeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ResponseTimeRate" value="3" data-bind="checked: responseTimeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ResponseTimeRate" value="2" data-bind="checked: responseTimeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ResponseTimeRate" value="1" data-bind="checked: responseTimeRate" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Technician Knowledge</td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianKnowledgeRate" value="5" data-bind="checked: technicianKnowledgeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianKnowledgeRate" value="4" data-bind="checked: technicianKnowledgeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianKnowledgeRate" value="3" data-bind="checked: technicianKnowledgeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianKnowledgeRate" value="2" data-bind="checked: technicianKnowledgeRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianKnowledgeRate" value="1" data-bind="checked: technicianKnowledgeRate" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Report Completion</td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ReportCompletionRate" value="5" data-bind="checked: reportCompletionRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ReportCompletionRate" value="4" data-bind="checked: reportCompletionRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ReportCompletionRate" value="3" data-bind="checked: reportCompletionRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ReportCompletionRate" value="2" data-bind="checked: reportCompletionRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ReportCompletionRate" value="1" data-bind="checked: reportCompletionRate" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Concerns Addressed</td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ConcernsAddressedRate" value="5" data-bind="checked: concernsAddressedRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ConcernsAddressedRate" value="4" data-bind="checked: concernsAddressedRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ConcernsAddressedRate" value="3" data-bind="checked: concernsAddressedRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ConcernsAddressedRate" value="2" data-bind="checked: concernsAddressedRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="ConcernsAddressedRate" value="1" data-bind="checked: concernsAddressedRate" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Technician Communication</td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianCommunicationRate" value="5" data-bind="checked: technicianCommunicationRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianCommunicationRate" value="4" data-bind="checked: technicianCommunicationRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianCommunicationRate" value="3" data-bind="checked: technicianCommunicationRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianCommunicationRate" value="2" data-bind="checked: technicianCommunicationRate" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="radio" name="TechnicianCommunicationRate" value="1" data-bind="checked: technicianCommunicationRate" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label">Additional Feedback</label>
+                            <textarea class="form-control" name="AdditionalFeedback" rows="3" maxlength="512" data-bind="value: additionalFeedback"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Cancel</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Skip and Complete") data-bind="click: save, visible: !incomplete()">Skip and Complete</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Complete") data-bind="click: saveAndSubmit, visible: !incomplete()">Complete</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Reopen") data-bind="click: save, visible: incomplete">
+                    Reopen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var FeedbackViewModel = function(opt) {
+        var self = this;
+        var options = opt;
+
+        self.repairId = ko.observable();
+        self.showDialog = ko.observable(false);
+        self.dialogTitle = ko.observable();
+        self.incomplete = ko.observable();
+        self.showDialog.subscribe(function(value) {
+            if (value) {
+
+                self.additionalFeedback('');
+                self.technicianCommunicationRate('');
+                self.concernsAddressedRate('');
+                self.reportCompletionRate('');
+                self.technicianKnowledgeRate('');
+                self.responseTimeRate('');
+            }
+        });
+
+        var requiredObj = {
+            required: {
+                message: ' '
+            }
+        };
+
+        self.additionalFeedback = ko.observable('');
+        self.technicianCommunicationRate = ko.observable().extend(requiredObj);
+        self.concernsAddressedRate = ko.observable().extend(requiredObj);
+        self.reportCompletionRate = ko.observable().extend(requiredObj);
+        self.technicianKnowledgeRate = ko.observable().extend(requiredObj);
+        self.responseTimeRate = ko.observable().extend(requiredObj);
+
+        self.save = function() {
+            save(false);
+        };
+
+        self.saveAndSubmit = function() {
+            save(true);
+        };
+        
+        function validate() {
+            var result = ko.validation.group(self, { deep: true });
+            return result().length;
+        }
+        
+        function save(submitFeedback) {
+            var data = {
+                id: self.repairId(),
+                status: 'complete',
+                feedbackVm: submitFeedback ? ko.toJS(self) : null
+            };
+
+            if (submitFeedback && data.feedbackVm) {
+                delete data.feedbackVm.save;
+                delete data.feedbackVm.saveAndSubmit;
+                delete data.feedbackVm.validate;
+            }
+
+            var errors = validate();
+            if (errors > 0 && submitFeedback) {
+                alert('Please rate all questions. Otherwise skip and complete');
+                return;
+            }
+
+            $.post(options.saveUrl,
+                data,
+                function(response) {
+                    if (response && response.success) {
+                        $("#repairs-grid").bootgrid('reload');
+                        window.feedbackVm.showDialog(false);
+                    }
+                });
+        };
+    };
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var options = {
+            saveUrl: '@Url.Action("CompleteRepair", "Repairs")'
+        };
+
+        window.feedbackVm = new FeedbackViewModel(options);
+        ko.applyBindings(window.feedbackVm, $('#divRepairComplete')[0]);
+    });
+</script>

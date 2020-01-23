@@ -1,0 +1,159 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Areas.Billing.Models
+@using AirPro.Site.Helpers
+@model PricingPlanViewModel
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshPricingPlans();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+    return;
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@using (Html.BeginForm("ManagePricingPlan", "PricingPlans", FormMethod.Post, new { @id = "pricingPlansForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.PricingPlanId)
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PricingPlanName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.PricingPlanName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PricingPlanName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PricingPlanDescription, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.PricingPlanDescription, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PricingPlanDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PricingPlanActiveInd, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.PricingPlanActiveInd)
+                    @Html.ValidationMessageFor(model => model.PricingPlanActiveInd, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CurrencyId, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(model=> model.CurrencyId, ViewBag.Currencies as IEnumerable<SelectListItem>, "<-- Select a Currency -->", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CurrencyId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="well" style="overflow-y: auto; overflow-x: hidden; max-height: 600px; padding-bottom: 0;">
+            <table style="width: 100%;" class="table table-bordered">
+                <tr>
+                    <th style="display: none;"></th>
+                    <th style="width: 100%;">Request Type</th>
+                    <th style="text-align: center">Domestic</th>
+                    <th style="text-align: center">European</th>
+                    <th style="text-align: center">Asian</th>
+                </tr>
+                @foreach (var item in (Model?.LineItems?.Where(m => m.PlanGroup == "RequestType")?.ToList() ?? new List<PricingPlanLineItemViewModel>()))
+            {
+                <tr>
+                    <td style="display: none;">
+                        <input name="LineItems.Index" type="hidden" value="RequestType_@item.TypeId" />
+                        <input name="LineItems[RequestType_@item.TypeId].TypeId" type="hidden" value="@item.TypeId" />
+                        <input name="LineItems[RequestType_@item.TypeId].PlanGroup" type="hidden" value="@item.PlanGroup" />
+                    </td>
+                    <td style="vertical-align: middle">
+                        <input name="LineItems[RequestType_@item.TypeId].TypeName" type="hidden" value="@item.TypeName" />
+                        @item.TypeName
+                    </td>
+                    <td>
+                            <input name="LineItems[RequestType_@item.TypeId].DomesticCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.DomesticCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[RequestType_@item.TypeId].DomesticCost" data-valmsg-replace="true"></span>
+                    </td>
+                    <td>
+                            <input name="LineItems[RequestType_@item.TypeId].EuropeanCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.EuropeanCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[RequestType_@item.TypeId].EuropeanCost" data-valmsg-replace="true"></span>
+                    </td>
+                    <td>
+                            <input name="LineItems[RequestType_@item.TypeId].AsianCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.AsianCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[RequestType_@item.TypeId].AsianCost" data-valmsg-replace="true"></span>
+                    </td>
+                </tr>
+        }
+            </table>
+
+            <table style="width: 100%;" class="table table-bordered">
+                <tr>
+                    <th style="display: none;"></th>
+                    <th style="width: 20%;">Work Type Group</th>
+                    <th style="width: 80%;">Work Type</th>
+                    <th style="text-align: center">Domestic</th>
+                    <th style="text-align: center">European</th>
+                    <th style="text-align: center">Asian</th>
+                </tr>
+                @foreach (var item in (Model?.LineItems?.Where(m => m.PlanGroup == "WorkType")?.ToList() ?? new List<PricingPlanLineItemViewModel>()))
+            {
+                    <tr>
+                        <td style="display: none;">
+                            <input name="LineItems.Index" type="hidden" value="WorkType_@item.TypeId" />
+                            <input name="LineItems[WorkType_@item.TypeId].TypeId" type="hidden" value="@item.TypeId" />
+                            <input name="LineItems[WorkType_@item.TypeId].PlanGroup" type="hidden" value="@item.PlanGroup" />
+                        </td>
+                        <td style="vertical-align: middle">
+                            <input name="LineItems[WorkType_@item.TypeId].TypeGroup" type="hidden" value="@item.TypeGroup" />
+                            @item.TypeGroup
+                        </td>
+                        <td style="vertical-align: middle">
+                            <input name="LineItems[WorkType_@item.TypeId].TypeName" type="hidden" value="@item.TypeName" />
+                            @item.TypeName
+                        </td>
+                        <td>
+                            <input name="LineItems[WorkType_@item.TypeId].DomesticCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.DomesticCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[WorkType_@item.TypeId].DomesticCost" data-valmsg-replace="true"></span>
+                        </td>
+                        <td>
+                            <input name="LineItems[WorkType_@item.TypeId].EuropeanCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.EuropeanCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[WorkType_@item.TypeId].EuropeanCost" data-valmsg-replace="true"></span>
+                        </td>
+                        <td>
+                            <input name="LineItems[WorkType_@item.TypeId].AsianCost" type="number" step="any" min="0" class="form-control ignore" style="min-width: 85px" value="@item.AsianCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LineItems[WorkType_@item.TypeId].AsianCost" data-valmsg-replace="true"></span>
+                        </td>
+                    </tr>
+        }
+            </table>
+        </div>
+    </div>
+}
+
+@if ((Model?.PricingPlanId ?? 0) > 0)
+{
+    @Html.UploadControl(UploadType.BillingPricingPlans, Model.PricingPlanId.ToString(), "Pricing Plan Uploads")
+}
+
+<script type="text/javascript">
+    var form = $('#pricingPlansForm');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+</script>

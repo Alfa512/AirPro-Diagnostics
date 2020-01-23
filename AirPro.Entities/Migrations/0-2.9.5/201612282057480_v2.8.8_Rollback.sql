@@ -1,0 +1,140 @@
+﻿
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = 'Scan' AND ROUTINE_NAME = 'usp_ProcessScan')
+	DROP PROCEDURE Scan.usp_ProcessScan
+GO
+
+-- =============================================
+-- Author:		Michael Sanders
+-- Create date: 05/02/2016
+-- Description:	Process Scan.
+-- =============================================
+CREATE PROCEDURE [Scan].[usp_ProcessScan]
+	@SCAN_UPLOAD_ID INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ScanXML XML;
+	SELECT @ScanXML = u.UPLOAD_XML
+	FROM Scan.Uploads u
+	WHERE u.SCAN_UPLOAD_ID = @SCAN_UPLOAD_ID
+
+	IF NOT EXISTS (SELECT 1 FROM Scan.Results WHERE SCAN_UPLOAD_ID = @SCAN_UPLOAD_ID)
+	BEGIN
+
+		INSERT INTO Scan.Results
+		(
+			SCAN_UPLOAD_ID
+			,VEHICLE_VIN
+			,VEHICLE_MAKE
+			,VEHICLE_MODEL
+			,VEHICLE_YEAR
+			,SHOP_NAME
+			,SHOP_ADDRESS
+			,SHOP_PHONE
+			,SHOP_FAX
+			,SHOP_EMAIL
+			,SCAN_DT
+		)
+		SELECT
+			@SCAN_UPLOAD_ID
+			,NULLIF(RTRIM(LTRIM(VEHICLE_VIN)), '')
+			,NULLIF(RTRIM(LTRIM(VEHICLE_MAKE)), '')
+			,NULLIF(RTRIM(LTRIM(VEHICLE_MODEL)), '')
+			,NULLIF(RTRIM(LTRIM(VEHICLE_YEAR)), '')
+			,NULLIF(RTRIM(LTRIM(SHOP_NAME)), '')
+			,NULLIF(RTRIM(LTRIM(SHOP_ADDRESS)), '')
+			,NULLIF(RTRIM(LTRIM(SHOP_PHONE)), '')
+			,NULLIF(RTRIM(LTRIM(SHOP_FAX)), '')
+			,NULLIF(RTRIM(LTRIM(SHOP_EMAIL)), '')
+			,NULLIF(RTRIM(LTRIM(SCAN_DT)), '')
+		FROM Scan.f_ScanResult(@ScanXML)
+
+		DECLARE @SCAN_ID INT
+		SET @SCAN_ID = SCOPE_IDENTITY()
+
+		INSERT INTO Scan.TestIssues
+		(
+			SCAN_ID
+			,TESTABILITY_ISSUE
+		)
+		SELECT
+			@SCAN_ID
+			,TESTABILITY_ISSUE
+		FROM Scan.f_TestIssues(@ScanXML)
+
+		INSERT INTO Scan.DTCResults
+		(
+			SCAN_ID
+			,CONTROLLER_NAME
+			,DTC_DESCRIPTION
+		)
+		SELECT
+			@SCAN_ID
+			,NULLIF(RTRIM(LTRIM(CONTROLLER_NAME)), '')
+			,NULLIF(RTRIM(LTRIM(DTC_DESCRIPTION)), '')
+		FROM Scan.f_DTCResults(@ScanXML)
+
+		INSERT INTO Scan.FFResults
+		(
+			SCAN_ID
+			,CONTROLLER_NAME
+			,FF_DTC
+			,FF_SENSOR_ONE
+			,FF_VALUE_ONE
+			,FF_UNITS_ONE
+			,FF_SENSOR_TWO
+			,FF_VALUE_TWO
+			,FF_UNITS_TWO
+		)
+		SELECT
+			@SCAN_ID
+			,NULLIF(RTRIM(LTRIM(CONTROLLER_NAME)), '')
+			,NULLIF(RTRIM(LTRIM(FF_DTC)), '')
+			,NULLIF(RTRIM(LTRIM(FF_SENSOR_ONE)), '')
+			,NULLIF(RTRIM(LTRIM(FF_VALUE_ONE)), '')
+			,NULLIF(RTRIM(LTRIM(FF_UNITS_ONE)), '')
+			,NULLIF(RTRIM(LTRIM(FF_SENSOR_TWO)), '')
+			,NULLIF(RTRIM(LTRIM(FF_VALUE_TWO)), '')
+			,NULLIF(RTRIM(LTRIM(FF_UNITS_TWO)), '')
+		FROM Scan.f_FFResults(@ScanXML)
+	
+	END
+END
+GO
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = 'Scan' AND TABLE_NAME = 'vwDTCResultsByScan')
+	DROP VIEW Scan.vwDTCResultsByScan
+GO
+
+CREATE VIEW Scan.vwDTCResultsByScan
+AS
+	SELECT
+		rt.TypeName [ScanType]
+		,v.Make [VehicleMake]
+		,v.Model [VehicleModel]
+		,v.Year [VehicleYear]
+		,d.CONTROLLER_NAME [DTC_Controller]
+		,d.DTC_DESCRIPTION [DTC_Description]
+		,COUNT(1) [Count]
+	FROM Repair.Orders o
+	INNER JOIN Scan.Requests r
+		INNER JOIN Scan.RequestTypes rt
+			ON r.TypeOfScan = rt.RequestTypeID
+		ON o.RepairOrderID = r.Repair_RepairOrderID
+	INNER JOIN Repair.Vehicles v
+		ON o.Vehicle_VIN = v.VIN
+	INNER JOIN Scan.Uploads u
+		INNER JOIN Scan.Results sr
+			INNER JOIN Scan.DTCResults d
+				ON sr.SCAN_ID = d.SCAN_ID
+			ON u.SCAN_UPLOAD_ID = sr.SCAN_UPLOAD_ID
+		ON r.RequestID = u.RequestID
+	GROUP BY
+		rt.TypeName
+		,v.Make
+		,v.Model
+		,v.Year
+		,d.CONTROLLER_NAME
+		,d.DTC_DESCRIPTION
+GO

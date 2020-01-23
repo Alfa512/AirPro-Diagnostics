@@ -1,0 +1,49 @@
+﻿@model AirPro.Site.Models.Help.HelpIndexViewModel
+@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Release Notes";
+}
+
+@section Styles {
+    <style type="text/css">
+
+    </style>
+}
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6 col-lg-8">
+        <h2 style="margin: 0;">@ViewBag.Title</h2>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        @if ((Model?.VersionSelectListItems?.Count ?? 0) > 0)
+        {
+            @Html.DropDownListFor(x => x.Version, new SelectList(Model.VersionSelectListItems), new { @class = "form-control col-md-4" })
+        }
+    </div>
+</div>
+
+<hr />
+
+<div class="help-items-container">
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function getReleaseNotes() {
+            var version = $('#Version').val();
+            $.get('@Url.Action("GetReleaseNotes")?version=' + version).then(function (response) {
+                if (response) {
+                    $('.help-items-container').html(response);
+                } else {
+                    $('.help-items-container').html('No Data Found');
+                }
+            });
+        }
+
+        $('#Version').change(getReleaseNotes);
+        getReleaseNotes();
+    </script>    
+}

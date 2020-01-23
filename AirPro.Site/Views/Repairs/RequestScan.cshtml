@@ -1,0 +1,233 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Site.Models.Request.RepairRequestScanViewModel
+
+@{
+    ViewBag.Title = "Request Scan";
+}
+
+<style type="text/css">
+    input[type="checkbox"].form-control {
+        width: initial;
+        box-shadow: none;
+        margin-top: 0;
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+@using (Html.BeginForm("RequestScan", "Repairs", FormMethod.Post, new { @id = "frmRequestScan" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.OrderId)
+
+        @Html.RequestTypeFor(Model.RequestTypeCategoryId, Model.RequestTypeID, Model.OrderId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ToolId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @if (((List<KeyValuePair<string, string>>)ViewBag.AirProTools).Count == 0)
+                {
+                    <div class="alert alert-warning" role="alert" style="margin:0">
+                        <strong>Warning!</strong> No devices detected for this shop.
+                    </div>
+                }
+                else
+                {
+                    @Html.DropDownListFor(model => model.ToolId, new SelectList(ViewBag.AirProTools, "Key", "Value"), "<-- Select Device -->", new { @class = "form-control" })
+                    <label id="lblToolId" style="padding-top: 7px; display: none;"></label>
+                    @Html.HiddenFor(model => model.ToolId)
+                    @Html.ValidationMessageFor(model => model.ToolId, "", new { @class = "text-danger" })
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WarningIndicators, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.MultiCheckBoxListFor(model => model.WarningIndicators, SelectListItemCache.WarningIndicatorSelectItems()?.ToList(), 2)
+                @Html.ValidationMessageFor(model => model.WarningIndicators, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" id="divSeatRemoved" style="display: none;">
+            @Html.LabelFor(model => model.SeatRemovedInd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SeatRemovedInd, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SeatRemovedInd, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.OtherWarningInfo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.OtherWarningInfo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.OtherWarningInfo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProblemDescription, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ProblemDescription, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ProblemDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @Html.ContactSelectFor(Model.ContactUserGuid, Model.ContactOtherFirstName, Model.ContactOtherLastName, Model.ContactOtherPhone, repairId: Model.OrderId, labelBootstrapColumn: 2)
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button id="btnSubmit" type="submit" class="btn btn-primary" @Html.DisableOnSubmit(DisableButtonType.Submit, "Submit")>Submit</button>
+            </div>
+        </div>
+    </div>
+}
+
+<hr />
+
+<div>
+    @Buttons.BackButton(Url.Action("Index", "Repairs"))
+</div>
+
+@if ((Model?.PositionStatementLinks?.Count ?? 0) > 0)
+{
+    <div class="modal fade" tabindex="-1" role="dialog" id="positionStatements">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Completion Scan Required
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>This Vehicle <strong>WILL</strong> Require a Completion Scan per OEM Position Statements.</p>
+
+                    <ul>
+                        @foreach (var link in Model.PositionStatementLinks)
+                        {
+                            <li>
+                                <a href="@Url.Action("File", "Download", new { id = link.Key, Area = "" })">@link.Value</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Acknowledge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@Scripts.Render("~/jqueryval/js")
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $toolDd = $('#ToolId');
+        if ($toolDd.find('option').length === 1) {
+            $('#lblToolId').text($toolDd.text());
+
+            $('#ToolId').hide();
+            $('#lblToolId').show();
+        }
+
+        $('#@Html.IdFor(m => m.WarningIndicators)').on('change', ':checked',
+            function () {
+                var checked = $('#@Html.IdFor(m => m.WarningIndicators)');
+                if ($(this).val() === "8") {
+                    checked.find('[value!="8"]').prop('checked', false);
+                } else {
+                    checked.find('[value="8"]').prop('checked', false);
+                }
+            });
+
+        $('#RequestTypeID').change(function () {
+            if (this.value) {
+                fillCategoryDropdown(this.value);
+            }
+            else {
+                $('#divRequestCategory').hide();
+            }
+            if (this.value === "5" && $('#positionStatements')) $('#positionStatements').modal('show');
+        });
+
+        if ($('#RequestTypeID').val() !== '') {
+            fillCategoryDropdown($('#RequestTypeID').val());
+        }
+
+        $('input[type="checkbox"][Name="WarningIndicators"]').rules('add', {
+            required: true,
+            messages: {
+                required: 'The Warning Indicators field is required.'
+            }
+        });
+
+        $('#frmRequestScan').on('submit',
+            function(e) {
+                $('#btnSubmit').button('loading');
+                if (!$(this).valid()) {
+                    $('#btnSubmit').button('reset');
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+        $('#RequestTypeCategoryId').on('change',
+            function() {
+                if (this.value === '2') {
+                    $('#divSeatRemoved').show();
+                } else {
+                    $('#SeatRemovedInd').prop('checked', false);
+                    $('#divSeatRemoved').hide();
+                }
+            });
+    });
+
+    function fillCategoryDropdown(value) {
+        $('#SeatRemovedInd').prop('checked', false);
+        $('#divSeatRemoved').hide();
+
+        $.post('@Url.Action("GetRequestTypes", "Repairs")', { id: value })
+            .done(function (data) {
+                if (data.length === 1) {
+                    $('#RequestTypeCategoryId').val(data[0].value);
+                    $('#lblRequestTypeCategoryId').text(data[0].text);
+
+                    $('#lblRequestTypeCategoryId').show();
+                    $('#RequestTypeCategoryId').hide();
+
+                    //Pre-Scan
+                    if (data[0].value === '2') {
+                        $('#divSeatRemoved').show();
+                    }
+                } else {
+                    var $dropdown = $('#RequestTypeCategoryId');
+                    $dropdown.empty();
+                    $dropdown.append('<option value=""><-- Select a Category --></option>');
+                    $.each(data,
+                        function () {
+                            var option = $('<option></option>').val(this.value).html(this.text);
+                            $dropdown.append(option);
+                        });
+
+                    $('#lblRequestTypeCategoryId').hide();
+                    $('#RequestTypeCategoryId').show();
+                }
+
+                $('#divRequestCategory').show();
+            });
+    }
+</script>

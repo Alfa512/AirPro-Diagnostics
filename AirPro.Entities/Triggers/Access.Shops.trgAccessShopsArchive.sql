@@ -1,0 +1,100 @@
+﻿CREATE TRIGGER [Access].[trgAccessShopsArchive] ON [Access].[Shops]
+AFTER UPDATE, DELETE
+AS
+BEGIN
+
+	INSERT INTO Access.ShopsArchive
+	(
+		ShopGuid
+		,AccountGuid
+		,Name
+		,Phone
+		,Fax
+		,Address1
+		,Address2
+		,City
+		,StateId
+		,Zip
+		,Notes
+		,DiscountPercentage
+		,CCCShopId
+		,AllowSelfScan
+		,PricingPlanId
+		,AverageVehiclesPerMonth
+		,EstimatePlanId
+		,AllowAutoRepairClose
+		,AllowScanAnalysis
+		,DefaultInsuranceCompanyId
+		,AllowSelfScanAssessment
+		,ShopFixedPriceInd
+		,FirstScanCost
+		,AdditionalScanCost
+		,AutomaticRepairCloseDays
+		,ActiveInd
+		,HideFromReports
+		,ShopNumber
+		,AllowDemoScan
+		,CurrencyId
+		,CreatedByUserGuid
+		,CreatedDt
+		,UpdatedByUserGuid
+		,UpdatedDt
+		,BillingCycleId
+		,AllowScanAnalysisAutoClose
+		,SendToMitchellInd
+		,AllowAllRepairAutoClose
+		,DisableShopBillingNotification
+		,DisableShopStatementNotification
+		,EmployeeGuid
+		,AutomaticInvoicesInd
+	)
+	SELECT
+		ShopGuid
+		,AccountGuid
+		,Name
+		,Phone
+		,Fax
+		,Address1
+		,Address2
+		,City
+		,StateId
+		,Zip
+		,Notes
+		,DiscountPercentage
+		,CCCShopId
+		,AllowSelfScan
+		,PricingPlanId
+		,AverageVehiclesPerMonth
+		,EstimatePlanId
+		,AllowAutoRepairClose
+		,AllowScanAnalysis
+		,DefaultInsuranceCompanyId
+		,AllowSelfScanAssessment
+		,ShopFixedPriceInd
+		,FirstScanCost
+		,AdditionalScanCost
+		,AutomaticRepairCloseDays
+		,ActiveInd
+		,HideFromReports
+		,ShopNumber
+		,AllowDemoScan
+		,CurrencyId
+		,CreatedByUserGuid
+		,CreatedDt
+		,UpdatedByUserGuid
+		,UpdatedDt
+		,BillingCycleId
+		,AllowScanAnalysisAutoClose
+		,SendToMitchellInd
+		,AllowAllRepairAutoClose
+		,DisableShopBillingNotification
+		,DisableShopStatementNotification
+		,EmployeeGuid
+		,AutomaticInvoicesInd
+	FROM deleted
+
+END
+GO
+
+ALTER TABLE [Access].[Shops] ENABLE TRIGGER [trgAccessShopsArchive]
+GO

@@ -1,0 +1,122 @@
+﻿@using AirPro.Entities.Scan
+@model AirPro.Site.Models.Shared.RequestTypeControlViewModel
+@{
+    var controlId = Guid.NewGuid().ToString();
+}
+<div class="form-group" id="divRequestCategory">
+    @Html.LabelFor(model => model.RequestTypeCategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        @Html.DropDownListFor(model => model.RequestTypeCategoryId, new SelectList(Model.RequestTypeCategories, "Key", "Value"), "<-- Select Category -->", new { @class = $"form-control request-type-categories-{controlId}", @id = $"RequestTypeCategoryId-{controlId}" })
+
+        @Html.HiddenFor(model => model.RequestTypeCategoryId)
+        @Html.ValidationMessageFor(model => model.RequestTypeCategoryId, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group hide request-type-container-@controlId">
+    <div class="col-md-2 control-label">
+        <i id="request-type-tooltip" data-toggle='tooltip' data-placement='right' title='No request type selected' class="glyphicon glyphicon-info-sign text-primary" style="margin-right: 5px"></i>
+        @Html.LabelFor(model => model.RequestTypeId)
+    </div>
+    <div class="col-md-10">
+        @Html.DropDownListFor(model => model.RequestTypeId, Model.RequestTypes as IEnumerable<SelectListItem>, "<-- Select Type -->", new { @class = $"form-control request-type-{controlId}" })
+        @Html.ValidationMessageFor(model => model.RequestTypeId, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        var allRequestTypes = [
+        @foreach (var item in Model?.RequestTypes ?? new List<SelectListItem>())
+        {
+            @: { id: @item.Value, name: '@item.Text', categories: [
+            foreach (var requestCategoryType in Model?.RequestCategoryTypes?.Where(x => x.RequestTypeId.ToString() == item.Value) ?? new List<RequestCategoryTypeEntityModel>())
+            {
+                @: @requestCategoryType.RequestCategoryId,
+            }
+            @: ] },
+        }
+        ];
+
+        var requestTypesTooltips = [
+        @foreach (var item in ViewBag.RequestTypesInstructions as IEnumerable<dynamic> ?? new List<dynamic>())
+        {
+            var idProp = item.GetType().GetProperty("RequestTypeId");
+            var instructionsProp = item.GetType().GetProperty("Instructions");
+
+            @:{ requestTypeId: @idProp.GetValue(item), instructions: '@instructionsProp.GetValue(item)' },
+        }
+        ];
+
+        function changeRequestTypeTooltip(selectedRequestTypeId) {
+            var $tooltipIcon = $("#request-type-tooltip");
+
+            var selectedRequestType;
+            if (selectedRequestTypeId && requestTypesTooltips) {
+                for (var i = 0; i < requestTypesTooltips.length; i++) {
+                    if (requestTypesTooltips[i] && requestTypesTooltips[i].requestTypeId == selectedRequestTypeId) {
+                        selectedRequestType = requestTypesTooltips[i];
+                        break;
+                    }
+                }
+            }
+
+            if (selectedRequestType) {
+                var ins = selectedRequestType.instructions;
+                $tooltipIcon.attr("data-original-title", ins);
+
+                if (ins && ins.length > 0) {
+                    $tooltipIcon.show();
+                } else {
+                    $tooltipIcon.hide();
+                }
+            } else {
+                $tooltipIcon.hide();
+            }
+        }
+
+        $(".request-type-@controlId").on('change',
+            function () {
+                changeRequestTypeTooltip($(this).val());
+            });
+
+        function populateRequestTypeDropdown(requestTypes) {
+            $(".request-type-container-@controlId").removeClass('hide');
+
+            var $dropdown = $(".request-type-@controlId");
+            $dropdown.children().remove();
+
+            if (requestTypes.length > 1) {
+                $dropdown.append($("<option />").val('').text('<-- Select Type -->'));
+
+                changeRequestTypeTooltip();
+            }
+            else {
+                changeRequestTypeTooltip(requestTypes[0].id);
+            }
+
+            $.each(requestTypes,
+                function(index, item) {
+                    $dropdown.append($("<option />").val(item.id).text(item.name));
+                });
+        }
+
+    $('.request-type-categories-@controlId').on('change',
+        function () {
+            var categoryId = $(this).val();
+            if (categoryId > 0) {
+                var requestTypes = allRequestTypes.filter(function(item) {
+                    return item.categories.filter(function(catId) { return catId.toString() === categoryId }).length > 0;
+                });
+                populateRequestTypeDropdown(requestTypes);
+            } else if (categoryId === '0') {
+                var requestTypes = allRequestTypes.filter(function(item) {
+                    return item.categories.length === 0;
+                });
+                populateRequestTypeDropdown(requestTypes);
+            } else {
+                $(".request-type-container-@controlId").addClass('hide');
+            }
+        });
+    });
+</script>

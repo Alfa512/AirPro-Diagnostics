@@ -1,0 +1,259 @@
+﻿@model  AirPro.Site.Models.Uploads.UploadControlViewModel
+
+<style>
+    #progress-wrp {
+        border: 1px solid #0099CC;
+        padding: 1px;
+        position: relative;
+        bottom: 6px;
+        height: 30px;
+        border-radius: 3px;
+        text-align: left;
+        background: #fff;
+        box-shadow: inset 1px 3px 6px rgba(0, 0, 0, 0.12);
+        width: 250px;
+    }
+
+        #progress-wrp .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            background-color: lightskyblue;
+            width: 0;
+            box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+        }
+
+        #progress-wrp .status {
+            top: 3px;
+            left: 45%;
+            position: absolute;
+            display: inline-block;
+            color: #000000;
+        }
+</style>
+
+<!-- Uploads Display Panel -->
+<div class="panel panel-success" id="upload-panel" data-type="@Model.Type" data-key="@Model.Key" style="margin-bottom: 10px;">
+    <div class="panel-heading">
+        <input class="pull-right" style="position: relative; bottom: 2px;" type="file" id="upload-file" data-type="@Model.Type" data-key="@Model.Key" />
+        <div id="progress-wrp" class="pull-right" style="display: none;" data-type="@Model.Type" data-key="@Model.Key">
+            <div class="progress-bar"></div>
+            <div class="status">0%</div>
+        </div>
+        <h4 class="panel-title" style="margin: 2px !important; font-size: 16px !important">
+            @Model.Title
+        </h4>
+    </div>
+    <table id="upload-grid" data-type="@Model.Type" data-key="@Model.Key" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+        <thead>
+            <tr>
+                <th data-column-id="uploadId" data-identifier="true" data-visible="false"></th>
+                <th data-column-id="uploadFileName" data-formatter="file-name">File Name</th>
+                <th data-column-id="uploadMimeType">Mime Type</th>
+                <th data-column-id="uploadFileSizeBytes" data-converter="size" data-width="100">File Size</th>
+                <th data-column-id="uploadedDateTime" data-converter="date" data-order="desc" data-width="175">Uploaded</th>
+                <th data-formatter="upload-menu" data-width="90" data-sortable="false"></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $("#upload-grid[data-type='@Model.Type'][data-key='@Model.Key']").bootgrid({
+        url: '@Url.Action("GetUploadsByPage", "Upload", new { @Area = "" })',
+        post: function() {
+            return {
+                type: @Model.Type,
+                key: '@Model.Key'
+            }
+        },
+        navigation: 2,
+        multiSort: false,
+        rowCount: [5],
+        columnSelection: false,
+        formatters: {
+            "file-name": function(c, r) {
+                return r.uploadFileName + '.' + r.uploadFileExtension;
+            },
+            "upload-menu": function(c, r) {
+                var result = "<div id='upload-menu' class='btn-group btn-group-sm pull-right' role='group'>";
+                result +=
+                    "<a href='@Url.Action("File", "Download", new { @Area = "" })/" + r.uploadId + "' target='_blank' class='btn btn-primary' data-toggle='tooltip' data-html='true' data-placement='top' title='Download'><i class='glyphicon glyphicon-cloud-download'></i></a>";
+                result +=
+                    "<a id='upload-delete' data-id='" + r.uploadId + "' data-type='@Model.Type' data-key='@Model.Key' class='btn btn-danger' data-toggle='tooltip' data-html='true' data-placement='top' title='Delete'><i class='glyphicon glyphicon-trash'></i></a>";
+                result += "</div>";
+
+                return result;
+            }
+        },
+        converters: {
+            size: {
+                to: function(value) {
+                    if (!value) return "0 B";
+                    if (value < 1024) return value + ' B';
+                    if (value < 10240) return Math.round(value / 1024 * 100) / 100 + ' KB';
+                    if (value >= 10240) return Math.round(value / 1024 / 1024 * 100) / 100 + ' MB';
+                    return "Error";
+                }
+            },
+            date: {
+                to: function(value) { return moment(value).format('MM/DD/YYYY hh:mm A'); }
+            }
+        }
+    }).on("loaded.rs.jquery.bootgrid",
+        function(e) {
+            $("body").tooltip({
+                selector: '[data-toggle="tooltip"]',
+                container: 'body'
+            });
+
+            $('#upload-delete[data-type="@Model.Type"][data-key="@Model.Key"]').on('click',
+                function (e) {
+                    e.preventDefault();
+                    var id = $(this).data('id');
+                    var type = $(this).data('type');
+                    var key = $(this).data('key');
+                    new Delete(id, type, key).doDelete();
+                });
+        });
+
+    $('#upload-file[data-type="@Model.Type"][data-key="@Model.Key"]').on('change',
+        function (e) {
+            // Load File.
+            var file = $(this)[0].files[0];
+
+            // Check File.
+            if (!file) return;
+
+            // Load Upload.
+            var upload = new Upload(file, $(this).data('type'), $(this).data('key'));
+
+            // Validate File.
+            if (upload.getSize() >= 104857600) {
+                alert('File size exceeds limit of 100 MB.');
+                $(this).val('');
+                return;
+            }
+
+            // Upload.
+            upload.doUpload();
+        });
+
+    var Delete = function (id, type, key) {
+        this.id = id;
+        this.type = type;
+        this.key = key;
+        this.allow = confirm('Are you sure you want to Delete this File?');
+    }
+
+    Delete.prototype.doDelete = function () {
+        if (this.allow) {
+            var that = this;
+            $.post('@Url.Action("Delete", "Upload", new { @Area = "" })', { id: that.id })
+                .done(function () {
+                    $("#upload-grid[data-type='" + that.type + "'][data-key='" + that.key + "']").bootgrid('reload');
+                })
+                .fail(function(e) {
+                    alert(e.statusText);
+                });
+        }
+    }
+
+    var Upload = function (file, type, key) {
+        // Load Values.
+        this.file = file;
+        this.type = type;
+        this.key = key;
+    };
+
+    Upload.prototype.getType = function() {
+        return this.file.type;
+    };
+
+    Upload.prototype.getSize = function () {
+        return this.file.size;
+    };
+
+    Upload.prototype.getName = function () {
+        return this.file.name;
+    };
+
+    Upload.prototype.doUpload = function () {
+        var that = this;
+
+        // Upload Display.
+        this.toggleStatus(true);
+
+        // Load Form Data.
+        var formData = new FormData();
+        formData.append("file", this.file, this.getName());
+        formData.append("type", this.type);
+        formData.append("key", this.key);
+
+        // Upload.
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Save", "Upload", new { @Area = "" })',
+            xhr: function () {
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) {
+                    myXhr.upload.addEventListener('progress', function (e) {
+                        that.progressHandling(e, that.type, that.key);
+                    }, false);
+                }
+                return myXhr;
+            },
+            success: function (data) {
+                window.setTimeout(function() {
+                    $("#progress-wrp[data-type='" + that.type + "'][data-key='" + that.key + "'] .progress-bar").css('background-color', 'lightgreen');
+                }, 500);
+                $("#upload-grid[data-type='" + that.type + "'][data-key='" + that.key + "']").bootgrid("reload");
+                console.log(data);
+            },
+            error: function (error) {
+                alert(error.statusText);
+                $("#progress-wrp[data-type='" + that.type + "'][data-key='" + that.key + "'] .progress-bar").css('background-color', 'lightcoral');
+                console.log(error);
+            },
+            async: true,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            timeout: 60000
+        }).done(function(e) {
+            window.setTimeout(function () {
+                that.toggleStatus(false);
+            }, 3000);
+        });
+    };
+
+    Upload.prototype.toggleStatus = function(showStatus) {
+        if (showStatus) {
+            $("#upload-file[data-type='" + this.type + "'][data-key='" + this.key + "']").css('display', 'none');
+            $("#progress-wrp[data-type='" + this.type + "'][data-key='" + this.key + "']").css('display', '');
+        } else {
+            $("#upload-file[data-type='" + this.type + "'][data-key='" + this.key + "']").val('');
+            $("#upload-file[data-type='" + this.type + "'][data-key='" + this.key + "']").css('display', '');
+            $("#progress-wrp[data-type='" + this.type + "'][data-key='" + this.key + "']").css('display', 'none');
+            $("#progress-wrp[data-type='" + this.type + "'][data-key='" + this.key + "'] .progress-bar").css('background-color', 'lightskyblue');
+        }
+    };
+
+    Upload.prototype.progressHandling = function (event, type, key) {
+        // Get Progress.
+        var percent = 0;
+        var position = event.loaded || event.position;
+        var total = event.total;
+        var progressBarId = "#progress-wrp[data-type='" + type + "'][data-key='" + key + "']";
+        if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+        }
+
+        // Change Text Color.
+        if (percent > 55) $(progressBarId + " .status").css("color", "white");
+
+        // Update Progress Bar.
+        $(progressBarId + " .progress-bar").css("width", + percent + "%");
+        $(progressBarId + " .status").text(percent + "%");
+    };
+</script>

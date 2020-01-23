@@ -1,0 +1,99 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Areas.Billing.Models
+@using AirPro.Site.Helpers
+@model EstimatePlanViewModel
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshEstimatePlans();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@using (Html.BeginForm("ManageEstimatePlan", "EstimatePlans", FormMethod.Post, htmlAttributes: new { @id = "estimatePlansForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.EstimatePlanId)
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ActiveInd, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.ActiveInd, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ActiveInd, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="well" style="overflow-y: auto; overflow-x: hidden; max-height: 600px; padding-bottom: 0;">
+            <table style="width: 100%;" class="table table-bordered">
+                <tr>
+                    <th style="display: none;"></th>
+                    <th>Vehicle Make</th>
+                    <th style="text-align: center; width: 130px;">Completion Cost</th>
+                </tr>
+                @{
+                    int i = 0;
+                }
+                @foreach (var item in Model?.VehiclePlans?.ToList() ?? new List<EstimatePlanVehicleViewModel>())
+                {
+                    <tr>
+                        <td style="display: none;">
+                            <input name="VehiclePlans[@i].VehicleMakeId" type="hidden" value="@item.VehicleMakeId" />
+                        </td>
+                        <td>
+                            <label for="VehiclePlans[@i].VehicleMakeName" class="control-label">@item.VehicleMakeName</label>
+                        </td>
+                        <td>
+                            <input name="VehiclePlans[@i].CompletionCost" type="number" step="any" min="0" maxLength="6"
+                                   class="form-control ignore" style="min-width: 85px" value="@item.CompletionCost" required="required" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="VehiclePlans[@i].CompletionCost" data-valmsg-replace="true"></span>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            </table>
+        </div>
+    </div>
+}
+
+@if ((Model?.EstimatePlanId ?? 0) > 0)
+{
+    @Html.UploadControl(UploadType.BillingEstimatePlans, Model.EstimatePlanId.ToString(), "Estimate Uploads")
+}
+
+<script type="text/javascript">
+    var form = $('#estimatePlansForm');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+</script>

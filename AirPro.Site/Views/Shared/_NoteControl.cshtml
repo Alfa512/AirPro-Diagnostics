@@ -1,0 +1,233 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@model  AirPro.Site.Models.Notes.NoteControlViewModel
+@{
+    string type = Model.Type.ToString();
+    var canCreate = !Model.IsReadOnly && User.IsInRole($"{type}NoteCreate");
+    var canEdit = !Model.IsReadOnly && User.IsInRole($"{type}NoteEdit");
+    var canDelete = !Model.IsReadOnly && User.IsInRole($"{type}NoteDelete");
+    var canView = User.IsInRole($"{type}NoteEdit") || User.IsInRole($"{type}NoteView");
+}
+<style>
+    .note-container {
+        padding-bottom: 15px;
+    }
+    .note-container:last-child {
+        padding-bottom: 0px;
+    }
+    #note-panel-@Model.Key .panel-heading {
+        padding: 5px 10px;
+    }
+    #note-panel-@Model.Key .panel-body {
+        overflow: auto;
+        max-height: 400px;
+    }
+    #note-panel-@Model.Key .panel-body h3 {
+         margin-top: 5px;
+    }
+</style>
+
+<!-- Notes Display Panel -->
+<div class="panel panel-info" data-bind="allowBindings: false" id="note-panel-@Model.Key" data-type="@Model.Type" data-key="@Model.Key" style="margin-bottom: 10px;">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-lg-6">
+                <h4 class="panel-title" style="margin: 2px !important; font-size: 16px !important;">
+                    @Model.Title
+                </h4>
+            </div>
+            <div class="col-lg-6">
+                @if (canCreate)
+                {
+                    <button class="btn btn-default btn-xs pull-right" type="button" id="add-note-btn" data-type="@Model.Type" data-key="@Model.Key" data-bind="click: add, enable: canAdd"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add Note</button>
+                }
+            </div>
+        </div>
+    </div>
+    @if (canView)
+    {
+        <div class="panel-body" data-bind="visible: notes() && notes().length > 0, foreach: notes">
+            <div class="row note-container">
+                <div class="col-lg-12">
+                    <textarea class="form-control" rows="3" data-bind="value: description, valueUpdate: 'keyup', enable: !readonly(), event: { blur: unfocusDescription }, hasFocus: !readonly()"></textarea>
+                    <span data-bind="text: updatedByUser"></span> <span data-bind="if: updatedDateTime">- <span data-bind="text: updatedDateTime"></span></span>
+                </div>
+                @if (canDelete || canEdit || canCreate)
+                {
+                    <div class="col-lg-12">
+                        @if (canEdit)
+                        {
+                            <button data-bind="click: $parent.edit, visible: readonly(), enable: $parent.canEdit" class="btn btn-xs btn-warning"><i class='glyphicon glyphicon-edit'></i></button>
+                        }
+                        @if (canDelete)
+                        {
+                            <button data-bind="click: $parent.remove" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="panel-body" data-bind="visible: !notes() || notes().length == 0">
+            <em>
+                No Notes to Display
+            </em>
+        </div>
+    }
+    else
+    {
+        <div class="panel-body">
+            <h3>You don't have permission to view this section.</h3>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    ko.bindingHandlers.allowBindings = {
+        init: function(elem, valueAccessor) {
+            // Let bindings proceed as normal *only if* my value is false
+            var shouldAllowBindings = ko.unwrap(valueAccessor());
+            return { controlsDescendantBindings: !shouldAllowBindings };
+        }
+    };
+
+    $(document).ready(function() {
+        var data = @Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings
+           {
+               ContractResolver = new CamelCasePropertyNamesContractResolver()
+           }));
+
+        var model = new NotesModel(data);
+        var control = document.getElementById('note-panel-@Model.Key');
+        ko.applyBindingsToDescendants(model, control);
+    });
+
+    var NotesModel = function(data) {
+        var self = this;
+        ko.mapping.fromJS(data, {}, self);
+        self.notes = ko.observableArray();
+        self.canEdit = ko.observable(@(canEdit.ToString().ToLower()));
+        self.user = '@Model.User';
+        self.canEdit = ko.pureComputed(function () {
+            for (var i = 0; i < self.notes().length; i++) {
+                var note = self.notes()[i];
+                if (!note.description()) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        self.edit = function (item) {
+            for (var i = 0; i < self.notes().length; i++) {
+                var note = self.notes()[i].readonly(true);
+            }
+            item.readonly(false);
+        }
+
+        @if (canCreate)
+        {
+            <text>
+
+        self.canAdd = ko.pureComputed(function () {
+            for (var i = 0; i < self.notes().length; i++) {
+                var note = self.notes()[i];
+
+                if (!note.readonly()) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        self.add = function () {
+            var newNote = new NoteModel();
+            newNote.readonly(false);
+            newNote.updatedByUser(self.user);
+            newNote.noteTypeId(self.type());
+            newNote.noteKey(self.key());
+            self.notes.splice(0,
+                0,
+                newNote);
+                };
+            </text>
+        }
+
+        @if (canDelete)
+        {
+            <text>
+        self.remove = function (note) {
+            if (!note.noteId()) {
+                self.notes.remove(note);
+            } else {
+
+                $.post('@Url.Action("Delete", "Note", new {area = ""})',
+                    {
+                        id: note.noteId(),
+                        type: self.type()
+                    }
+                ).then(function (response) {
+                    self.notes.remove(note);
+                }
+                );
+            }
+                };
+            </text>
+        }
+        @if (canView)
+        {
+            <text>
+                function init() {
+                    $.post('@Url.Action("GetNotes", "Note", new {area = ""})', { type: self.type(), key:self.key() }).then(function (response) {
+                            for (var i = 0; i < response.length; i++) {
+                                var note = response[i];
+                                self.notes.push(new NoteModel(note.noteId,
+                                    note.noteDescription,
+                                    note.noteTypeId,
+                                    note.noteKey,
+                                    note.updatedDateTime,
+                                    note.updatedByUser,
+                                    true));
+                            }
+
+                        });
+                    }
+
+                init();
+            </text>
+        }
+        };
+
+    var NoteModel = function (noteId, description, noteTypeId, noteKey, updatedDateTime, updatedByUser, readonly) {
+        var self = this;
+        self.description = ko.observable(description);
+        self.noteId = ko.observable(noteId);
+        self.noteTypeId = ko.observable(noteTypeId);
+        self.noteKey = ko.observable(noteKey);
+        self.updatedDateTime = ko.observable();
+        if (updatedDateTime) self.updatedDateTime(moment(updatedDateTime).format('MM/DD/YYYY hh:mm A'));
+
+        self.updatedByUser = ko.observable(updatedByUser);
+        self.canSave = ko.pureComputed(function () {
+            return self.description();
+        });
+
+        self.unfocusDescription = function () {
+            if (self.description()) {
+                self.readonly(true);
+            }
+        };
+        self.delayedDescription = ko.pureComputed(self.description).extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 500 } });
+        self.readonly = ko.observable(readonly);
+
+        self.delayedDescription.subscribe(function (val) {
+            if (self.description()) {
+                $.post('@Url.Action("Save", "Note", new {area = ""})', { noteId: self.noteId(), noteTypeId: self.noteTypeId(), noteKey: self.noteKey(), noteDescription: val }).then(function (response) {
+                    self.noteId(response.noteId);
+                    self.updatedByUser(response.updatedByUser);
+                    self.updatedDateTime(moment(response.updatedDateTime).format('MM/DD/YYYY hh:mm A'));
+                });
+            }
+        }, this);
+    }
+</script>

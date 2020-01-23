@@ -1,0 +1,16 @@
+﻿using AirPro.Common.Enumerations;
+using AirPro.Service.DTOs.Interface;
+
+namespace AirPro.Site.Models.Request
+{
+    public class ReportDecisionSelectionItemViewModel : IReportDecisionSelectionItemDto
+    {
+        public int DecisionId { get; set; }
+        public string DecisionText { get; set; }
+        public bool DecisionSelected { get; set; }
+        public ReportTextSeverity DecisionTextSeverity { get; set; }
+        public float VehicleMakeUsage { get; set; }
+        public float RequestTypeUsage { get; set; }
+        public float RequestCategoryUsage { get; set; }
+    }
+}

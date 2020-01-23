@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8B76F6C7-12D1-442B-9DFC-611D3F965FBD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AirPro.Service</RootNamespace>
+    <AssemblyName>AirPro.Service</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UniMatrix.Common">
+      <HintPath>..\UniMatrix.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DtoExtensions.cs" />
+    <Compile Include="DTOs\Concrete\AgedRepairsUserPreferenceDto.cs" />
+    <Compile Include="DTOs\Concrete\BillingCycleDto.cs" />
+    <Compile Include="DTOs\Concrete\CompleteRegistrationResultDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportValidationRuleDto.cs" />
+    <Compile Include="DTOs\Interface\IReportPossibleMissingControllerDto.cs" />
+    <Compile Include="DTOs\Concrete\EmployeeDto.cs" />
+    <Compile Include="DTOs\Concrete\InvoiceWorkItemDto.cs" />
+    <Compile Include="DTOs\Concrete\RegistrationOptionsDto.cs" />
+    <Compile Include="DTOs\Concrete\CCCInsuranceCompanyDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportPossibleMissingControllerDto.cs" />
+    <Compile Include="DTOs\Concrete\CancelReasonTypeDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportVehicleMakeToolDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopAirProToolDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopGuidIdDto.cs" />
+    <Compile Include="DTOs\Concrete\ClientValidationDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopUserDto.cs" />
+    <Compile Include="DTOs\Concrete\RequestTypeDto.cs" />
+    <Compile Include="DTOs\Concrete\RegistrationAccountDto.cs" />
+    <Compile Include="DTOs\Concrete\RegistrationDto.cs" />
+    <Compile Include="DTOs\Concrete\LocationDto.cs" />
+    <Compile Include="DTOs\Concrete\RegistrationShopDto.cs" />
+    <Compile Include="DTOs\Concrete\RegistrationUserDto.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianCoverageRowItemDto.cs" />
+    <Compile Include="DTOs\Concrete\TechReportDto.cs" />
+    <Compile Include="DTOs\Concrete\TroubleCodeRecommendationDto.cs" />
+    <Compile Include="DTOs\Concrete\NoteDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportRequestTypeSelectionItemDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticFreezeFrameDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticFreezeFrameSensorDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticFreezeFrameSensorGroupDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticResultDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticTroubleCodeDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportAirProToolSelectionItemDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticControllerDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportResponsibilityHistoryListItemDto.cs" />
+    <Compile Include="DTOs\Concrete\DecisionDto.cs" />
+    <Compile Include="DTOs\Concrete\DecisionRequestCategoryDto.cs" />
+    <Compile Include="DTOs\Concrete\DecisionRequestTypeDto.cs" />
+    <Compile Include="DTOs\Concrete\DecisionVehicleMakeDto.cs" />
+    <Compile Include="DTOs\Concrete\TroubleCodeRecommendationUsageDto.cs" />
+    <Compile Include="DTOs\Concrete\RepairCreateValidateShopDto.cs" />
+    <Compile Include="DTOs\Interface\IEmployeeDto.cs" />
+    <Compile Include="DTOs\Interface\IInvoiceWorkItemDto.cs" />
+    <Compile Include="DTOs\Concrete\VehicleMakeToolDto.cs" />
+    <Compile Include="DTOs\Interface\IRegistrationOptionsDto.cs" />
+    <Compile Include="DTOs\Interface\ICCCInsuranceCompanyDto.cs" />
+    <Compile Include="DTOs\Interface\ICancelReasonTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IReportValidationRuleDto.cs" />
+    <Compile Include="DTOs\Interface\IReportVehicleMakeToolDto.cs" />
+    <Compile Include="DTOs\Interface\IRequestTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IRegistrationAccountDto.cs" />
+    <Compile Include="DTOs\Interface\ILocationDto.cs" />
+    <Compile Include="DTOs\Interface\IRegistrationDto.cs" />
+    <Compile Include="DTOs\Interface\IRegistrationShopDto.cs" />
+    <Compile Include="DTOs\Interface\IRegistrationUserDto.cs" />
+    <Compile Include="DTOs\Interface\IClientValidationDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticQueueDto.cs" />
+    <Compile Include="DTOs\Interface\IValidationRuleDto.cs" />
+    <Compile Include="DTOs\Interface\ITechReportDto.cs" />
+    <Compile Include="DTOs\Interface\ITroubleCodeRecommendationDto.cs" />
+    <Compile Include="DTOs\Interface\IDecisionDto.cs" />
+    <Compile Include="DTOs\Interface\IDecisionRequestCategoryDto.cs" />
+    <Compile Include="DTOs\Interface\IDecisionRequestTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IDecisionVehicleMakeDto.cs" />
+    <Compile Include="DTOs\Interface\INoteDto.cs" />
+    <Compile Include="DTOs\Interface\IReportAirProToolSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportDecisionSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportFrequentRecommendationSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportRequestTypeSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportResponsibilityHistoryListItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportTroubleCodeDto.cs" />
+    <Compile Include="DTOs\Interface\IReportWorkTypeSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportDto.cs" />
+    <Compile Include="DTOs\Interface\IReportTroubleCodeRecommendationDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticToolDto.cs" />
+    <Compile Include="DTOs\Concrete\ReleaseNoteDto.cs" />
+    <Compile Include="DTOs\Concrete\ReleaseNoteShownPreferenceDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopContactDto.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianCoverageDto.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianCoverageUserPreferenceDto.cs" />
+    <Compile Include="DTOs\Concrete\OutstandingInvoice.cs" />
+    <Compile Include="DTOs\Concrete\RecentPaymentDto.cs" />
+    <Compile Include="DTOs\Concrete\UserAccountDto.cs" />
+    <Compile Include="DTOs\Concrete\UserPreferenceDto.cs" />
+    <Compile Include="DTOs\Concrete\UserShopDto.cs" />
+    <Compile Include="DTOs\Interface\IBillingCycleDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticToolDto.cs" />
+    <Compile Include="DTOs\Interface\IInvoiceLineItemDto.cs" />
+    <Compile Include="DTOs\Concrete\InvoiceLineItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReleaseNoteDto.cs" />
+    <Compile Include="DTOs\Interface\IShopContactDto.cs" />
+    <Compile Include="DTOs\Interface\ITechnicianCoverageDto.cs" />
+    <Compile Include="DTOs\Interface\IOutstandingInvoiceDto.cs" />
+    <Compile Include="DTOs\Interface\IRecentPaymentDto.cs" />
+    <Compile Include="DTOs\Interface\ITroubleCodeRecommendationUsageDto.cs" />
+    <Compile Include="DTOs\Interface\IUserAccountDto.cs" />
+    <Compile Include="DTOs\Interface\IUserPreferenceDto.cs" />
+    <Compile Include="DTOs\Interface\IUserShopDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportWorkTypeSelectionItemDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportDecisionSelectionItemDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportTroubleCodeDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportTroubleCodeRecommendationDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportFrequentRecommendationSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IRepairCreateValidateShopDto.cs" />
+    <Compile Include="DTOs\Interface\IWorkTypeRequestTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IWorkTypeVehicleMakeDto.cs" />
+    <Compile Include="DTOs\Concrete\DiagnosticQueueDto.cs" />
+    <Compile Include="DTOs\Profiles\CCCInsuranceCompanyDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\WorkTypeRequestTypeDto.cs" />
+    <Compile Include="DTOs\Concrete\WorkTypeVehicleMakeDto.cs" />
+    <Compile Include="DTOs\Profiles\CancelReasonTypeDtoProfile.cs" />
+    <Compile Include="DTOs\Interface\IVehicleMakeToolDto.cs" />
+    <Compile Include="DTOs\Profiles\DiagnosticToolProfile.cs" />
+    <Compile Include="DTOs\Interface\IRepairRequestScanDto.cs" />
+    <Compile Include="DTOs\Profiles\RegistrationAccountDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RegistrationDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RegistrationOptionsProfile.cs" />
+    <Compile Include="DTOs\Profiles\RegistrationShopDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RegistrationUserDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\ReleaseNoteDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\NoteDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RequestTypeDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\VehicleMakeToolDtoProfile.cs" />
+    <Compile Include="GridPageExtension.cs" />
+    <Compile Include="ServiceArgs.cs" />
+    <Compile Include="DTOs\Concrete\AccountDto.cs" />
+    <Compile Include="DTOs\Concrete\FeedbackDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopVehicleMakesPricingPlanDto.cs" />
+    <Compile Include="DTOs\Concrete\InvoiceDto.cs" />
+    <Compile Include="DTOs\Concrete\VehicleMakeDto.cs" />
+    <Compile Include="DTOs\Interface\IFeedbackDto.cs" />
+    <Compile Include="DTOs\Interface\IVehicleMakeTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IVehicleMakeDto.cs" />
+    <Compile Include="DTOs\Interface\IShopVehicleMakesPricingDto.cs" />
+    <Compile Include="DTOs\Profiles\FeedbackDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\UploadDto.cs" />
+    <Compile Include="DTOs\Interface\IInvoiceDto.cs" />
+    <Compile Include="DTOs\Profiles\AccountDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\AirProToolSubscriptionDto.cs" />
+    <Compile Include="DTOs\Concrete\AirProToolDto.cs" />
+    <Compile Include="DTOs\Profiles\AirProToolDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\AirProToolDepositDto.cs" />
+    <Compile Include="DTOs\Profiles\UploadDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\CurrencyDto.cs" />
+    <Compile Include="DTOs\Concrete\EstimatePlanDto.cs" />
+    <Compile Include="DTOs\Profiles\EstimatePlanDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\EstimatePlanVehicleDto.cs" />
+    <Compile Include="DTOs\Concrete\InsuranceCompanyDto.cs" />
+    <Compile Include="DTOs\Profiles\InsuranceCompanyDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\ShopInsuranceCompanyPlanDto.cs" />
+    <Compile Include="DTOs\Concrete\PointOfImpactDto.cs" />
+    <Compile Include="DTOs\Profiles\PricingPlanDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\PricingPlanLineItemDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RepairDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\RequestDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianProfileDto.cs" />
+    <Compile Include="DTOs\Profiles\TechnicianProfileDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianScheduleDto.cs" />
+    <Compile Include="DTOs\Concrete\TechnicianTimeOffDto.cs" />
+    <Compile Include="DTOs\Concrete\VehicleLookupDto.cs" />
+    <Compile Include="DTOs\Concrete\GroupDto.cs" />
+    <Compile Include="DTOs\Profiles\GroupDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\RepairDto.cs" />
+    <Compile Include="DTOs\Concrete\RepairDownloadDto.cs" />
+    <Compile Include="DTOs\Concrete\StateDto.cs" />
+    <Compile Include="DTOs\Profiles\VehicleMakeDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\WorkTypeDtoProfile.cs" />
+    <Compile Include="DTOs\Profiles\WorkTypeGroupDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\VehicleDto.cs" />
+    <Compile Include="DTOs\Interface\IAirProToolDepositDto.cs" />
+    <Compile Include="DTOs\Interface\IAirProToolSubscriptionDto.cs" />
+    <Compile Include="DTOs\Interface\IUploadDto.cs" />
+    <Compile Include="DTOs\Interface\IRequestDto.cs" />
+    <Compile Include="DTOs\Interface\IAirProToolDto.cs" />
+    <Compile Include="DTOs\Interface\ICurrencyDto.cs" />
+    <Compile Include="DTOs\Interface\IEstimatePlanDto.cs" />
+    <Compile Include="DTOs\Interface\IEstimatePlanVehicleDto.cs" />
+    <Compile Include="DTOs\Interface\IInsuranceCompanyDto.cs" />
+    <Compile Include="DTOs\Interface\IShopInsuranceCompanyPlanDto.cs" />
+    <Compile Include="DTOs\Interface\IPointOfImpactDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticControllerDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticFreezeFrameDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticFreezeFrameSensorDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticFreezeFrameSensorGroupDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticResultDto.cs" />
+    <Compile Include="DTOs\Interface\IDiagnosticTroubleCodeDto.cs" />
+    <Compile Include="DTOs\Interface\IPricingPlanDto.cs" />
+    <Compile Include="DTOs\Interface\IPricingPlanLineItemDto.cs" />
+    <Compile Include="DTOs\Interface\ITechnicianProfileDto.cs" />
+    <Compile Include="DTOs\Interface\IRepairDto.cs" />
+    <Compile Include="DTOs\Interface\IGridPageDto.cs" />
+    <Compile Include="DTOs\Concrete\RequestLogEntryDto.cs" />
+    <Compile Include="DTOs\Concrete\ShopDto.cs" />
+    <Compile Include="DTOs\Profiles\ShopDtoProfile.cs" />
+    <Compile Include="DTOs\Concrete\UpdateResultDto.cs" />
+    <Compile Include="DTOs\Concrete\UserDto.cs" />
+    <Compile Include="DTOs\Profiles\UserDtoProfile.cs" />
+    <Compile Include="DTOs\Interface\IAccountDto.cs" />
+    <Compile Include="DTOs\Interface\IGroupDto.cs" />
+    <Compile Include="DTOs\Interface\IPaymentDto.cs" />
+    <Compile Include="DTOs\Interface\IRepairDownloadDto.cs" />
+    <Compile Include="DTOs\Interface\IShopDto.cs" />
+    <Compile Include="DTOs\Interface\IStateDto.cs" />
+    <Compile Include="DTOs\Interface\ITechnicianScheduleDto.cs" />
+    <Compile Include="DTOs\Interface\IUpdateResultDto.cs" />
+    <Compile Include="DTOs\Interface\IUserDto.cs" />
+    <Compile Include="DTOs\Interface\IWorkTypeDto.cs" />
+    <Compile Include="DTOs\Interface\IWorkTypeGroupDto.cs" />
+    <Compile Include="DTOs\Concrete\WorkTypeDto.cs" />
+    <Compile Include="DTOs\Concrete\WorkTypeGroupDto.cs" />
+    <Compile Include="DTOs\Interface\IVehicleDto.cs" />
+    <Compile Include="DTOs\Concrete\PricingPlanDto.cs" />
+    <Compile Include="DTOs\Concrete\PricingPlanLineItemDto.cs" />
+    <Compile Include="DTOs\Concrete\RequestDto.cs" />
+    <Compile Include="DTOs\Interface\ITechnicianTimeOffDto.cs" />
+    <Compile Include="IServiceSettings.cs" />
+    <Compile Include="IServiceUser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceFactory.cs" />
+    <Compile Include="ServiceSettings.cs" />
+    <Compile Include="Services\Abstract\ServiceBase.cs" />
+    <Compile Include="Services\Concrete\AccountService.cs" />
+    <Compile Include="DTOs\Concrete\GridPageDto.cs" />
+    <Compile Include="DTOs\Profiles\StateDtoProfile.cs" />
+    <Compile Include="Services\Concrete\AirProToolService.cs" />
+    <Compile Include="Services\Concrete\BillingCycleService.cs" />
+    <Compile Include="Services\Concrete\ClientValidationService.cs" />
+    <Compile Include="Services\Concrete\CCCInsuranceCompanyService.cs" />
+    <Compile Include="Services\Concrete\EmployeeService.cs" />
+    <Compile Include="Services\Concrete\RegistrationOptionsService.cs" />
+    <Compile Include="Services\Concrete\CancelReasonTypeService.cs" />
+    <Compile Include="Services\Concrete\RepairCreateValidateShopService.cs" />
+    <Compile Include="Services\Concrete\RequestTypeService.cs" />
+    <Compile Include="Services\Concrete\RegistrationService.cs" />
+    <Compile Include="Services\Concrete\LocationService.cs" />
+    <Compile Include="Services\Concrete\DiagnosticQueueService.cs" />
+    <Compile Include="Services\Concrete\TroubleCodeRecommendationService.cs" />
+    <Compile Include="Services\Concrete\DecisionService.cs" />
+    <Compile Include="Services\Concrete\DiagnosticToolService.cs" />
+    <Compile Include="Services\Concrete\FeedbackService.cs" />
+    <Compile Include="Services\Concrete\InvoiceService.cs" />
+    <Compile Include="Services\Concrete\ReleaseNoteService.cs" />
+    <Compile Include="Services\Concrete\TechnicianCoverageService.cs" />
+    <Compile Include="Services\Concrete\RecentPaymentService.cs" />
+    <Compile Include="Services\Concrete\OutstandingInvoiceService.cs" />
+    <Compile Include="DTOs\Interface\IReportDiagnosticResultSelectionItemDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportDiagnosticResultSelectionItemDto.cs" />
+    <Compile Include="DTOs\Interface\IReportInternalNoteHistoryListItemDto.cs" />
+    <Compile Include="DTOs\Concrete\ReportInternalNoteHistoryListItemDto.cs" />
+    <Compile Include="Services\Concrete\ReportService.cs" />
+    <Compile Include="Services\Concrete\NoteService.cs" />
+    <Compile Include="Services\Concrete\UploadService.cs" />
+    <Compile Include="Services\Concrete\RequestService.cs" />
+    <Compile Include="Services\Concrete\EstimatePlanService.cs" />
+    <Compile Include="Services\Concrete\DiagnosticResultService.cs" />
+    <Compile Include="Services\Concrete\InsuranceCompanyService.cs" />
+    <Compile Include="Services\Concrete\PricingPlanService.cs" />
+    <Compile Include="Services\Concrete\TechnicianProfileService.cs" />
+    <Compile Include="Services\Concrete\UserAccountService.cs" />
+    <Compile Include="Services\Concrete\UserPreferenceService.cs" />
+    <Compile Include="Services\Concrete\UserShopService.cs" />
+    <Compile Include="Services\Concrete\ValidationRuleService.cs" />
+    <Compile Include="Services\Concrete\VehicleMakeTypeService.cs" />
+    <Compile Include="Services\Concrete\VehicleMakeService.cs" />
+    <Compile Include="Services\Concrete\VehicleService.cs" />
+    <Compile Include="Services\Concrete\PaymentService.cs" />
+    <Compile Include="Services\Concrete\RepairService.cs" />
+    <Compile Include="Services\Concrete\StateService.cs" />
+    <Compile Include="Services\Concrete\GroupService.cs" />
+    <Compile Include="Services\Concrete\ShopService.cs" />
+    <Compile Include="Services\Concrete\UserService.cs" />
+    <Compile Include="Services\Concrete\WorkTypeGroupService.cs" />
+    <Compile Include="Services\Concrete\WorkTypeService.cs" />
+    <Compile Include="Services\Interface\IService.cs" />
+    <Compile Include="IServiceFactory.cs" />
+    <Compile Include="ServiceUser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AirPro.Common\AirPro.Common.csproj">
+      <Project>{469d19db-ccf9-45a1-825a-5d47c44d1bfb}</Project>
+      <Name>AirPro.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Entities\AirPro.Entities.csproj">
+      <Project>{c4734dca-e58e-4b05-b16f-b9b1b479d13a}</Project>
+      <Name>AirPro.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Logging\AirPro.Logging.csproj">
+      <Project>{E49250A2-4B1B-4B20-9A21-3DE4FCF391A2}</Project>
+      <Name>AirPro.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AirPro.Storage\AirPro.Storage.csproj">
+      <Project>{97a3a131-740c-4a1c-ad9b-fcdcc7bab842}</Project>
+      <Name>AirPro.Storage</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

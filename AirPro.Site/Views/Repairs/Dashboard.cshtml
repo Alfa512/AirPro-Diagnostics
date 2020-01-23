@@ -1,0 +1,942 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Repair Dashboard";
+
+    var canEdit = HttpContext.Current.User.IsInRole(ApplicationRoles.RepairEdit.ToString());
+    var canCreate = HttpContext.Current.User.IsInRole(ApplicationRoles.RepairCreate.ToString());
+}
+
+@section Styles {
+    <style type="text/css">
+        ul.pagination {
+            margin: 10px;
+        }
+
+        .dataGrid {
+            margin-top: 10px;
+        }
+
+        .panel-heading > .bootgrid-header {
+            margin: 0;
+        }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+        .panel-heading {
+            padding: 5px 10px;
+        }
+
+        .panel-title {
+            margin: 2px;
+            font-size: 20px;
+        }
+
+            .panel-title > .btn {
+                color: black;
+            }
+
+        .dropdown-item {
+            color: black;
+        }
+
+        a.column-header-anchor {
+            color: gray !important;
+            text-decoration: none;
+        }
+
+        #repairs .panel,
+        #repairs .table-responsive {
+            overflow: visible !important;
+        }
+
+        #gridSearch > .bootgrid-header, #aging-repairs-grid-header.bootgrid-header {
+            margin: 0;
+        }
+
+        .panel-heading #gridSearch,
+        .panel-heading #addNew {
+            padding-top: 2px;
+        }
+
+        #status {
+            width: 125px;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .repairMenu {
+            overflow: visible !important;
+        }
+
+        @@media screen and (max-width: 991px) {
+            .bootgrid-header .actionBar {
+                text-align: left !important;
+            }
+
+            .panel-heading #gridSearch,
+            .panel-heading #addNew {
+                padding-top: 4px;
+            }
+        }
+
+        .aging-repairs-grid-cnt {
+            max-height: 600px;
+            overflow: auto;
+        }
+
+        .close-repair-checkbox {
+            margin-left: 15px !important;
+        }
+
+        #grpActions .btn-group {
+            border: none !important;
+        }
+
+        .glyphicon-ban-circle {
+            color: #c12e2a;
+        }
+
+        .glyphicon-ok-circle {
+            color: green;
+        }
+
+        .reports-menu li {
+            padding: 1px;
+        }
+    </style>
+}
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6 col-lg-8">
+        <h2 style="margin: 0;">@ViewBag.Title</h2>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        @if ((ViewBag?.ShopSelectListItems?.Count ?? 0) == 1)
+        {
+            @Html.DropDownList("ShopGuid", new SelectList(ViewBag.ShopSelectListItems, "Value", "Text"), new { @class = "form-control col-md-4", disabled = true })
+        }
+        else if ((ViewBag?.ShopSelectListItems?.Count ?? 0) > 1)
+        {
+            @Html.DropDownList("ShopGuid", new SelectList(ViewBag.ShopSelectListItems, "Value", "Text"), "<-- All Shops -->", new { @class = "form-control col-md-4" })
+        }
+    </div>
+</div>
+
+<hr />
+
+@if (!String.IsNullOrWhiteSpace(ViewBag.Notice))
+{
+    <div class="alert alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Notice:</strong> @ViewBag.Notice
+    </div>
+}
+
+<div class="alert alert-success alert-dismissible" role="alert" id="alertRepair" style="display: none;">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Notice:</strong><span class="msg"></span>
+</div>
+
+<div id="repairs" class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-1">
+                <h4 class="panel-title">
+                    <span style="position: relative; top: 2px;">Repairs</span>
+                </h4>
+            </div>
+            <div class="col-md-4" id="addNew">
+                @AddRepairButton()
+                @AddSelfScanButton()
+                @AddScanAnalysisButton()
+            </div>
+            <div class="col-md-7" id="gridSearch">
+                @Html.DropDownList("status", SelectListItemCache.RepairStatusSelectItems(), new { @class = "form-control input-sm" })
+            </div>
+        </div>
+    </div>
+    <div style="overflow-y: auto;">
+        <div style="min-width: 700px;">
+            <table id="repairs-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                <thead>
+                    <tr>
+                        <th data-column-id="repairMenu" data-visible-in-selection="false" data-formatter="repairMenu" data-sortable="false" data-align="center" data-css-class="repairMenu"></th>
+                        <th data-column-id="repairId" data-identifier="true" data-visible="true" data-visible-in-selection="true">Repair ID</th>
+                        <th data-column-id="repairStatusName">Repair Status</th>
+                        <th data-column-id="shopName">Shop Name</th>
+                        <th data-column-id="shopRONumber">RO Number</th>
+                        <th data-column-id="insuranceCompanyDisplay" data-visible="false">Insurance Co</th>
+                        <th data-column-id="insuranceReferenceNumber" data-visible="false">Claim Number</th>
+                        <th data-column-id="vehicleVIN">Vehicle VIN</th>
+                        <th data-column-id="vehicleMake">Vehicle Make</th>
+                        <th data-column-id="vehicleModel">Vehicle Model</th>
+                        <th data-column-id="vehicleYear" data-visible="false">Vehicle Year</th>
+                        <th data-column-id="vehicleTransmission" data-visible="false">Vehicle Tran</th>
+                        <th data-column-id="vehicleManualEntryInd" data-visible="false" data-converter="bool" data-align="center" data-sortable="false">Vehicle Manual Entry</th>
+                        <th data-column-id="odometer" data-visible="false">Odometer</th>
+                        <th data-column-id="airBagsDeployed" data-visible="false" data-converter="bool" data-align="center" data-sortable="false">Air Bags Deployed</th>
+                        <th data-column-id="drivableInd" data-visible="false" data-converter="bool" data-align="center" data-sortable="false">Drivable</th>
+                        <th data-column-id="createdBy" data-visible="false">Created By</th>
+                        <th data-column-id="createdDt" data-converter="date">Created Date</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@helper AddRepairButton()
+{
+    if (User.IsInRole(ApplicationRoles.RepairCreate.ToString()))
+    {
+        <button id="btnAddNew" class="btn btn-sm btn-default" style="margin-right: 10px;"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add&nbsp;Repair</button>
+    }
+}
+
+@helper AddSelfScanButton()
+{
+    if (User.IsInRole(ApplicationRoles.RepairCreate.ToString()))
+    {
+        if (ViewBag?.SelfScanShops?.Count > 0 ?? false)
+        {
+            if (ViewBag?.SelfScanShops?.Count > 1 ?? false)
+            {
+                <div class="btn-group" style="margin-right: 10px;">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="glyphicon glyphicon-plus"></i>&nbsp;Self Scan&nbsp;<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var shop in ViewBag.SelfScanShops)
+                        {
+                            <li><a style="cursor: pointer" onclick="newSelfScan('@shop.Value');">@shop.Text</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <button type="button" style="margin-right: 10px;" class="btn btn-success btn-sm" onclick="newSelfScan('@ViewBag.SelfScanShops[0].Value');"><i class="glyphicon glyphicon-plus"></i>&nbsp;Self Scan</button>
+            }
+        }
+    }
+}
+
+@helper AddScanAnalysisButton()
+{
+    if (User.IsInRole(ApplicationRoles.RepairCreate.ToString()))
+    {
+        if (ViewBag?.ScanAnalysisShops?.Count > 0 ?? false)
+        {
+            if (ViewBag?.ScanAnalysisShops?.Count > 1 ?? false)
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="glyphicon glyphicon-plus"></i>&nbsp;Scan Analysis&nbsp;<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var shop in ViewBag.ScanAnalysisShops)
+                        {
+                            <li><a style="cursor: pointer" onclick="newScanAnalysis('@shop.Value');">@shop.Text</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <button type="button" class="btn btn-success btn-sm" onclick="newScanAnalysis('@ViewBag.ScanAnalysisShops[0].Value');"><i class="glyphicon glyphicon-plus"></i>&nbsp;Scan Analysis</button>
+            }
+        }
+    }
+}
+
+@if (ViewBag?.ScanAnalysisShops?.Count > 0 ?? false)
+{
+    <div class="modal fade" id="scanAnalysisModal" tabindex="-1" role="dialog" aria-labelledby="scanAnalysisModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scanAnalysisModalLabel">New Scan Analysis</h4>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="scanAnalysis.submit();" @Html.DisableOnAjax(DisableButtonType.Submit, "Create")>Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function newScanAnalysis(shopGuid) {
+            $('#scanAnalysisModal .modal-body').load('@Url.Action("StartScanAnalysis")/' + shopGuid);
+            $('#scanAnalysisModal').modal('show');
+        }
+    </script>
+}
+
+@if (ViewBag?.SelfScanShops?.Count > 0 ?? false)
+{
+    <div class="modal fade" id="selfScanModal" tabindex="-1" role="dialog" aria-labelledby="selfScanModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="selfScanModalLabel">New Self Scan</h4>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="selfScanCreate();" @Html.DisableOnAjax(DisableButtonType.Submit, "Create")>Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function newSelfScan(shopGuid) {
+            $('#selfScanModal .modal-body').load('@Url.Action("StartSelfScan")/' + shopGuid);
+            $('#selfScanModal').modal('show');
+        }
+    </script>
+}
+
+@if (ViewBag.ShowAgingRepairs == true && !User.IsInRole(ApplicationRoles.ShopShowAll.ToString()) && !User.IsInRole(ApplicationRoles.AccountShowAll.ToString()))
+{
+    <div class="modal fade" id="agingRepairsModal" tabindex="-1" role="dialog" aria-labelledby="agingRepairsModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="agingRepairsModalLabel">Aging Repairs</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 15px;">The Repairs below will be closed automatically when you click the save button. Please uncheck any that you wish to leave open.</p>
+                    <div id="aging-repairs" class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <h4 class="panel-title">
+                                        <span style="position: relative; top: 2px;">Repairs</span>
+                                    </h4>
+                                </div>
+                                <div class="col-sm-8" id="agingRepairsGridSearch">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div style="overflow-y: auto;">
+                            <div class="aging-repairs-grid-cnt">
+                                <table id="aging-repairs-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-column-id="repairId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-sortable="false" data-formatter="agingCheckbox" data-width="65">Close</th>
+                                            <th data-column-id="shopRONumber">RO#</th>
+                                            <th data-column-id="vehicleVIN" data-width="175">Vehicle VIN</th>
+                                            <th data-column-id="vehicleMake">Make</th>
+                                            <th data-column-id="vehicleModel">Model</th>
+                                            <th data-column-id="vehicleYear">Year</th>
+                                            <th data-column-id="createdDt" data-width="165" data-converter="date">Created</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary aging-repairs-save" onclick="closeSelectedAgedRepairs();">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var agingPopupTracked;
+        $('#aging-repairs-grid').bootgrid({
+            url: '@Url.Action("GetAgingRepairsByPage")',
+            rowCount: [-1],
+            searchSettings: {
+                delay: 500,
+                characters: 1
+            },
+            formatters: {
+                "agingCheckbox": function(column, row) {
+                    return agingCheckbox(row);
+                }
+            },
+            converters: {
+                date: {
+                    to: function(value) { return moment(value).format('MM/DD/YYYY hh:mm A'); }
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid",
+            function(e) {
+                if ($('#aging-repairs-grid tbody tr .no-results').length == 0) {
+                    $('#agingRepairsModal').modal('show');
+                    if (!agingPopupTracked) {
+                        $.post('@Url.Action("TrackAgingRepairsModalShown")');
+                        agingPopupTracked = true;
+                    }
+                }
+            });
+
+        $("#aging-repairs-grid").bootgrid("sort", { CreatedDt: 'ASC' });
+        $('#aging-repairs-grid-header').appendTo('#agingRepairsGridSearch');
+        $('.panel-heading .btn-group').addClass('btn-group-sm');
+        $('.panel-heading .input-group').addClass('input-group-sm');
+
+        function closeSelectedAgedRepairs() {
+            $('.aging-repairs-save').attr('disabled', 'disabled');
+            var repairIdsToClose = $(".close-repair-checkbox:checked").map(function(){
+                return $(this).val();
+            }).get();
+
+            if (repairIdsToClose && repairIdsToClose.length > 0) {
+                $.post('@Url.Action("CloseAgingRepairs")', { repairIds: repairIdsToClose }).then(function() {
+                    $('#agingRepairsModal').modal('hide');
+                    $('.aging-repairs-save').removeAttr('disabled');
+                    $('#repairs-grid').bootgrid("reload");
+                });
+            } else {
+                $('#agingRepairsModal').modal('hide');
+                $('.aging-repairs-save').removeAttr('disabled');
+                $('#repairs-grid').bootgrid("reload");
+            }
+        }
+
+        function agingCheckbox(repair) {
+            return "<input type='checkbox' value='" +
+                repair.repairId +
+                "' class='close-repair-checkbox' checked='checked' />";
+        }
+    </script>
+}
+
+@if (User.IsInRole(ApplicationRoles.RepairCreate.ToString()))
+{
+    @Html.Action("CreateRepair", "Repairs")
+}
+
+@if (User.IsInRole(ApplicationRoles.RepairCreate.ToString()) || User.IsInRole(ApplicationRoles.RepairEdit.ToString()))
+{
+    @Html.Partial("_Complete")
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        var scanRequestHub = $.connection.scanRequestHub;
+        $.connection.hub.start();
+
+        function updateScanAction(scan, title, btnClass, action) {
+            $('#repairs-grid tbody tr').each(function(index) {
+                var tr$ = $(this);
+
+                var rowId = tr$.data('row-id');
+                if (rowId === scan.RepairId) {
+                    var button$ = $(tr$.find(".scan-request-status-button"));
+                    button$.removeClass('btn-default btn-warning btn-primary');
+                    button$.attr('title', title).tooltip('fixTitle');
+                    button$.addClass(btnClass);
+                    action(scan, tr$, button$);
+                }
+            });
+        }
+
+        scanRequestHub.client.removeScanRequest = function(scan) {
+            updateScanAction(scan,
+                'Request Scan',
+                'btn-primary',
+                function(scan, tr$, button$) {
+                    button$.attr('href', getRequestScanLink(scan.RepairId));
+                    button$.parent().append(getCompleteMenuBtn());
+
+                    if (scan.RequestTypeId === 3 || scan.RequestTypeId === 7) {
+                        $("#repairs-grid").bootgrid('reload');
+                    }
+                });
+        };
+
+        scanRequestHub.client.addScanRequest = function(scan) {
+            updateScanAction(scan,
+                'Scan Requested',
+                'btn-default',
+                function(scan, tr$, button$) {
+                    tr$.find(".btn-complete").remove();
+                });
+        }
+
+        scanRequestHub.client.updateScanRequest = function(scan) {
+            var title = 'Request In Progress';
+            if (scan.TechnicianName) {
+                title = title + '<br/>' + scan.TechnicianName;
+            }
+
+            updateScanAction(scan,
+                title,
+                'btn-warning',
+                function(scan, tr$, button$) {});
+        };
+
+        $(document).ready(function() {
+            $('#repairs-grid-header').appendTo('#gridSearch');
+            $('#status').prependTo('#repairs-grid-header .actionBar');
+            $('.panel-heading .btn-group').addClass('btn-group-sm');
+            $('.panel-heading .input-group').addClass('input-group-sm');
+
+            $('#status').on('change',
+                function() {
+                    $('#repairs-grid').bootgrid("reload");
+                });
+
+            $('#ShopGuid').on('change',
+                function() {
+                    $('#repairs-grid').bootgrid("reload");
+                });
+
+            $('.repair-uncomplete')
+                .on('click',
+                    function(e) {
+                        if (!confirm('The will uncomplete this Repair, are you sure you wish to continue?'))
+                            e.preventDefault();
+                    });
+
+            $('#selfScanModal').on('hidden.bs.modal',
+                function(e) {
+                    $('#selfScanModal .modal-body').html('<i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...');
+                });
+
+            $('#scanAnalysisModal').on('hidden.bs.modal',
+                function(e) {
+                    $('#scanAnalysisModal .modal-body')
+                        .html('<i class="fa fa-refresh fa-spin"></i>&nbsp;&nbsp;Loading...');
+                });
+
+            moveActionMenu();
+            $(window).resize(moveActionMenu);
+        });
+
+        function moveActionMenu() {
+            var menu = $('.actionBar .actions');
+            if (menu && $(menu).offset().left < 27) {
+                $(menu).find('.dropdown-menu.pull-right').removeClass('pull-right').addClass('pull-left');
+            } else {
+                $(menu).find('.dropdown-menu.pull-left').removeClass('pull-left').addClass('pull-right');
+            }
+        }
+
+        function getRequestScanLink(repairId) {
+            return '@Url.Action("RequestScan", "Repairs")/' + repairId;
+        }
+
+        function getMenuBtn(btnClass, icon, title, url, customClass) {
+            var btn =
+                "<a href='{3}' class='btn btn-{0} {4}' data-toggle='tooltip' data-html='true' data-placement='top' title='{2}'><i class='glyphicon glyphicon-{1}'></i></a>";
+
+            return btn.format(btnClass, icon, title, url, customClass);
+        }
+
+        function getCompleteMenuBtn() {
+            return getMenuBtn('danger',
+                'ok',
+                'Complete&nbsp;Repair',
+                '#',
+                'btn-complete');
+        }
+
+        function repairMenu(repair) {
+            var reportCount = 0;
+            repair.repairDownloads.map(d => d.downloadType).forEach(function(type) {
+                if (type === 'Report') reportCount++;
+            });
+
+            var result = "<div id='grpActions' class='btn-group btn-group-sm pull-left' role='group'>";
+            if (repair.repairStatusId && repair.repairStatusId == @Html.Raw((int) RepairStatuses.Active)) {
+                if (repair.activeRequestId) {
+                    if (repair.activeRequestInProgressInd) {
+                        var reqTech = '';
+                        if (repair.activeRequestTechnician != null) {
+                            reqTech = '<br/>Tech: ' + repair.activeRequestTechnician;
+                        }
+                        result += getMenuBtn('warning',
+                            'wrench',
+                            'Request&nbsp;In&nbsp;Progress' + reqTech,
+                            '#',
+                            'scan-request-status-button');
+                    } else {
+                        result += getMenuBtn('default',
+                            'wrench',
+                            'Scan&nbsp;Requested',
+                            '#',
+                            'scan-request-status-button');
+                    }
+                } else {
+                    if (repair.allowedShopRequestTypesCount > 0 && reportCount < 10) {
+                        result += getMenuBtn('primary',
+                            'wrench',
+                            'Request&nbsp;Scan',
+                            getRequestScanLink(repair.repairId),
+                            'scan-request-status-button');
+                    }
+                }
+            }
+
+            if (repair.repairStatusId && repair.repairStatusId == @((int) RepairStatuses.Invoiced) ||
+                repair.repairStatusId == @((int) RepairStatuses.Paid))
+                result += getMenuBtn('primary',
+                    'usd',
+                    'View&nbsp;Invoice',
+                    '@Url.Action("Invoice", "Download")/' +
+                    repair.repairId);
+
+            if (repair.repairDownloads && repair.repairDownloads.length > 0) {
+                result += "<div class='btn-group' role='group' data-toggle='tooltip' data-placement='top' title='Downloads'>";
+                result += "<button type='button' class='btn btn-success btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
+                result += "<i class='glyphicon glyphicon-file'></i>";
+                result += "<span class='caret'></span></button>";
+                result += "<ul class='dropdown-menu dropdown-menu-left reports-menu' role='menu'>";
+
+                var files = "";
+                var reports = "";
+                var option = "<li><a href='{0}' style='color: black;'><i class='glyphicon {1} icon-margin-right'></i>&nbsp;{2}</a></li>";
+                repair.repairDownloads.forEach(function (download) {
+                    switch (download.downloadType) {
+                        case 'Report':
+                            reports += option.format(
+                                '@Url.Action("ScanReport", "Download")/' + download.downloadId, 
+                                'glyphicon-ok-circle',
+                                "{0}&nbsp;Report&nbsp;({1})".format(download.displayName, download.downloadId));
+                            break;
+                        case 'Cancelled':
+                            reports += option.format(
+                                '@Url.Action("ScanReport", "Download")/' + download.downloadId, 
+                                'glyphicon-ban-circle',
+                                "{0}&nbsp;Report&nbsp;({1})".format(download.displayName, download.downloadId));
+                            break;
+                        case 'File':
+                            files += option.format(
+                                '@Url.Action("File", "Download")/' + download.downloadId,
+                                'glyphicon-file',
+                                download.displayName);
+                            break;
+                    }
+                });
+
+                result += reports;
+                if (reports && reports.length > 0 && files && files.length > 0)
+                    result += '<li role="separator" class="divider" style="margin: 4px 0;"></li>';
+                result += files;
+
+                result += "</ul></div>";
+            }
+
+            if (repair.estimateInd) {
+                result += getMenuBtn('primary',
+                    'save-file',
+                    'Repair&nbsp;Assessment',
+                    '@Url.Action("Estimate", "Download")/' + repair.repairId);
+            }
+
+            @if (!canEdit)
+            {
+                <text>
+                    result += getMenuBtn('info',
+                        'info-sign',
+                        'Repair&nbsp;Info',
+                        '#',
+                        'btn-details');
+                </text>
+            }
+
+            @if (canEdit || canCreate)
+            {
+                <text>
+                    if (repair.repairStatusId && repair.repairStatusId == @((int) RepairStatuses.Completed) ||
+                        repair.repairStatusId == @((int) RepairStatuses.Canceled))
+                        result += getMenuBtn('warning repair-uncomplete',
+                            'open',
+                            'Reopen&nbsp;Repair',
+                            '#',
+                            'btn-uncomplete');
+                </text>
+            }
+
+            @if (canEdit)
+            {
+                <text>
+                    if (repair.repairStatusId && repair.repairStatusId == @((int) RepairStatuses.Active)) {
+                        result += getMenuBtn('warning',
+                            'edit',
+                            'Edit&nbsp;Repair',
+                            '#',
+                            'btn-edit');
+
+                        if (!repair.activeRequestId)
+                            result += getCompleteMenuBtn();
+                    } else {
+                        result += getMenuBtn('info',
+                            'info-sign',
+                            'Repair&nbsp;Info',
+                            '#',
+                            'btn-details');
+
+                        result += getMenuBtn('warning',
+                            'duplicate',
+                            'Clone',
+                            '@Url.Action("Clone")/' + repair.repairId,
+                            'scan-request-status-button');
+                    }
+                </text>
+            }
+
+            result += '</div>';
+
+            return result;
+        }
+
+        $("#repairs-grid").bootgrid({
+            url: '@Url.Action("GetRepairsByPage")',
+            post: function() {
+                return {
+                    statusFilter: $('#status').val(),
+                    shopGuid: $('#ShopGuid').val()
+                }
+            },
+            rowCount: [10, 25, 50, 100],
+            searchSettings: {
+                delay: 500,
+                characters: 4
+            },
+            formatters: {
+                "repairMenu": function(column, row) {
+                    return repairMenu(row);
+                }
+            },
+            converters: {
+                bool: {
+                    to: function(value) {
+                        return value
+                            ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                            : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+                    }
+                },
+                date: {
+                    to: function(value) { return moment(value).format('MM/DD/YYYY hh:mm A'); }
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid",
+            function(e) {
+                var widthList = [];
+                var maxWidth = 0;
+                var requiredWidth = 0;
+                var tableWidth = $('table#repairs-grid').width();
+
+                var columns = $('#repairs-grid thead tr th');
+                for (var i = 1; i < columns.length + 1; i++) {
+                    var columnCells = $('#repairs-grid tbody td:nth-child(' + i + ')');
+                    maxWidth = getMaxWidth(columnCells) + 10;
+                    requiredWidth += maxWidth;
+                    widthList.push(maxWidth);
+                }
+
+                var differenceWidth = tableWidth - requiredWidth;
+
+                for (var i = 0; i < widthList.length; i++) {
+                    maxWidth = widthList[i];
+
+                    if (differenceWidth > 0) {
+                        var th = $(columns[i]).find('a span.text');
+                        var width = calcTextWidth(th.text(), th) +
+                            16 +
+                            10 +
+                            2; // 16 is margin and 10 is padding and 2 in case edge case
+                        if (width > maxWidth) {
+                            var columnWidthDifference = width - maxWidth;
+                            if (differenceWidth >= columnWidthDifference) {
+                                differenceWidth -= columnWidthDifference;
+                                maxWidth = width;
+                            }
+                        }
+                    }
+
+                    $(columns[i]).css('width', maxWidth);
+                }
+
+
+                $(".dropdown-toggle").dropdown();
+
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]',
+                    container: 'body'
+                });
+
+                //Edit functionality
+                $('a.btn-edit, a.btn-details').on('click',
+                    '',
+                    function(e) {
+                        e.preventDefault();
+                        var repairId = $(this).parents('tr').attr('data-row-id');
+
+                        var classList = [];
+                        if (e.target.tagName === "I") {
+                            classList = $(e.target).parent().attr('class').split(/\s+/);
+                        } else {
+                            classList = $(e.target).attr('class').split(/\s+/);
+                        }
+
+                        var editMode = true;
+                        $.each(classList,
+                            function(index, item) {
+                                if (item === 'btn-details') {
+                                    editMode = false;
+                                }
+                            });
+
+                        var $q = $.post('@Url.Action("EditRepair", "Repairs")',
+                            { id: repairId, editMode: editMode },
+                            function(response) {
+                                window.repairViewModel.showDialog(true);
+
+                                var repair = response.RepairOrder;
+                                var vehicle = response.Vehicle;
+
+                                var selected = ko.utils.arrayFirst(window.repairViewModel.vehicles(),
+                                    function(item) {
+                                        return item.Value == vehicle.VehicleMakeId;
+                                    });
+
+                                var vehicleObj = new Vehicle(
+                                    vehicle.VehicleVIN,
+                                    vehicle.VehicleMakeId,
+                                    vehicle.VehicleModel,
+                                    vehicle.VehicleYear,
+                                    vehicle.VehicleTransmission,
+                                    vehicle.VehicleMakeTypeName,
+                                    selected);
+
+                                var repairObj = new Repair(
+                                    repair.RepairId,
+                                    repair.ShopGuid,
+                                    repair.ShopRONumber,
+                                    repair.InsuranceCompanyId,
+                                    repair.InsuranceCompanyOther,
+                                    repair.InsuranceReferenceNumber,
+                                    repair.Odometer,
+                                    repair.AirBagsDeployed,
+                                    repair.DrivableInd,
+                                    repair.AirBagsVisualDeployments);
+
+                                window.repairViewModel.readOnly(response.ReadOnly);
+                                window.repairViewModel.editMode(repair.RepairId > 0);
+
+                                setTimeout(function() {
+                                        window.repairViewModel.repair(repairObj);
+                                        window.repairViewModel.vehicle(vehicleObj);
+                                        window.repairViewModel.vehicleVin(response.Vehicle.VehicleVIN);
+                                    },
+                                    50); // setTimout is required here b/c change of showDialog trigger reset repair and it happens after we set repair
+
+                                //Clear image selection
+                                $.each($('.poi-imageV2'),
+                                    function() {
+                                        clearLocation($(this));
+                                    });
+
+                                //set image selection
+                                $.each(repair.PointsOfImpact,
+                                    function() {
+                                        setLocation(this);
+                                    });
+                            });
+                    });
+
+                //Complete functionality
+                $('#repairs-grid tbody').on('click',
+                    'a.btn-complete, a.btn-uncomplete',
+                    function(e) {
+                        e.preventDefault();
+
+                        var repairId = $(this).parents('tr').attr('data-row-id');
+
+                        var request = { status: 'complete' };
+                        var classList = [];
+                        if (e.target.tagName === "I") {
+                            classList = $(e.target).parent().attr('class').split(/\s+/);
+                        } else {
+                            classList = $(e.target).attr('class').split(/\s+/);
+                        }
+                        window.feedbackVm.incomplete(false);
+                        window.feedbackVm.dialogTitle('Complete Repair');
+                        $.each(classList,
+                            function(index, item) {
+                                if (item === 'btn-uncomplete') {
+                                    request.status = 'uncomplete';
+                                    window.feedbackVm.incomplete(true);
+                                    window.feedbackVm.dialogTitle('Reopen Repair');
+                                }
+                            });
+
+                        window.feedbackVm.showDialog(true);
+                        window.feedbackVm.repairId(repairId);
+                        $('.tooltip:visible').remove();
+                    });
+            });
+
+        $('#btnAddNew').click(function() {
+            window.repairViewModel.showDialog(true);
+            setTimeout(function() {
+                    window.repairViewModel.btnText('Create');
+                    window.repairViewModel.btnText2('Create And Request');
+                    window.repairViewModel.readOnly(false);
+                    window.repairViewModel.editMode(false);
+
+                    //Clear image selection
+                    $.each($('.poi-imageV2'),
+                        function() {
+                            clearLocation($(this));
+                        });
+                },
+                200);
+        });
+
+        $('.poi-imageV2').prop('readonly', true);
+
+        function getMaxWidth(columnCells$) {
+            var widthArray = columnCells$.map(function() {
+                return calcTextWidth($(this).text(), $(this));
+            }).get();
+            return Math.max.apply(Math, widthArray);
+        }
+
+        function calcTextWidth(text, parentElem) {
+            var grpActions = parentElem.find('#grpActions').children();
+            if (grpActions.length > 0) {
+                var w = 0;
+                grpActions.each(function(index, item) {
+                    w += $(item).outerWidth();
+                });
+                return w + 10;
+            }
+
+            var hasIcon = parentElem.find(".glyphicon ").length > 0;
+            if (hasIcon) {
+                return 30;
+            }
+
+            var elem = $("<span></span>").css("display", "none").text(text);
+            parentElem.append(elem);
+            var width = elem.width();
+            elem.remove();
+            return width;
+        }
+    </script>
+}

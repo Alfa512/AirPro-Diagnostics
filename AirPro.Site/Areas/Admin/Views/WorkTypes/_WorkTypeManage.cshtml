@@ -1,0 +1,117 @@
+﻿@using AirPro.Site.Helpers
+@model AirPro.Site.Areas.Admin.Models.WorkTypes.WorkTypeViewModel
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshWorkTypeGroups();
+                    refreshWorkTypes();
+                    updateComplete("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+<script>
+    function vehicleMakeSelectAll() {
+        $('[name="WorkTypeVehicleMakeIds"]').prop('checked', true);
+    }
+
+    function vehicleMakeUnSelectAll() {
+        $('[name="WorkTypeVehicleMakeIds"]').prop('checked', false);
+    }
+</script>
+
+<style>
+    a {
+        cursor: pointer;
+    }
+
+    .well {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.WorkTypeId)
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeGroupId, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(model => model.WorkTypeGroupId, ViewBag.GroupTypeSelection as List<SelectListItem>, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.WorkTypeGroupId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.WorkTypeName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WorkTypeName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeRequestTypeIds, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.MultiCheckBoxListFor(model => model.WorkTypeRequestTypeIds, Model?.WorkTypeRequestTypeSelectListItems?.ToList(), 1)
+                @Html.ValidationMessageFor(model => model.WorkTypeRequestTypeIds, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.WorkTypeVehicleMakeIds, htmlAttributes: new { @class = "control-label" })
+                <div style="font-size: 11px;">
+                    <a onclick="vehicleMakeSelectAll();">Select All</a> | <a onclick="vehicleMakeUnSelectAll();">Un-Select All</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                @Html.MultiCheckBoxListFor(model => model.WorkTypeVehicleMakeIds, Model?.WorkTypeVehicleMakeSelectListItems?.ToList(), 2)
+                @Html.ValidationMessageFor(model => model.WorkTypeVehicleMakeIds, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeSortOrder, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.WorkTypeSortOrder, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WorkTypeSortOrder, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeDescription, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.WorkTypeDescription, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WorkTypeDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkTypeActiveInd, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.WorkTypeActiveInd)
+                    @Html.ValidationMessageFor(model => model.WorkTypeActiveInd, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+}

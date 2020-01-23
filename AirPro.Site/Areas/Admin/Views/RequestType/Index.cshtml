@@ -1,0 +1,31 @@
+﻿@model IEnumerable<AirPro.Library.Models.Concrete.ScanRequestTypeEditViewModel>
+@using GridMvc.Html
+@using GridMvc.Sorting
+
+@{
+    ViewBag.Title = "Request Types";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.TypeName).Titled("Request Name").Sortable(true);
+    columns.Add(x => x.ActiveFlag).Titled("Active Flag").Sortable(true);
+    columns.Add(x => x.BillableFlag).Titled("Billable Flag").Sortable(true);
+    columns.Add(x => x.DefaultPrice).Titled("Default Price").Sortable(true).Format("{0:c}");
+    columns.Add(x => x.SortOrder).Titled("Sort Order").Sortable(true).SortInitialDirection(GridSortDirection.Ascending);
+    columns.Add(x => x.UpdatedBy).Titled("Last Updated By").Sortable(true);
+    columns.Add(x => x.UpdatedDt).Titled("Last Updated").Sortable(true);
+    columns.Add().Encoded(false).Sanitized(false).Titled("").SetWidth(100).RenderValueAs(x => (RequestType(x.RequestTypeID.ToString()))).Filterable(false);
+}).WithPaging(25).Filterable(true)
+
+@helper RequestType(string requestId)
+{
+    <div class='btn-group btn-group-sm' role='group'>
+        <a href='@Url.Action("Details", "RequestType", new {ID = requestId})' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Details'><i class='glyphicon glyphicon-info-sign'></i></a>
+        <a href='@Url.Action("Edit", "RequestType", new {ID = requestId})' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Edit'><i class='glyphicon glyphicon-edit'></i></a>
+    </div>
+}

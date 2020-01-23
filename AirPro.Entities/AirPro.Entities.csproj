@@ -1,0 +1,2515 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C4734DCA-E58E-4B05-B16F-B9B1B479D13A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AirPro.Entities</RootNamespace>
+    <AssemblyName>AirPro.Entities</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="UniMatrix.Common">
+      <HintPath>..\UniMatrix.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Access\AccountArchiveEntityModel.cs" />
+    <Compile Include="Access\AccountEntityModel.cs" />
+    <Compile Include="Access\GroupArchiveEntityModel.cs" />
+    <Compile Include="Access\GroupRoleArchiveEntityModel.cs" />
+    <Compile Include="Access\RegistrationAccountEntityModel.cs" />
+    <Compile Include="Access\RegistrationEntityModel.cs" />
+    <Compile Include="Access\RegistrationShopEntityModel.cs" />
+    <Compile Include="Access\RegistrationUserEntityModel.cs" />
+    <Compile Include="Access\ShopContactEntityModel.cs" />
+    <Compile Include="Access\ShopRequestTypeEntityModel.cs" />
+    <Compile Include="Billing\BillingCycleEntityModel.cs" />
+    <Compile Include="Billing\ShopInsuranceCompanyEstimateEntityModel.cs" />
+    <Compile Include="Common\NoteEntityModel.cs" />
+    <Compile Include="Common\NoteTypeEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticResultTroubleCodeEntityModel.cs" />
+    <Compile Include="Migrations\3.2.0\201902280705360_APD-2107.cs" />
+    <Compile Include="Migrations\3.2.0\201902280705360_APD-2107.Designer.cs">
+      <DependentUpon>201902280705360_APD-2107.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903041944233_APD-2132.cs" />
+    <Compile Include="Migrations\3.2.0\201903041944233_APD-2132.Designer.cs">
+      <DependentUpon>201903041944233_APD-2132.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903061858354_APD-2252.cs" />
+    <Compile Include="Migrations\3.2.0\201903061858354_APD-2252.Designer.cs">
+      <DependentUpon>201903061858354_APD-2252.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903071834573_APD-2122.cs" />
+    <Compile Include="Migrations\3.2.0\201903071834573_APD-2122.Designer.cs">
+      <DependentUpon>201903071834573_APD-2122.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903101724140_APD-2126.cs" />
+    <Compile Include="Migrations\3.2.0\201903101724140_APD-2126.Designer.cs">
+      <DependentUpon>201903101724140_APD-2126.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903181830038_APD-2284.cs" />
+    <Compile Include="Migrations\3.2.0\201903181830038_APD-2284.Designer.cs">
+      <DependentUpon>201903181830038_APD-2284.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903191332533_APD-2305.cs" />
+    <Compile Include="Migrations\3.2.0\201903191332533_APD-2305.Designer.cs">
+      <DependentUpon>201903191332533_APD-2305.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903191436525_APD-2123.cs" />
+    <Compile Include="Migrations\3.2.0\201903191436525_APD-2123.Designer.cs">
+      <DependentUpon>201903191436525_APD-2123.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903231224299_APD-2104.cs" />
+    <Compile Include="Migrations\3.2.0\201903231224299_APD-2104.Designer.cs">
+      <DependentUpon>201903231224299_APD-2104.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903251044482_APD-2282.cs" />
+    <Compile Include="Migrations\3.2.0\201903251044482_APD-2282.Designer.cs">
+      <DependentUpon>201903251044482_APD-2282.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903251103187_APD-2017.cs" />
+    <Compile Include="Migrations\3.2.0\201903251103187_APD-2017.Designer.cs">
+      <DependentUpon>201903251103187_APD-2017.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903251207228_APD-2125.cs" />
+    <Compile Include="Migrations\3.2.0\201903251207228_APD-2125.Designer.cs">
+      <DependentUpon>201903251207228_APD-2125.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.2.0\201903261630131_APD-2214.cs" />
+    <Compile Include="Migrations\3.2.0\201903261630131_APD-2214.Designer.cs">
+      <DependentUpon>201903261630131_APD-2214.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902261909170_APD-2215.cs" />
+    <Compile Include="Migrations\3.1.0\201902261909170_APD-2215.Designer.cs">
+      <DependentUpon>201902261909170_APD-2215.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902202132493_APD-2128.cs" />
+    <Compile Include="Migrations\3.1.0\201902202132493_APD-2128.Designer.cs">
+      <DependentUpon>201902202132493_APD-2128.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902201634163_APD-2016.cs" />
+    <Compile Include="Migrations\3.1.0\201902201634163_APD-2016.Designer.cs">
+      <DependentUpon>201902201634163_APD-2016.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902201624019_APD-2193.cs" />
+    <Compile Include="Migrations\3.1.0\201902201624019_APD-2193.Designer.cs">
+      <DependentUpon>201902201624019_APD-2193.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902131914322_APD-2005.cs" />
+    <Compile Include="Migrations\3.1.0\201902131914322_APD-2005.Designer.cs">
+      <DependentUpon>201902131914322_APD-2005.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902132118347_APD-581.cs" />
+    <Compile Include="Migrations\3.1.0\201902132118347_APD-581.Designer.cs">
+      <DependentUpon>201902132118347_APD-581.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902041750274_APD-1817.cs" />
+    <Compile Include="Migrations\3.1.0\201902041750274_APD-1817.Designer.cs">
+      <DependentUpon>201902041750274_APD-1817.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902051536545_APD-1922.cs" />
+    <Compile Include="Migrations\3.1.0\201902051536545_APD-1922.Designer.cs">
+      <DependentUpon>201902051536545_APD-1922.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Diagnostics\DiagnosticVehicleControllerEntityModel.cs" />
+    <Compile Include="Migrations\3.1.0\201902061809111_APD-1812.cs" />
+    <Compile Include="Migrations\3.1.0\201902061809111_APD-1812.Designer.cs">
+      <DependentUpon>201902061809111_APD-1812.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902061833468_APD-2105.cs" />
+    <Compile Include="Migrations\3.1.0\201902061833468_APD-2105.Designer.cs">
+      <DependentUpon>201902061833468_APD-2105.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902061849199_APD-1760.cs" />
+    <Compile Include="Migrations\3.1.0\201902061849199_APD-1760.Designer.cs">
+      <DependentUpon>201902061849199_APD-1760.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902061914232_APD-2020.cs" />
+    <Compile Include="Migrations\3.1.0\201902061914232_APD-2020.Designer.cs">
+      <DependentUpon>201902061914232_APD-2020.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902071729322_APD-897.cs" />
+    <Compile Include="Migrations\3.1.0\201902071729322_APD-897.Designer.cs">
+      <DependentUpon>201902071729322_APD-897.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902071814248_APD-1392.cs" />
+    <Compile Include="Migrations\3.1.0\201902071814248_APD-1392.Designer.cs">
+      <DependentUpon>201902071814248_APD-1392.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902071829000_APD-744.cs" />
+    <Compile Include="Migrations\3.1.0\201902071829000_APD-744.Designer.cs">
+      <DependentUpon>201902071829000_APD-744.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902071851029_APD-301.cs" />
+    <Compile Include="Migrations\3.1.0\201902071851029_APD-301.Designer.cs">
+      <DependentUpon>201902071851029_APD-301.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902082007571_APD-1929.cs" />
+    <Compile Include="Migrations\3.1.0\201902082007571_APD-1929.Designer.cs">
+      <DependentUpon>201902082007571_APD-1929.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.1.0\201902111843312_APD-1664.cs" />
+    <Compile Include="Migrations\3.1.0\201902111843312_APD-1664.Designer.cs">
+      <DependentUpon>201902111843312_APD-1664.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901111824296_APD-1615.cs" />
+    <Compile Include="Migrations\3.0.7\201901111824296_APD-1615.Designer.cs">
+      <DependentUpon>201901111824296_APD-1615.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901112119092_APD-1848.cs" />
+    <Compile Include="Migrations\3.0.7\201901112119092_APD-1848.Designer.cs">
+      <DependentUpon>201901112119092_APD-1848.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901121543044_APD-1980.cs" />
+    <Compile Include="Migrations\3.0.7\201901121543044_APD-1980.Designer.cs">
+      <DependentUpon>201901121543044_APD-1980.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901141634305_APD-1952.cs" />
+    <Compile Include="Migrations\3.0.7\201901141634305_APD-1952.Designer.cs">
+      <DependentUpon>201901141634305_APD-1952.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901141814530_APD-1938.cs" />
+    <Compile Include="Migrations\3.0.7\201901141814530_APD-1938.Designer.cs">
+      <DependentUpon>201901141814530_APD-1938.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901141910480_APD-996.cs" />
+    <Compile Include="Migrations\3.0.7\201901141910480_APD-996.Designer.cs">
+      <DependentUpon>201901141910480_APD-996.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901141928399_APD-737.cs" />
+    <Compile Include="Migrations\3.0.7\201901141928399_APD-737.Designer.cs">
+      <DependentUpon>201901141928399_APD-737.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901141943375_APD-1637.cs" />
+    <Compile Include="Migrations\3.0.7\201901141943375_APD-1637.Designer.cs">
+      <DependentUpon>201901141943375_APD-1637.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901142116108_APD-1850.cs" />
+    <Compile Include="Migrations\3.0.7\201901142116108_APD-1850.Designer.cs">
+      <DependentUpon>201901142116108_APD-1850.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901151808439_APD-1631.cs" />
+    <Compile Include="Migrations\3.0.7\201901151808439_APD-1631.Designer.cs">
+      <DependentUpon>201901151808439_APD-1631.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901151830526_APD-1783.cs" />
+    <Compile Include="Migrations\3.0.7\201901151830526_APD-1783.Designer.cs">
+      <DependentUpon>201901151830526_APD-1783.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901161345287_APD-2002.cs" />
+    <Compile Include="Migrations\3.0.7\201901161345287_APD-2002.Designer.cs">
+      <DependentUpon>201901161345287_APD-2002.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901161733026_APD-1406.cs" />
+    <Compile Include="Migrations\3.0.7\201901161733026_APD-1406.Designer.cs">
+      <DependentUpon>201901161733026_APD-1406.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901162000193_APD-1849.cs" />
+    <Compile Include="Migrations\3.0.7\201901162000193_APD-1849.Designer.cs">
+      <DependentUpon>201901162000193_APD-1849.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.7\201901171640591_APD-1758.cs" />
+    <Compile Include="Migrations\3.0.7\201901171640591_APD-1758.Designer.cs">
+      <DependentUpon>201901171640591_APD-1758.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201812180730047_APD-1851.cs" />
+    <Compile Include="Migrations\3.0.6\201812180730047_APD-1851.Designer.cs">
+      <DependentUpon>201812180730047_APD-1851.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201812180628546_APD-1852.cs" />
+    <Compile Include="Migrations\3.0.6\201812180628546_APD-1852.Designer.cs">
+      <DependentUpon>201812180628546_APD-1852.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201812101816237_APD-1841.cs" />
+    <Compile Include="Migrations\3.0.6\201812101816237_APD-1841.Designer.cs">
+      <DependentUpon>201812101816237_APD-1841.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810081822399_APD-1258.cs" />
+    <Compile Include="Migrations\3.0.6\201810081822399_APD-1258.Designer.cs">
+      <DependentUpon>201810081822399_APD-1258.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810081906122_APD-1380.cs" />
+    <Compile Include="Migrations\3.0.6\201810081906122_APD-1380.Designer.cs">
+      <DependentUpon>201810081906122_APD-1380.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810082100573_APD-1613.cs" />
+    <Compile Include="Migrations\3.0.6\201810082100573_APD-1613.Designer.cs">
+      <DependentUpon>201810082100573_APD-1613.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810101620494_APD-1390.cs" />
+    <Compile Include="Migrations\3.0.6\201810101620494_APD-1390.Designer.cs">
+      <DependentUpon>201810101620494_APD-1390.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810111516208_APD-1026.cs" />
+    <Compile Include="Migrations\3.0.6\201810111516208_APD-1026.Designer.cs">
+      <DependentUpon>201810111516208_APD-1026.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810111637096_APD-1486.cs" />
+    <Compile Include="Migrations\3.0.6\201810111637096_APD-1486.Designer.cs">
+      <DependentUpon>201810111637096_APD-1486.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810121453435_APD-1159.cs" />
+    <Compile Include="Migrations\3.0.6\201810121453435_APD-1159.Designer.cs">
+      <DependentUpon>201810121453435_APD-1159.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810151533588_APD-1624.cs" />
+    <Compile Include="Migrations\3.0.6\201810151533588_APD-1624.Designer.cs">
+      <DependentUpon>201810151533588_APD-1624.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810172017592_APD-1619.cs" />
+    <Compile Include="Migrations\3.0.6\201810172017592_APD-1619.Designer.cs">
+      <DependentUpon>201810172017592_APD-1619.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810241655120_APD-1545.cs" />
+    <Compile Include="Migrations\3.0.6\201810241655120_APD-1545.Designer.cs">
+      <DependentUpon>201810241655120_APD-1545.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810241736555_APD-1438.cs" />
+    <Compile Include="Migrations\3.0.6\201810241736555_APD-1438.Designer.cs">
+      <DependentUpon>201810241736555_APD-1438.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810241748481_APD-1535.cs" />
+    <Compile Include="Migrations\3.0.6\201810241748481_APD-1535.Designer.cs">
+      <DependentUpon>201810241748481_APD-1535.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810241814329_APD-1639.cs" />
+    <Compile Include="Migrations\3.0.6\201810241814329_APD-1639.Designer.cs">
+      <DependentUpon>201810241814329_APD-1639.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810251452327_APD-1285.cs" />
+    <Compile Include="Migrations\3.0.6\201810251452327_APD-1285.Designer.cs">
+      <DependentUpon>201810251452327_APD-1285.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810292001178_APD-1700.cs" />
+    <Compile Include="Migrations\3.0.6\201810292001178_APD-1700.Designer.cs">
+      <DependentUpon>201810292001178_APD-1700.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810311841228_APD-1160.cs" />
+    <Compile Include="Migrations\3.0.6\201810311841228_APD-1160.Designer.cs">
+      <DependentUpon>201810311841228_APD-1160.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811021313454_APD-1312.cs" />
+    <Compile Include="Migrations\3.0.6\201811021313454_APD-1312.Designer.cs">
+      <DependentUpon>201811021313454_APD-1312.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811022015093_APD-1678.cs" />
+    <Compile Include="Migrations\3.0.6\201811022015093_APD-1678.Designer.cs">
+      <DependentUpon>201811022015093_APD-1678.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811052032339_APD-1177.cs" />
+    <Compile Include="Migrations\3.0.6\201811052032339_APD-1177.Designer.cs">
+      <DependentUpon>201811052032339_APD-1177.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811061641090_APD-1673.cs" />
+    <Compile Include="Migrations\3.0.6\201811061641090_APD-1673.Designer.cs">
+      <DependentUpon>201811061641090_APD-1673.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811061715449_APD-1598.cs" />
+    <Compile Include="Migrations\3.0.6\201811061715449_APD-1598.Designer.cs">
+      <DependentUpon>201811061715449_APD-1598.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811061822026_APD-1638.cs" />
+    <Compile Include="Migrations\3.0.6\201811061822026_APD-1638.Designer.cs">
+      <DependentUpon>201811061822026_APD-1638.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811061832105_APD-1273.cs" />
+    <Compile Include="Migrations\3.0.6\201811061832105_APD-1273.Designer.cs">
+      <DependentUpon>201811061832105_APD-1273.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811081603463_APD-1681.cs" />
+    <Compile Include="Migrations\3.0.6\201811081603463_APD-1681.Designer.cs">
+      <DependentUpon>201811081603463_APD-1681.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811141821541_APD-1779.cs" />
+    <Compile Include="Migrations\3.0.6\201811141821541_APD-1779.Designer.cs">
+      <DependentUpon>201811141821541_APD-1779.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811161630461_APD-1740.cs" />
+    <Compile Include="Migrations\3.0.6\201811161630461_APD-1740.Designer.cs">
+      <DependentUpon>201811161630461_APD-1740.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811281950391_APD-1478.cs" />
+    <Compile Include="Migrations\3.0.6\201811281950391_APD-1478.Designer.cs">
+      <DependentUpon>201811281950391_APD-1478.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201811301629563_APD-1829.cs" />
+    <Compile Include="Migrations\3.0.6\201811301629563_APD-1829.Designer.cs">
+      <DependentUpon>201811301629563_APD-1829.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repair\OrderStatusEntityModel.cs" />
+    <Compile Include="Scan\ReportValidationRuleEntityModel.cs" />
+    <Compile Include="Scan\RequestTypeValidationRuleEntityModel.cs" />
+    <Compile Include="Scan\ValidationRuleEntityModel.cs" />
+    <Compile Include="Scan\WorkTypeVehicleMakeEntityModel.cs" />
+    <Compile Include="Repair\VehicleMakeToolEntityModel.cs" />
+    <Compile Include="Scan\ReportArchiveEntityModel.cs" />
+    <Compile Include="Scan\IReportEntityModel.cs" />
+    <Compile Include="Scan\ReportDiagnosticResultEntityModel.cs" />
+    <Compile Include="Scan\CancelReasonTypeEntityModel.cs" />
+    <Compile Include="Scan\ReportOrderTroubleCodeEntityModel.cs" />
+    <Compile Include="Scan\DecisionEntityModel.cs" />
+    <Compile Include="Scan\DecisionRequestCategoryEntityModel.cs" />
+    <Compile Include="Scan\DecisionRequestTypeEntityModel.cs" />
+    <Compile Include="Scan\DecisionVehicleMakeEntityModel.cs" />
+    <Compile Include="Scan\ReportDecisionEntityModel.cs" />
+    <Compile Include="Scan\ReportTroubleCodeRecomendationEntityModel.cs" />
+    <Compile Include="Scan\ReportVehicleMakeToolEntityModel.cs" />
+    <Compile Include="Scan\TroubleCodeRecomendationEntityModel.cs" />
+    <Compile Include="Common\ReleaseNoteEntityModel.cs" />
+    <Compile Include="Common\ReleaseNoteRoleEntityModel.cs" />
+    <Compile Include="Interfaces\IGroupRoleEntityModel.cs" />
+    <Compile Include="Interfaces\IGroupEntityModel.cs" />
+    <Compile Include="Interfaces\IUserGroupEntityModel.cs" />
+    <Compile Include="Interfaces\IUserShopEntityModel.cs" />
+    <Compile Include="Access\UserGroupArchiveEntityModel.cs" />
+    <Compile Include="Access\UserShopArchiveEntityModel.cs" />
+    <Compile Include="Interfaces\IUserAccountEntityModel.cs" />
+    <Compile Include="Access\UserAccountArchiveEntityModel.cs" />
+    <Compile Include="Interfaces\IAccountEntityModel.cs" />
+    <Compile Include="Interfaces\IShopEntityModel.cs" />
+    <Compile Include="Interfaces\IUserEntityModel.cs" />
+    <Compile Include="Access\ShopArchiveEntityModel.cs" />
+    <Compile Include="Access\UserArchiveEntityModel.cs" />
+    <Compile Include="Access\UserPreferenceEntityModel.cs" />
+    <Compile Include="Access\GroupEntityModel.cs" />
+    <Compile Include="Access\GroupRoleEntityModel.cs" />
+    <Compile Include="Access\LoginEntityModel.cs" />
+    <Compile Include="Access\ShopInsuranceCompanyEntityModel.cs" />
+    <Compile Include="Billing\CurrencyEntityModel.cs" />
+    <Compile Include="Access\ShopVehicleMakeEntityModel.cs" />
+    <Compile Include="Billing\ShopInsuranceCompanyPricingEntityModel.cs" />
+    <Compile Include="Billing\EstimatePlanEntityModel.cs" />
+    <Compile Include="Billing\EstimatePlanVehicleEntityModel.cs" />
+    <Compile Include="Billing\PricingPlanEntityModel.cs" />
+    <Compile Include="Billing\PricingPlanRequestTypeEntityModel.cs" />
+    <Compile Include="Billing\PricingPlanWorkTypeEntityModel.cs" />
+    <Compile Include="Billing\ShopVehicleMakesPricingEntityModel.cs" />
+    <Compile Include="Common\StateEntityModel.cs" />
+    <Compile Include="Common\CountryEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticUploadFileTypeEntityModel.cs" />
+    <Compile Include="Interfaces\IAuditBaseEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolAccountArchiveEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolAccountEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolDepositEntityModel.cs" />
+    <Compile Include="Common\UploadEntityModel.cs" />
+    <Compile Include="Common\UploadTypeEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolArchiveEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolShopArchiveEntityModel.cs" />
+    <Compile Include="Inventory\AirproToolSubscriptionEntityModel.cs" />
+    <Compile Include="Inventory\AirProToolShopEntityModel.cs" />
+    <Compile Include="Inventory\IAirProTool.cs" />
+    <Compile Include="Diagnostics\DiagnosticUploadEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticToolEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticResultFreezeFrameSensorGroupEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticResultFreezeFrameSensorEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticResultFreezeFrameEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticTroubleCodeEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticControllerEntityModel.cs" />
+    <Compile Include="Diagnostics\DiagnosticResultEntityModel.cs" />
+    <Compile Include="Migrations\0-2.9.5\201704290959333_v3.0.3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201704290959333_v3.0.3.Designer.cs">
+      <DependentUpon>201704290959333_v3.0.3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201705022213481_v3.0.4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201705022213481_v3.0.4.Designer.cs">
+      <DependentUpon>201705022213481_v3.0.4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201705041927308_v3.0.5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201705041927308_v3.0.5.Designer.cs">
+      <DependentUpon>201705041927308_v3.0.5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201705050948252_v3.0.6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201705050948252_v3.0.6.Designer.cs">
+      <DependentUpon>201705050948252_v3.0.6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201706102300169_v3.0.7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201706102300169_v3.0.7.Designer.cs">
+      <DependentUpon>201706102300169_v3.0.7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201707011708477_v3.0.8.cs" />
+    <Compile Include="Migrations\0-2.9.5\201707011708477_v3.0.8.Designer.cs">
+      <DependentUpon>201707011708477_v3.0.8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201708131859581_v3.0.9.cs" />
+    <Compile Include="Migrations\0-2.9.5\201708131859581_v3.0.9.Designer.cs">
+      <DependentUpon>201708131859581_v3.0.9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201708202140039_v3.1.0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201708202140039_v3.1.0.Designer.cs">
+      <DependentUpon>201708202140039_v3.1.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201708210456333_v3.1.1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201708210456333_v3.1.1.Designer.cs">
+      <DependentUpon>201708210456333_v3.1.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201710160949321_v3.1.2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201710160949321_v3.1.2.Designer.cs">
+      <DependentUpon>201710160949321_v3.1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201711020937465_v3.1.3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201711020937465_v3.1.3.Designer.cs">
+      <DependentUpon>201711020937465_v3.1.3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201712072153481_v3.1.4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201712072153481_v3.1.4.Designer.cs">
+      <DependentUpon>201712072153481_v3.1.4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201712100815179_v3.1.5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201712100815179_v3.1.5.Designer.cs">
+      <DependentUpon>201712100815179_v3.1.5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201801211721553_v3.1.6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201801211721553_v3.1.6.Designer.cs">
+      <DependentUpon>201801211721553_v3.1.6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201801212048012_v3.1.7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201801212048012_v3.1.7.Designer.cs">
+      <DependentUpon>201801212048012_v3.1.7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201801241402275_v3.1.8.cs" />
+    <Compile Include="Migrations\0-2.9.5\201801241402275_v3.1.8.Designer.cs">
+      <DependentUpon>201801241402275_v3.1.8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201801250408365_v3.1.9.cs" />
+    <Compile Include="Migrations\0-2.9.5\201801250408365_v3.1.9.Designer.cs">
+      <DependentUpon>201801250408365_v3.1.9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201802041934580_v3.2.0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201802041934580_v3.2.0.Designer.cs">
+      <DependentUpon>201802041934580_v3.2.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201802160332219_v3.2.1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201802160332219_v3.2.1.Designer.cs">
+      <DependentUpon>201802160332219_v3.2.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201802210727460_v3.2.2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201802210727460_v3.2.2.Designer.cs">
+      <DependentUpon>201802210727460_v3.2.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803082251084_APD-462.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803082251084_APD-462.Designer.cs">
+      <DependentUpon>201803082251084_APD-462.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803082255170_APD-317.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803082255170_APD-317.Designer.cs">
+      <DependentUpon>201803082255170_APD-317.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803090413357_APD-487.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803090413357_APD-487.Designer.cs">
+      <DependentUpon>201803090413357_APD-487.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803091848017_APD-525.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803091848017_APD-525.Designer.cs">
+      <DependentUpon>201803091848017_APD-525.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803102252112_APD-132.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803102252112_APD-132.Designer.cs">
+      <DependentUpon>201803102252112_APD-132.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803110759205_APD-40.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803110759205_APD-40.Designer.cs">
+      <DependentUpon>201803110759205_APD-40.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803172213505_APD-503.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803172213505_APD-503.Designer.cs">
+      <DependentUpon>201803172213505_APD-503.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803221832430_APD-533.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803221832430_APD-533.Designer.cs">
+      <DependentUpon>201803221832430_APD-533.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803250314337_APD-599.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803250314337_APD-599.Designer.cs">
+      <DependentUpon>201803250314337_APD-599.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803250441451_APD-573.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803250441451_APD-573.Designer.cs">
+      <DependentUpon>201803250441451_APD-573.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803250609073_APD-618.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803250609073_APD-618.Designer.cs">
+      <DependentUpon>201803250609073_APD-618.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803250722354_APD-347.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803250722354_APD-347.Designer.cs">
+      <DependentUpon>201803250722354_APD-347.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803251126031_APD-551.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803251126031_APD-551.Designer.cs">
+      <DependentUpon>201803251126031_APD-551.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803291757495_APD-669.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803291757495_APD-669.Designer.cs">
+      <DependentUpon>201803291757495_APD-669.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803291944491_APD-673.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803291944491_APD-673.Designer.cs">
+      <DependentUpon>201803291944491_APD-673.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201803311839238_APD-184.cs" />
+    <Compile Include="Migrations\0-2.9.5\201803311839238_APD-184.Designer.cs">
+      <DependentUpon>201803311839238_APD-184.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804010400449_APD-187.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804010400449_APD-187.Designer.cs">
+      <DependentUpon>201804010400449_APD-187.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804031646411_APD-300.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804031646411_APD-300.Designer.cs">
+      <DependentUpon>201804031646411_APD-300.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804060032538_APD-208.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804060032538_APD-208.Designer.cs">
+      <DependentUpon>201804060032538_APD-208.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804081438560_APD-435.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804081438560_APD-435.Designer.cs">
+      <DependentUpon>201804081438560_APD-435.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804130534083_APD-523.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804130534083_APD-523.Designer.cs">
+      <DependentUpon>201804130534083_APD-523.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804211700273_APD-450.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804211700273_APD-450.Designer.cs">
+      <DependentUpon>201804211700273_APD-450.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804212043119_APD-708.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804212043119_APD-708.Designer.cs">
+      <DependentUpon>201804212043119_APD-708.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201804220008049_APD-385.cs" />
+    <Compile Include="Migrations\0-2.9.5\201804220008049_APD-385.Designer.cs">
+      <DependentUpon>201804220008049_APD-385.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201805020546119_APD-812.cs" />
+    <Compile Include="Migrations\0-2.9.5\201805020546119_APD-812.Designer.cs">
+      <DependentUpon>201805020546119_APD-812.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.6\201805031837580_APD-604.cs" />
+    <Compile Include="Migrations\2.9.6\201805031837580_APD-604.Designer.cs">
+      <DependentUpon>201805031837580_APD-604.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.6\201805061119230_APD-166.cs" />
+    <Compile Include="Migrations\2.9.6\201805061119230_APD-166.Designer.cs">
+      <DependentUpon>201805061119230_APD-166.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.6\201805061140371_APD-745.cs" />
+    <Compile Include="Migrations\2.9.6\201805061140371_APD-745.Designer.cs">
+      <DependentUpon>201805061140371_APD-745.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.6\201805091407336_APD-880.cs" />
+    <Compile Include="Migrations\2.9.6\201805091407336_APD-880.Designer.cs">
+      <DependentUpon>201805091407336_APD-880.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805111926567_APD-709.cs" />
+    <Compile Include="Migrations\2.9.7\201805111926567_APD-709.Designer.cs">
+      <DependentUpon>201805111926567_APD-709.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805121958494_APD-832.cs" />
+    <Compile Include="Migrations\2.9.7\201805121958494_APD-832.Designer.cs">
+      <DependentUpon>201805121958494_APD-832.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805160511013_APD-171.cs" />
+    <Compile Include="Migrations\2.9.7\201805160511013_APD-171.Designer.cs">
+      <DependentUpon>201805160511013_APD-171.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805161532406_APD-119.cs" />
+    <Compile Include="Migrations\2.9.7\201805161532406_APD-119.Designer.cs">
+      <DependentUpon>201805161532406_APD-119.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805170516398_APD-768.cs" />
+    <Compile Include="Migrations\2.9.7\201805170516398_APD-768.Designer.cs">
+      <DependentUpon>201805170516398_APD-768.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805171914194_APD-193.cs" />
+    <Compile Include="Migrations\2.9.7\201805171914194_APD-193.Designer.cs">
+      <DependentUpon>201805171914194_APD-193.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805180252533_APD-431.cs" />
+    <Compile Include="Migrations\2.9.7\201805180252533_APD-431.Designer.cs">
+      <DependentUpon>201805180252533_APD-431.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805190346151_APD-698.cs" />
+    <Compile Include="Migrations\2.9.7\201805190346151_APD-698.Designer.cs">
+      <DependentUpon>201805190346151_APD-698.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.7\201805251524087_APD-978.cs" />
+    <Compile Include="Migrations\2.9.7\201805251524087_APD-978.Designer.cs">
+      <DependentUpon>201805251524087_APD-978.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201805311301057_APD-877.cs" />
+    <Compile Include="Migrations\2.9.8\201805311301057_APD-877.Designer.cs">
+      <DependentUpon>201805311301057_APD-877.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201805311546341_APD-926.cs" />
+    <Compile Include="Migrations\2.9.8\201805311546341_APD-926.Designer.cs">
+      <DependentUpon>201805311546341_APD-926.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201805311636480_APD-901.cs" />
+    <Compile Include="Migrations\2.9.8\201805311636480_APD-901.Designer.cs">
+      <DependentUpon>201805311636480_APD-901.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201805311803091_APD-325.cs" />
+    <Compile Include="Migrations\2.9.8\201805311803091_APD-325.Designer.cs">
+      <DependentUpon>201805311803091_APD-325.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201805311916257_APD-665.cs" />
+    <Compile Include="Migrations\2.9.8\201805311916257_APD-665.Designer.cs">
+      <DependentUpon>201805311916257_APD-665.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201806021919552_APD-770.cs" />
+    <Compile Include="Migrations\2.9.8\201806021919552_APD-770.Designer.cs">
+      <DependentUpon>201806021919552_APD-770.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.8\201806132115574_APD-1094.cs" />
+    <Compile Include="Migrations\2.9.8\201806132115574_APD-1094.Designer.cs">
+      <DependentUpon>201806132115574_APD-1094.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.9\201806140154199_APD-924.cs" />
+    <Compile Include="Migrations\2.9.9\201806140154199_APD-924.Designer.cs">
+      <DependentUpon>201806140154199_APD-924.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.9\201806142126348_APD-949.cs" />
+    <Compile Include="Migrations\2.9.9\201806142126348_APD-949.Designer.cs">
+      <DependentUpon>201806142126348_APD-949.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.9\201806162012587_APD-890.cs" />
+    <Compile Include="Migrations\2.9.9\201806162012587_APD-890.Designer.cs">
+      <DependentUpon>201806162012587_APD-890.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.9\201806162134383_APD-1006.cs" />
+    <Compile Include="Migrations\2.9.9\201806162134383_APD-1006.Designer.cs">
+      <DependentUpon>201806162134383_APD-1006.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\2.9.9\201806170810522_APD-428.cs" />
+    <Compile Include="Migrations\2.9.9\201806170810522_APD-428.Designer.cs">
+      <DependentUpon>201806170810522_APD-428.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810051954372_APD-1484.cs" />
+    <Compile Include="Migrations\3.0.6\201810051954372_APD-1484.Designer.cs">
+      <DependentUpon>201810051954372_APD-1484.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810081632388_APD-1441.cs" />
+    <Compile Include="Migrations\3.0.6\201810081632388_APD-1441.Designer.cs">
+      <DependentUpon>201810081632388_APD-1441.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810081701244_APD-1497.cs" />
+    <Compile Include="Migrations\3.0.6\201810081701244_APD-1497.Designer.cs">
+      <DependentUpon>201810081701244_APD-1497.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.6\201810081718313_APD-1270.cs" />
+    <Compile Include="Migrations\3.0.6\201810081718313_APD-1270.Designer.cs">
+      <DependentUpon>201810081718313_APD-1270.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201810031719322_APD-1500.cs" />
+    <Compile Include="Migrations\3.0.5\201810031719322_APD-1500.Designer.cs">
+      <DependentUpon>201810031719322_APD-1500.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809252105425_APD-1529.cs" />
+    <Compile Include="Migrations\3.0.5\201809252105425_APD-1529.Designer.cs">
+      <DependentUpon>201809252105425_APD-1529.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241513327_APD-1449.cs" />
+    <Compile Include="Migrations\3.0.5\201809241513327_APD-1449.Designer.cs">
+      <DependentUpon>201809241513327_APD-1449.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241602051_APD-1349.cs" />
+    <Compile Include="Migrations\3.0.5\201809241602051_APD-1349.Designer.cs">
+      <DependentUpon>201809241602051_APD-1349.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241615187_APD-1450.cs" />
+    <Compile Include="Migrations\3.0.5\201809241615187_APD-1450.Designer.cs">
+      <DependentUpon>201809241615187_APD-1450.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241641595_APD-1463.cs" />
+    <Compile Include="Migrations\3.0.5\201809241641595_APD-1463.Designer.cs">
+      <DependentUpon>201809241641595_APD-1463.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241656536_APD-1445.cs" />
+    <Compile Include="Migrations\3.0.5\201809241656536_APD-1445.Designer.cs">
+      <DependentUpon>201809241656536_APD-1445.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241709124_APD-1225.cs" />
+    <Compile Include="Migrations\3.0.5\201809241709124_APD-1225.Designer.cs">
+      <DependentUpon>201809241709124_APD-1225.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241827093_APD-1310.cs" />
+    <Compile Include="Migrations\3.0.5\201809241827093_APD-1310.Designer.cs">
+      <DependentUpon>201809241827093_APD-1310.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241909199_APD-1452.cs" />
+    <Compile Include="Migrations\3.0.5\201809241909199_APD-1452.Designer.cs">
+      <DependentUpon>201809241909199_APD-1452.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.5\201809241945354_APD-236.cs" />
+    <Compile Include="Migrations\3.0.5\201809241945354_APD-236.Designer.cs">
+      <DependentUpon>201809241945354_APD-236.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809121748040_APD-281.cs" />
+    <Compile Include="Migrations\3.0.4\201809121748040_APD-281.Designer.cs">
+      <DependentUpon>201809121748040_APD-281.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809121549465_APD-1475.cs" />
+    <Compile Include="Migrations\3.0.4\201809121549465_APD-1475.Designer.cs">
+      <DependentUpon>201809121549465_APD-1475.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201808302122120_APD-1402.cs" />
+    <Compile Include="Migrations\3.0.4\201808302122120_APD-1402.Designer.cs">
+      <DependentUpon>201808302122120_APD-1402.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809102141526_APD-1322.cs" />
+    <Compile Include="Migrations\3.0.4\201809102141526_APD-1322.Designer.cs">
+      <DependentUpon>201809102141526_APD-1322.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809102212215_APD-1323.cs" />
+    <Compile Include="Migrations\3.0.4\201809102212215_APD-1323.Designer.cs">
+      <DependentUpon>201809102212215_APD-1323.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809111507032_APD-1091.cs" />
+    <Compile Include="Migrations\3.0.4\201809111507032_APD-1091.Designer.cs">
+      <DependentUpon>201809111507032_APD-1091.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809111717090_APD-1395.cs" />
+    <Compile Include="Migrations\3.0.4\201809111717090_APD-1395.Designer.cs">
+      <DependentUpon>201809111717090_APD-1395.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.4\201809112156380_APD-473.cs" />
+    <Compile Include="Migrations\3.0.4\201809112156380_APD-473.Designer.cs">
+      <DependentUpon>201809112156380_APD-473.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.3\201808290839474_APD-1428.cs" />
+    <Compile Include="Migrations\3.0.3\201808290839474_APD-1428.Designer.cs">
+      <DependentUpon>201808290839474_APD-1428.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.3\201808241522415_APD-1292.cs" />
+    <Compile Include="Migrations\3.0.3\201808241522415_APD-1292.Designer.cs">
+      <DependentUpon>201808241522415_APD-1292.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.3\201808241534066_APD-1245.cs" />
+    <Compile Include="Migrations\3.0.3\201808241534066_APD-1245.Designer.cs">
+      <DependentUpon>201808241534066_APD-1245.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.3\201808241628225_APD-157.cs" />
+    <Compile Include="Migrations\3.0.3\201808241628225_APD-157.Designer.cs">
+      <DependentUpon>201808241628225_APD-157.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.3\201808241840547_APD-1353.cs" />
+    <Compile Include="Migrations\3.0.3\201808241840547_APD-1353.Designer.cs">
+      <DependentUpon>201808241840547_APD-1353.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.2\201808171833469_APD-1400.cs" />
+    <Compile Include="Migrations\3.0.2\201808171833469_APD-1400.Designer.cs">
+      <DependentUpon>201808171833469_APD-1400.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.2\201808161540146_APD-1396.cs" />
+    <Compile Include="Migrations\3.0.2\201808161540146_APD-1396.Designer.cs">
+      <DependentUpon>201808161540146_APD-1396.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.2\201808072219331_APD-1257.cs" />
+    <Compile Include="Migrations\3.0.2\201808072219331_APD-1257.Designer.cs">
+      <DependentUpon>201808072219331_APD-1257.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.1\201807102258023_APD-916.cs" />
+    <Compile Include="Migrations\3.0.1\201807102258023_APD-916.Designer.cs">
+      <DependentUpon>201807102258023_APD-916.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.1\201807112324384_APD-1178.cs" />
+    <Compile Include="Migrations\3.0.1\201807112324384_APD-1178.Designer.cs">
+      <DependentUpon>201807112324384_APD-1178.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.1\201807121937520_APD-1246.cs" />
+    <Compile Include="Migrations\3.0.1\201807121937520_APD-1246.Designer.cs">
+      <DependentUpon>201807121937520_APD-1246.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.1\201807132216278_APD-969.cs" />
+    <Compile Include="Migrations\3.0.1\201807132216278_APD-969.Designer.cs">
+      <DependentUpon>201807132216278_APD-969.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201807052129440_APD-1036.cs" />
+    <Compile Include="Migrations\3.0.0\201807052129440_APD-1036.Designer.cs">
+      <DependentUpon>201807052129440_APD-1036.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806200838254_APD-1112.cs" />
+    <Compile Include="Migrations\3.0.0\201806200838254_APD-1112.Designer.cs">
+      <DependentUpon>201806200838254_APD-1112.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806211724351_APD-1099.cs" />
+    <Compile Include="Migrations\3.0.0\201806211724351_APD-1099.Designer.cs">
+      <DependentUpon>201806211724351_APD-1099.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806241207282_APD-1040.cs" />
+    <Compile Include="Migrations\3.0.0\201806241207282_APD-1040.Designer.cs">
+      <DependentUpon>201806241207282_APD-1040.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806250106180_APD-752.cs" />
+    <Compile Include="Migrations\3.0.0\201806250106180_APD-752.Designer.cs">
+      <DependentUpon>201806250106180_APD-752.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806250302422_APD-888.cs" />
+    <Compile Include="Migrations\3.0.0\201806250302422_APD-888.Designer.cs">
+      <DependentUpon>201806250302422_APD-888.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806251831524_APD-294.cs" />
+    <Compile Include="Migrations\3.0.0\201806251831524_APD-294.Designer.cs">
+      <DependentUpon>201806251831524_APD-294.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806252227108_APD-1083.cs" />
+    <Compile Include="Migrations\3.0.0\201806252227108_APD-1083.Designer.cs">
+      <DependentUpon>201806252227108_APD-1083.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806252322155_APD-1034.cs" />
+    <Compile Include="Migrations\3.0.0\201806252322155_APD-1034.Designer.cs">
+      <DependentUpon>201806252322155_APD-1034.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201806281433115_APD-292.cs" />
+    <Compile Include="Migrations\3.0.0\201806281433115_APD-292.Designer.cs">
+      <DependentUpon>201806281433115_APD-292.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\3.0.0\201807011717543_APD-965.cs" />
+    <Compile Include="Migrations\3.0.0\201807011717543_APD-965.Designer.cs">
+      <DependentUpon>201807011717543_APD-965.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Notifications\NotificationUserEntityModel.cs" />
+    <Compile Include="Access\RoleEntityModel.cs" />
+    <Compile Include="Access\ShopEntityModel.cs" />
+    <Compile Include="Access\UserAccountEntityModel.cs" />
+    <Compile Include="Access\UserEntityModel.cs" />
+    <Compile Include="Access\UserGroupEntityModel.cs" />
+    <Compile Include="Access\UserRoleEntityModel.cs" />
+    <Compile Include="Access\UserShopEntityModel.cs" />
+    <Compile Include="Billing\PaymentEntityModel.cs" />
+    <Compile Include="Billing\PaymentTransactionEntityModel.cs" />
+    <Compile Include="Billing\PaymentTypeEntityModel.cs" />
+    <Compile Include="EntityDbContext.cs" />
+    <Compile Include="AuditBaseEntityModel.cs" />
+    <Compile Include="MigrationHistoryConfig.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605110343134_InitialDeploy.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605110343134_InitialDeploy.Designer.cs">
+      <DependentUpon>201605110343134_InitialDeploy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201605130246082_Scans.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605130246082_Scans.Designer.cs">
+      <DependentUpon>201605130246082_Scans.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201605222104298_Shops.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605222104298_Shops.Designer.cs">
+      <DependentUpon>201605222104298_Shops.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201605292056447_v1_2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605292056447_v1_2.Designer.cs">
+      <DependentUpon>201605292056447_v1_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201605300238198_v1_3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201605300238198_v1_3.Designer.cs">
+      <DependentUpon>201605300238198_v1_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606050554550_v1_4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606050554550_v1_4.Designer.cs">
+      <DependentUpon>201606050554550_v1_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606070406040_v1_5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606070406040_v1_5.Designer.cs">
+      <DependentUpon>201606070406040_v1_5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606112257359_v1_6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606112257359_v1_6.Designer.cs">
+      <DependentUpon>201606112257359_v1_6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606122031571_v1_1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606122031571_v1_1.Designer.cs">
+      <DependentUpon>201606122031571_v1_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606122209384_v2_0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606122209384_v2_0.Designer.cs">
+      <DependentUpon>201606122209384_v2_0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606122234174_v2_1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606122234174_v2_1.Designer.cs">
+      <DependentUpon>201606122234174_v2_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606140749023_v2_2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606140749023_v2_2.Designer.cs">
+      <DependentUpon>201606140749023_v2_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606150113592_v2_3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606150113592_v2_3.Designer.cs">
+      <DependentUpon>201606150113592_v2_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606150314557_v2_3_1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606150314557_v2_3_1.Designer.cs">
+      <DependentUpon>201606150314557_v2_3_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606150641137_v2_3_2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606150641137_v2_3_2.Designer.cs">
+      <DependentUpon>201606150641137_v2_3_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606190732379_v2_4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606190732379_v2_4.Designer.cs">
+      <DependentUpon>201606190732379_v2_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606191027008_v2_4_1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606191027008_v2_4_1.Designer.cs">
+      <DependentUpon>201606191027008_v2_4_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606220601229_v2_5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606220601229_v2_5.Designer.cs">
+      <DependentUpon>201606220601229_v2_5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606240325247_v2_6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606240325247_v2_6.Designer.cs">
+      <DependentUpon>201606240325247_v2_6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201606280629014_v2_7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201606280629014_v2_7.Designer.cs">
+      <DependentUpon>201606280629014_v2_7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201607052337402_v2_7_1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201607052337402_v2_7_1.Designer.cs">
+      <DependentUpon>201607052337402_v2_7_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608070537455_v2_7_2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608070537455_v2_7_2.Designer.cs">
+      <DependentUpon>201608070537455_v2_7_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608141733597_v2_7_3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608141733597_v2_7_3.Designer.cs">
+      <DependentUpon>201608141733597_v2_7_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608162051310_v2_7_4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608162051310_v2_7_4.Designer.cs">
+      <DependentUpon>201608162051310_v2_7_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608210210563_v2_7_5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608210210563_v2_7_5.Designer.cs">
+      <DependentUpon>201608210210563_v2_7_5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608211654378_v2_7_6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608211654378_v2_7_6.Designer.cs">
+      <DependentUpon>201608211654378_v2_7_6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608212123089_v2_7_7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608212123089_v2_7_7.Designer.cs">
+      <DependentUpon>201608212123089_v2_7_7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201608280618327_v2_7_8.cs" />
+    <Compile Include="Migrations\0-2.9.5\201608280618327_v2_7_8.Designer.cs">
+      <DependentUpon>201608280618327_v2_7_8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201609031817284_v2_7_9.cs" />
+    <Compile Include="Migrations\0-2.9.5\201609031817284_v2_7_9.Designer.cs">
+      <DependentUpon>201609031817284_v2_7_9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201610120311123_v2.8.0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201610120311123_v2.8.0.Designer.cs">
+      <DependentUpon>201610120311123_v2.8.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201610161720516_v2.8.1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201610161720516_v2.8.1.Designer.cs">
+      <DependentUpon>201610161720516_v2.8.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201611190734086_v2.8.2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201611190734086_v2.8.2.Designer.cs">
+      <DependentUpon>201611190734086_v2.8.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201611201258145_v2.8.3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201611201258145_v2.8.3.Designer.cs">
+      <DependentUpon>201611201258145_v2.8.3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612041554265_v2.8.4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612041554265_v2.8.4.Designer.cs">
+      <DependentUpon>201612041554265_v2.8.4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612222349234_v2.8.5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612222349234_v2.8.5.Designer.cs">
+      <DependentUpon>201612222349234_v2.8.5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612281815057_v2.8.6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612281815057_v2.8.6.Designer.cs">
+      <DependentUpon>201612281815057_v2.8.6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612281952513_v2.8.7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612281952513_v2.8.7.Designer.cs">
+      <DependentUpon>201612281952513_v2.8.7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612282057480_v2.8.8.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612282057480_v2.8.8.Designer.cs">
+      <DependentUpon>201612282057480_v2.8.8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612282137119_v2.8.9.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612282137119_v2.8.9.Designer.cs">
+      <DependentUpon>201612282137119_v2.8.9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612290843565_v2.9.0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612290843565_v2.9.0.Designer.cs">
+      <DependentUpon>201612290843565_v2.9.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612291058162_v2.9.1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612291058162_v2.9.1.Designer.cs">
+      <DependentUpon>201612291058162_v2.9.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612302046303_v2.9.2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612302046303_v2.9.2.Designer.cs">
+      <DependentUpon>201612302046303_v2.9.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201612312226414_v2.9.3.cs" />
+    <Compile Include="Migrations\0-2.9.5\201612312226414_v2.9.3.Designer.cs">
+      <DependentUpon>201612312226414_v2.9.3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201701010249001_v2.9.4.cs" />
+    <Compile Include="Migrations\0-2.9.5\201701010249001_v2.9.4.Designer.cs">
+      <DependentUpon>201701010249001_v2.9.4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201701012122162_v2.9.5.cs" />
+    <Compile Include="Migrations\0-2.9.5\201701012122162_v2.9.5.Designer.cs">
+      <DependentUpon>201701012122162_v2.9.5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201701022232457_v2.9.6.cs" />
+    <Compile Include="Migrations\0-2.9.5\201701022232457_v2.9.6.Designer.cs">
+      <DependentUpon>201701022232457_v2.9.6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201701040907402_v2.9.7.cs" />
+    <Compile Include="Migrations\0-2.9.5\201701040907402_v2.9.7.Designer.cs">
+      <DependentUpon>201701040907402_v2.9.7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201703210853339_v2.9.8.cs" />
+    <Compile Include="Migrations\0-2.9.5\201703210853339_v2.9.8.Designer.cs">
+      <DependentUpon>201703210853339_v2.9.8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201703220559006_v2.9.9.cs" />
+    <Compile Include="Migrations\0-2.9.5\201703220559006_v2.9.9.Designer.cs">
+      <DependentUpon>201703220559006_v2.9.9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201703231741250_v3.0.0.cs" />
+    <Compile Include="Migrations\0-2.9.5\201703231741250_v3.0.0.Designer.cs">
+      <DependentUpon>201703231741250_v3.0.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201703231959026_v3.0.1.cs" />
+    <Compile Include="Migrations\0-2.9.5\201703231959026_v3.0.1.Designer.cs">
+      <DependentUpon>201703231959026_v3.0.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\0-2.9.5\201703241625584_v3.0.2.cs" />
+    <Compile Include="Migrations\0-2.9.5\201703241625584_v3.0.2.Designer.cs">
+      <DependentUpon>201703241625584_v3.0.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\References.cs" />
+    <Compile Include="Notifications\NotificationTypeEntityModel.cs" />
+    <Compile Include="Notifications\NotificationTypeRoleEntityModel.cs" />
+    <Compile Include="Notifications\NotificationUserOptOutEntityModel.cs" />
+    <Compile Include="Repair\FeedbackEntityModel.cs" />
+    <Compile Include="Repair\OrderPointOfImpactEntityModel.cs" />
+    <Compile Include="Repair\PointOfImpactEntityModel.cs" />
+    <Compile Include="Repair\VehicleMakeTypeEntityModel.cs" />
+    <Compile Include="Repair\InsuranceCompanyEntityModel.cs" />
+    <Compile Include="Repair\InvoiceEntityModel.cs" />
+    <Compile Include="Repair\InvoiceEntityMetadata.cs" />
+    <Compile Include="Repair\OrderEntityModel.cs" />
+    <Compile Include="Repair\VehicleMakeEntityModel.cs" />
+    <Compile Include="Reporting\ReportTemplateEntityModel.cs" />
+    <Compile Include="Interfaces\IArchiveEntityModel.cs" />
+    <Compile Include="Interfaces\IRequestEntityModel.cs" />
+    <Compile Include="Scan\ReportEntityModel.cs" />
+    <Compile Include="Scan\ReportWorkTypeEntityModel.cs" />
+    <Compile Include="Scan\RequestArchiveEntityModel.cs" />
+    <Compile Include="Scan\RequestEntityModel.cs" />
+    <Compile Include="Scan\RequestCategoryEntityModel.cs" />
+    <Compile Include="Scan\RequestCategoryTypeEntityModel.cs" />
+    <Compile Include="Scan\RequestTypeEntityModel.cs" />
+    <Compile Include="Scan\RequestWarningIndicatorEntityModel.cs" />
+    <Compile Include="Scan\WorkTypeEntityModel.cs" />
+    <Compile Include="Scan\WorkTypeRequestTypeEntityModel.cs" />
+    <Compile Include="Scan\WorkTypeGroupEntityModel.cs" />
+    <Compile Include="Scan\WarningIndicatorEntityModel.cs" />
+    <Compile Include="Notifications\NotificationLogEntityModel.cs" />
+    <Compile Include="Notifications\NotificationTemplateEntityModel.cs" />
+    <Compile Include="Service\CccEstimateEntityModel.cs" />
+    <Compile Include="Service\MitchellRegistrationEntityModel.cs" />
+    <Compile Include="Service\CCCInsuranceCompanyEntityModel.cs" />
+    <Compile Include="Service\MitchellReportEntityModel.cs" />
+    <Compile Include="Service\MitchellRequestEntityModel.cs" />
+    <Compile Include="Support\ApplicationExceptionEntityModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repair\OrderEntityMetadata.cs" />
+    <Compile Include="Repair\VehicleEntityModel.cs" />
+    <Compile Include="Scan\RequestEntityMetadata.cs" />
+    <Compile Include="Repair\VehicleLookupEntityModel.cs" />
+    <Compile Include="Access\UserClaimEntityModel.cs" />
+    <Compile Include="Access\UserLoginEntityModel.cs" />
+    <Compile Include="Support\ConnectionEntityModel.cs" />
+    <Compile Include="Support\ConnectionLogEntityModel.cs" />
+    <Compile Include="Support\IConnectionLogEntityModel.cs" />
+    <Compile Include="Support\RequestLogEntityModel.cs" />
+    <Compile Include="Support\RequestLogExceptionEntityModel.cs" />
+    <Compile Include="Support\RequestLogUserAgentEntityModel.cs" />
+    <Compile Include="Technician\LocationEntityModel.cs" />
+    <Compile Include="Technician\ProfileScheduleEntityModel.cs" />
+    <Compile Include="Technician\ProfileTimeOffEntryEntityModel.cs" />
+    <Compile Include="Technician\TechnicianProfileEntityModel.cs" />
+    <Compile Include="Technician\ProfileVehicleMakeEntityModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Migrations\0-2.9.5\201612281952513_v2.8.7_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612281952513_v2.8.7_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201703241625584_v3.0.2_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201703210853339_v2.9.8_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201701040907402_v2.9.7_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201701010249001_v2.9.4_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201701010249001_v2.9.4_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612302046303_v2.9.2_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612302046303_v2.9.2_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612290843565_v2.9.0_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612290843565_v2.9.0_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612282137119_v2.8.9_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612282137119_v2.8.9_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612282057480_v2.8.8_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612282057480_v2.8.8_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_CompleteRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetRegistrationOptions.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetEmployeeDisplayList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetShopDisplayList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetShops.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_SaveLoginAttempt.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_SaveShop.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetUsersByRepairId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.udf_GetPricingPlanIdByOrderId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetBillingInvoice.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetRegistrationGrid.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetBillingInvoiceGrid.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_CommaListToTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetEndOfDay.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetUserTimeZoneId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_GetDiagnosticQueueByShop.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_UpdateVehicleControllers.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetRegistrationWelcomeNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetRegistrationNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetScanToolIssuesNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetStatementNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_GetControllersSearch.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_GetDiagnosticResults.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_GetTroubleCodesSearch.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Diagnostic.usp_SaveDiagnosticResult.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_CloseRepairByRequestId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Inventory.usp_GetAirProToolStats.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetVehicleMakes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetDecodeVIN.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetVehicleMakes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetAccountShopRepsReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetEstimatedOutstandingRevenueReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetInvoiceSummaryReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetReportAccess.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetReportTemplates.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetHourlyVolumeByWeekReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetFeedbackReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetTechAvgScansByDayReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetShopActivityReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_SaveRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetVolumeSummaryReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.udf_GetValidationRulesByRequestId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetDecisionById.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetDecisionsByGridPage.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetDecisionsRanked.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetRecomendationSearch.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetReportByRequestId.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetRequestById.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetPaymentsGrid.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetRequestsByUser.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetRequestTypeDisplayList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetRequestTypes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetTroubleCodeRecommendations.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetValidationRuleDisplayList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetWorkType.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetWorkTypeDisplayList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveDecision.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveRequestType.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveTroubleCodeRecommendation.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_GetMitchellRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_GetMitchellReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveReport.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_SaveMitchellRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_UpdateCCCInsuranceCompanies.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_UpdateMitchellRegistration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_GetConnections.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Technician.usp_SaveProfileTimeOff.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Technician.usp_SaveProfileSchedules.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_SaveEstimatePlan.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_SaveOrderPointsOfImpact.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_ModifyAdminRights.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetNotificationUsers.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_UserGroupRoleSync.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_ViewUserGroupRoles.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetOutstandingInvoices.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetPaymentTransactions.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_VoidPayment.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_CreateFromCCCEstimates.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetChartingData.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetEstimateReportDataSource.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_SaveCCCEstimate.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_SaveRequestLog.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_IdListToTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetWorkTypeGroups.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_GetWorkTypeSearch.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveWorkType.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Scan.usp_SaveWorkTypeGroup.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetDisplayName.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetLastDayOfWeek.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetLocalDateTime.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetRepairCountByStatus.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetRequestTypeCountByDate.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetInvoiceReportDataSource.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetScanReportDataSource.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_GetStatementReportDataSource.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetRepairsByUser.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetVehicleByVIN.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_SaveVehicle.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_SaveVehicleLookup.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetPricingPlans.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_GetPricingPlanTemplate.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_SavePricingPlan.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Billing.usp_SavePricingPlanLineItem.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_GetInsuranceCompanies.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetRepairNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Repair.usp_SaveInsuranceCompany.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_ApplicationStart.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_SaveConnection.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_UserSessionEnd.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_GetServiceUser.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_SaveApplicationException.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetRequestNotification.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Notification.usp_GetUserMemberships.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Technician.usp_GetQueueConnections.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Technician.usp_GetWeeklySchedule.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_SaveUserPreferences.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Support.usp_RunNightlyProcess.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_GetEmptyGuid.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Service.usp_SaveMitchellRequest.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_DeleteAccount.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Access.usp_DeleteShop.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_XmlToTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Common.udf_JsonArrayToTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.GroupRoles.trgAccessGroupRolesArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.Groups.trgAccessGroupsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.UserAccounts.trgAccessUserAccountsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.Accounts.trgAccessAccountsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.UserGroups.trgAccessUserGroupsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.UserShops.trgAccessUserShopsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.Users.trgAccessUsersArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Access.Shops.trgAccessShopsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Inventory.AirProToolAccounts.trgAirProToolAccountsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Inventory.AirProToolShops.trgAirProToolShopsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Scan.Requests.trgScanRequestsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Scan.Reports.trgScanReportsArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Inventory.AirProTools.trgAirProToolArchive.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Triggers\Support.Connections.tgrConnectionLog.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Access.udt_ShopInsuranceCompaniesEstimatePlans.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Access.udt_ShopVehicleMakesPricing.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Access.udt_ShopInsuranceCompaniesPricingPlans.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Diagnostic.udt_ResultFreezeFrames.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Diagnostic.udt_ResultTroubleCodes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Access.udt_ShopContacts.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Scan.udt_VehicleMakeTool.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Scan.udt_DecisionSettings.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Scan.udt_ReportDecisions.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Scan.udt_ReportRecommendations.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Technician.udt_Schedules.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Technician.udt_TimeOff.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UserDefinedTypes\Billing.udt_EstimateVehiclePlans.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Technician.usp_SaveProfile.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Procedures\Reporting.usp_BuildReportData.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Access.vwUserMemberships.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Billing.vwInvoiceBalances.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Billing.vwInvoiceLineItems.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Billing.vwPaymentTransactions.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Diagnostic.vwUploadQueue.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Repair.vwOrderDetails.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Repair.vwRequestTypeCounts.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Repair.vwRequestTimes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Reporting.vwReportData.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Scan.vwRequestDetails.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="App.config" />
+    <Content Include="Migrations\0-2.9.5\201612222349234_v2.8.5_Rollback.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201612222349234_v2.8.5_Deploy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201605110343134_InitialDeploy.resx">
+      <DependentUpon>201605110343134_InitialDeploy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201605130246082_Scans.resx">
+      <DependentUpon>201605130246082_Scans.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201605222104298_Shops.resx">
+      <DependentUpon>201605222104298_Shops.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201605292056447_v1_2.resx">
+      <DependentUpon>201605292056447_v1_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201605300238198_v1_3.resx">
+      <DependentUpon>201605300238198_v1_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606050554550_v1_4.resx">
+      <DependentUpon>201606050554550_v1_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606070406040_v1_5.resx">
+      <DependentUpon>201606070406040_v1_5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606112257359_v1_6.resx">
+      <DependentUpon>201606112257359_v1_6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606122031571_v1_1.resx">
+      <DependentUpon>201606122031571_v1_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606122209384_v2_0.resx">
+      <DependentUpon>201606122209384_v2_0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606122234174_v2_1.resx">
+      <DependentUpon>201606122234174_v2_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606140749023_v2_2.resx">
+      <DependentUpon>201606140749023_v2_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606150113592_v2_3.resx">
+      <DependentUpon>201606150113592_v2_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606150314557_v2_3_1.resx">
+      <DependentUpon>201606150314557_v2_3_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606150641137_v2_3_2.resx">
+      <DependentUpon>201606150641137_v2_3_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606190732379_v2_4.resx">
+      <DependentUpon>201606190732379_v2_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606191027008_v2_4_1.resx">
+      <DependentUpon>201606191027008_v2_4_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606220601229_v2_5.resx">
+      <DependentUpon>201606220601229_v2_5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606240325247_v2_6.resx">
+      <DependentUpon>201606240325247_v2_6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201606280629014_v2_7.resx">
+      <DependentUpon>201606280629014_v2_7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201607052337402_v2_7_1.resx">
+      <DependentUpon>201607052337402_v2_7_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608070537455_v2_7_2.resx">
+      <DependentUpon>201608070537455_v2_7_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608141733597_v2_7_3.resx">
+      <DependentUpon>201608141733597_v2_7_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608162051310_v2_7_4.resx">
+      <DependentUpon>201608162051310_v2_7_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608210210563_v2_7_5.resx">
+      <DependentUpon>201608210210563_v2_7_5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608211654378_v2_7_6.resx">
+      <DependentUpon>201608211654378_v2_7_6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608212123089_v2_7_7.resx">
+      <DependentUpon>201608212123089_v2_7_7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201608280618327_v2_7_8.resx">
+      <DependentUpon>201608280618327_v2_7_8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201609031817284_v2_7_9.resx">
+      <DependentUpon>201609031817284_v2_7_9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201610120311123_v2.8.0.resx">
+      <DependentUpon>201610120311123_v2.8.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201610161720516_v2.8.1.resx">
+      <DependentUpon>201610161720516_v2.8.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201611190734086_v2.8.2.resx">
+      <DependentUpon>201611190734086_v2.8.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201611201258145_v2.8.3.resx">
+      <DependentUpon>201611201258145_v2.8.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612041554265_v2.8.4.resx">
+      <DependentUpon>201612041554265_v2.8.4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612222349234_v2.8.5.resx">
+      <DependentUpon>201612222349234_v2.8.5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612281815057_v2.8.6.resx">
+      <DependentUpon>201612281815057_v2.8.6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612281952513_v2.8.7.resx">
+      <DependentUpon>201612281952513_v2.8.7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612282057480_v2.8.8.resx">
+      <DependentUpon>201612282057480_v2.8.8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612282137119_v2.8.9.resx">
+      <DependentUpon>201612282137119_v2.8.9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612290843565_v2.9.0.resx">
+      <DependentUpon>201612290843565_v2.9.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612291058162_v2.9.1.resx">
+      <DependentUpon>201612291058162_v2.9.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612302046303_v2.9.2.resx">
+      <DependentUpon>201612302046303_v2.9.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201612312226414_v2.9.3.resx">
+      <DependentUpon>201612312226414_v2.9.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201701010249001_v2.9.4.resx">
+      <DependentUpon>201701010249001_v2.9.4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201701012122162_v2.9.5.resx">
+      <DependentUpon>201701012122162_v2.9.5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201701022232457_v2.9.6.resx">
+      <DependentUpon>201701022232457_v2.9.6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201701040907402_v2.9.7.resx">
+      <DependentUpon>201701040907402_v2.9.7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201703210853339_v2.9.8.resx">
+      <DependentUpon>201703210853339_v2.9.8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201703220559006_v2.9.9.resx">
+      <DependentUpon>201703220559006_v2.9.9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201703231741250_v3.0.0.resx">
+      <DependentUpon>201703231741250_v3.0.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201703231959026_v3.0.1.resx">
+      <DependentUpon>201703231959026_v3.0.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201703241625584_v3.0.2.resx">
+      <DependentUpon>201703241625584_v3.0.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201704290959333_v3.0.3.resx">
+      <DependentUpon>201704290959333_v3.0.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201705022213481_v3.0.4.resx">
+      <DependentUpon>201705022213481_v3.0.4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201705041927308_v3.0.5.resx">
+      <DependentUpon>201705041927308_v3.0.5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201705050948252_v3.0.6.resx">
+      <DependentUpon>201705050948252_v3.0.6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201706102300169_v3.0.7.resx">
+      <DependentUpon>201706102300169_v3.0.7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201707011708477_v3.0.8.resx">
+      <DependentUpon>201707011708477_v3.0.8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201708131859581_v3.0.9.resx">
+      <DependentUpon>201708131859581_v3.0.9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201708202140039_v3.1.0.resx">
+      <DependentUpon>201708202140039_v3.1.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201708210456333_v3.1.1.resx">
+      <DependentUpon>201708210456333_v3.1.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201710160949321_v3.1.2.resx">
+      <DependentUpon>201710160949321_v3.1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201711020937465_v3.1.3.resx">
+      <DependentUpon>201711020937465_v3.1.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201712072153481_v3.1.4.resx">
+      <DependentUpon>201712072153481_v3.1.4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201712100815179_v3.1.5.resx">
+      <DependentUpon>201712100815179_v3.1.5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201801211721553_v3.1.6.resx">
+      <DependentUpon>201801211721553_v3.1.6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201801212048012_v3.1.7.resx">
+      <DependentUpon>201801212048012_v3.1.7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201801241402275_v3.1.8.resx">
+      <DependentUpon>201801241402275_v3.1.8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201801250408365_v3.1.9.resx">
+      <DependentUpon>201801250408365_v3.1.9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201802041934580_v3.2.0.resx">
+      <DependentUpon>201802041934580_v3.2.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201802160332219_v3.2.1.resx">
+      <DependentUpon>201802160332219_v3.2.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201802210727460_v3.2.2.resx">
+      <DependentUpon>201802210727460_v3.2.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803082251084_APD-462.resx">
+      <DependentUpon>201803082251084_APD-462.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803082255170_APD-317.resx">
+      <DependentUpon>201803082255170_APD-317.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803090413357_APD-487.resx">
+      <DependentUpon>201803090413357_APD-487.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803091848017_APD-525.resx">
+      <DependentUpon>201803091848017_APD-525.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803102252112_APD-132.resx">
+      <DependentUpon>201803102252112_APD-132.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803110759205_APD-40.resx">
+      <DependentUpon>201803110759205_APD-40.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803172213505_APD-503.resx">
+      <DependentUpon>201803172213505_APD-503.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803221832430_APD-533.resx">
+      <DependentUpon>201803221832430_APD-533.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803250314337_APD-599.resx">
+      <DependentUpon>201803250314337_APD-599.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803250441451_APD-573.resx">
+      <DependentUpon>201803250441451_APD-573.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803250609073_APD-618.resx">
+      <DependentUpon>201803250609073_APD-618.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803250722354_APD-347.resx">
+      <DependentUpon>201803250722354_APD-347.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803251126031_APD-551.resx">
+      <DependentUpon>201803251126031_APD-551.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803291757495_APD-669.resx">
+      <DependentUpon>201803291757495_APD-669.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803291944491_APD-673.resx">
+      <DependentUpon>201803291944491_APD-673.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201803311839238_APD-184.resx">
+      <DependentUpon>201803311839238_APD-184.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804010400449_APD-187.resx">
+      <DependentUpon>201804010400449_APD-187.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804031646411_APD-300.resx">
+      <DependentUpon>201804031646411_APD-300.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804060032538_APD-208.resx">
+      <DependentUpon>201804060032538_APD-208.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804081438560_APD-435.resx">
+      <DependentUpon>201804081438560_APD-435.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804130534083_APD-523.resx">
+      <DependentUpon>201804130534083_APD-523.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804211700273_APD-450.resx">
+      <DependentUpon>201804211700273_APD-450.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804212043119_APD-708.resx">
+      <DependentUpon>201804212043119_APD-708.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201804220008049_APD-385.resx">
+      <DependentUpon>201804220008049_APD-385.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\0-2.9.5\201805020546119_APD-812.resx">
+      <DependentUpon>201805020546119_APD-812.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.6\201805031837580_APD-604.resx">
+      <DependentUpon>201805031837580_APD-604.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.6\201805061119230_APD-166.resx">
+      <DependentUpon>201805061119230_APD-166.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.6\201805061140371_APD-745.resx">
+      <DependentUpon>201805061140371_APD-745.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.6\201805091407336_APD-880.resx">
+      <DependentUpon>201805091407336_APD-880.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805111926567_APD-709.resx">
+      <DependentUpon>201805111926567_APD-709.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805121958494_APD-832.resx">
+      <DependentUpon>201805121958494_APD-832.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805160511013_APD-171.resx">
+      <DependentUpon>201805160511013_APD-171.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805161532406_APD-119.resx">
+      <DependentUpon>201805161532406_APD-119.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805170516398_APD-768.resx">
+      <DependentUpon>201805170516398_APD-768.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805171914194_APD-193.resx">
+      <DependentUpon>201805171914194_APD-193.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805180252533_APD-431.resx">
+      <DependentUpon>201805180252533_APD-431.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805190346151_APD-698.resx">
+      <DependentUpon>201805190346151_APD-698.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.7\201805251524087_APD-978.resx">
+      <DependentUpon>201805251524087_APD-978.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201805311301057_APD-877.resx">
+      <DependentUpon>201805311301057_APD-877.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201805311546341_APD-926.resx">
+      <DependentUpon>201805311546341_APD-926.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201805311636480_APD-901.resx">
+      <DependentUpon>201805311636480_APD-901.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201805311803091_APD-325.resx">
+      <DependentUpon>201805311803091_APD-325.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201805311916257_APD-665.resx">
+      <DependentUpon>201805311916257_APD-665.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201806021919552_APD-770.resx">
+      <DependentUpon>201806021919552_APD-770.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.8\201806132115574_APD-1094.resx">
+      <DependentUpon>201806132115574_APD-1094.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.9\201806140154199_APD-924.resx">
+      <DependentUpon>201806140154199_APD-924.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.9\201806142126348_APD-949.resx">
+      <DependentUpon>201806142126348_APD-949.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.9\201806162012587_APD-890.resx">
+      <DependentUpon>201806162012587_APD-890.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.9\201806162134383_APD-1006.resx">
+      <DependentUpon>201806162134383_APD-1006.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\2.9.9\201806170810522_APD-428.resx">
+      <DependentUpon>201806170810522_APD-428.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201902280705360_APD-2107.resx">
+      <DependentUpon>201902280705360_APD-2107.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903041944233_APD-2132.resx">
+      <DependentUpon>201903041944233_APD-2132.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903061858354_APD-2252.resx">
+      <DependentUpon>201903061858354_APD-2252.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903071834573_APD-2122.resx">
+      <DependentUpon>201903071834573_APD-2122.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903101724140_APD-2126.resx">
+      <DependentUpon>201903101724140_APD-2126.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903181830038_APD-2284.resx">
+      <DependentUpon>201903181830038_APD-2284.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903191332533_APD-2305.resx">
+      <DependentUpon>201903191332533_APD-2305.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903191436525_APD-2123.resx">
+      <DependentUpon>201903191436525_APD-2123.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903231224299_APD-2104.resx">
+      <DependentUpon>201903231224299_APD-2104.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903251044482_APD-2282.resx">
+      <DependentUpon>201903251044482_APD-2282.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903251103187_APD-2017.resx">
+      <DependentUpon>201903251103187_APD-2017.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903251207228_APD-2125.resx">
+      <DependentUpon>201903251207228_APD-2125.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.2.0\201903261630131_APD-2214.resx">
+      <DependentUpon>201903261630131_APD-2214.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902261909170_APD-2215.resx">
+      <DependentUpon>201902261909170_APD-2215.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902202132493_APD-2128.resx">
+      <DependentUpon>201902202132493_APD-2128.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902201634163_APD-2016.resx">
+      <DependentUpon>201902201634163_APD-2016.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902201624019_APD-2193.resx">
+      <DependentUpon>201902201624019_APD-2193.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902131914322_APD-2005.resx">
+      <DependentUpon>201902131914322_APD-2005.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902132118347_APD-581.resx">
+      <DependentUpon>201902132118347_APD-581.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902041750274_APD-1817.resx">
+      <DependentUpon>201902041750274_APD-1817.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902051536545_APD-1922.resx">
+      <DependentUpon>201902051536545_APD-1922.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902061809111_APD-1812.resx">
+      <DependentUpon>201902061809111_APD-1812.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902061833468_APD-2105.resx">
+      <DependentUpon>201902061833468_APD-2105.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902061849199_APD-1760.resx">
+      <DependentUpon>201902061849199_APD-1760.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902061914232_APD-2020.resx">
+      <DependentUpon>201902061914232_APD-2020.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902071729322_APD-897.resx">
+      <DependentUpon>201902071729322_APD-897.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902071814248_APD-1392.resx">
+      <DependentUpon>201902071814248_APD-1392.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902071829000_APD-744.resx">
+      <DependentUpon>201902071829000_APD-744.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902071851029_APD-301.resx">
+      <DependentUpon>201902071851029_APD-301.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902082007571_APD-1929.resx">
+      <DependentUpon>201902082007571_APD-1929.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.1.0\201902111843312_APD-1664.resx">
+      <DependentUpon>201902111843312_APD-1664.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901111824296_APD-1615.resx">
+      <DependentUpon>201901111824296_APD-1615.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901112119092_APD-1848.resx">
+      <DependentUpon>201901112119092_APD-1848.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901121543044_APD-1980.resx">
+      <DependentUpon>201901121543044_APD-1980.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901141634305_APD-1952.resx">
+      <DependentUpon>201901141634305_APD-1952.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901141814530_APD-1938.resx">
+      <DependentUpon>201901141814530_APD-1938.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901141910480_APD-996.resx">
+      <DependentUpon>201901141910480_APD-996.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901141928399_APD-737.resx">
+      <DependentUpon>201901141928399_APD-737.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901141943375_APD-1637.resx">
+      <DependentUpon>201901141943375_APD-1637.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901142116108_APD-1850.resx">
+      <DependentUpon>201901142116108_APD-1850.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901151808439_APD-1631.resx">
+      <DependentUpon>201901151808439_APD-1631.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901151830526_APD-1783.resx">
+      <DependentUpon>201901151830526_APD-1783.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901161345287_APD-2002.resx">
+      <DependentUpon>201901161345287_APD-2002.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901161733026_APD-1406.resx">
+      <DependentUpon>201901161733026_APD-1406.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901162000193_APD-1849.resx">
+      <DependentUpon>201901162000193_APD-1849.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.7\201901171640591_APD-1758.resx">
+      <DependentUpon>201901171640591_APD-1758.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201812180730047_APD-1851.resx">
+      <DependentUpon>201812180730047_APD-1851.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201812180628546_APD-1852.resx">
+      <DependentUpon>201812180628546_APD-1852.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201812101816237_APD-1841.resx">
+      <DependentUpon>201812101816237_APD-1841.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810051954372_APD-1484.resx">
+      <DependentUpon>201810051954372_APD-1484.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810081632388_APD-1441.resx">
+      <DependentUpon>201810081632388_APD-1441.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810081701244_APD-1497.resx">
+      <DependentUpon>201810081701244_APD-1497.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810081718313_APD-1270.resx">
+      <DependentUpon>201810081718313_APD-1270.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810081822399_APD-1258.resx">
+      <DependentUpon>201810081822399_APD-1258.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810081906122_APD-1380.resx">
+      <DependentUpon>201810081906122_APD-1380.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810082100573_APD-1613.resx">
+      <DependentUpon>201810082100573_APD-1613.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810101620494_APD-1390.resx">
+      <DependentUpon>201810101620494_APD-1390.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810111516208_APD-1026.resx">
+      <DependentUpon>201810111516208_APD-1026.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810111637096_APD-1486.resx">
+      <DependentUpon>201810111637096_APD-1486.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810121453435_APD-1159.resx">
+      <DependentUpon>201810121453435_APD-1159.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810151533588_APD-1624.resx">
+      <DependentUpon>201810151533588_APD-1624.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810172017592_APD-1619.resx">
+      <DependentUpon>201810172017592_APD-1619.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810241655120_APD-1545.resx">
+      <DependentUpon>201810241655120_APD-1545.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810241736555_APD-1438.resx">
+      <DependentUpon>201810241736555_APD-1438.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810241748481_APD-1535.resx">
+      <DependentUpon>201810241748481_APD-1535.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810241814329_APD-1639.resx">
+      <DependentUpon>201810241814329_APD-1639.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810251452327_APD-1285.resx">
+      <DependentUpon>201810251452327_APD-1285.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810292001178_APD-1700.resx">
+      <DependentUpon>201810292001178_APD-1700.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201810311841228_APD-1160.resx">
+      <DependentUpon>201810311841228_APD-1160.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811021313454_APD-1312.resx">
+      <DependentUpon>201811021313454_APD-1312.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811022015093_APD-1678.resx">
+      <DependentUpon>201811022015093_APD-1678.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811052032339_APD-1177.resx">
+      <DependentUpon>201811052032339_APD-1177.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811061641090_APD-1673.resx">
+      <DependentUpon>201811061641090_APD-1673.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811061715449_APD-1598.resx">
+      <DependentUpon>201811061715449_APD-1598.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811061822026_APD-1638.resx">
+      <DependentUpon>201811061822026_APD-1638.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811061832105_APD-1273.resx">
+      <DependentUpon>201811061832105_APD-1273.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811081603463_APD-1681.resx">
+      <DependentUpon>201811081603463_APD-1681.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811141821541_APD-1779.resx">
+      <DependentUpon>201811141821541_APD-1779.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811161630461_APD-1740.resx">
+      <DependentUpon>201811161630461_APD-1740.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811281950391_APD-1478.resx">
+      <DependentUpon>201811281950391_APD-1478.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.6\201811301629563_APD-1829.resx">
+      <DependentUpon>201811301629563_APD-1829.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201810031719322_APD-1500.resx">
+      <DependentUpon>201810031719322_APD-1500.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809252105425_APD-1529.resx">
+      <DependentUpon>201809252105425_APD-1529.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241513327_APD-1449.resx">
+      <DependentUpon>201809241513327_APD-1449.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241602051_APD-1349.resx">
+      <DependentUpon>201809241602051_APD-1349.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241615187_APD-1450.resx">
+      <DependentUpon>201809241615187_APD-1450.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241641595_APD-1463.resx">
+      <DependentUpon>201809241641595_APD-1463.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241656536_APD-1445.resx">
+      <DependentUpon>201809241656536_APD-1445.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241709124_APD-1225.resx">
+      <DependentUpon>201809241709124_APD-1225.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241827093_APD-1310.resx">
+      <DependentUpon>201809241827093_APD-1310.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241909199_APD-1452.resx">
+      <DependentUpon>201809241909199_APD-1452.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.5\201809241945354_APD-236.resx">
+      <DependentUpon>201809241945354_APD-236.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809121748040_APD-281.resx">
+      <DependentUpon>201809121748040_APD-281.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809121549465_APD-1475.resx">
+      <DependentUpon>201809121549465_APD-1475.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201808302122120_APD-1402.resx">
+      <DependentUpon>201808302122120_APD-1402.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809102141526_APD-1322.resx">
+      <DependentUpon>201809102141526_APD-1322.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809102212215_APD-1323.resx">
+      <DependentUpon>201809102212215_APD-1323.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809111507032_APD-1091.resx">
+      <DependentUpon>201809111507032_APD-1091.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809111717090_APD-1395.resx">
+      <DependentUpon>201809111717090_APD-1395.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.4\201809112156380_APD-473.resx">
+      <DependentUpon>201809112156380_APD-473.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.3\201808290839474_APD-1428.resx">
+      <DependentUpon>201808290839474_APD-1428.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.3\201808241522415_APD-1292.resx">
+      <DependentUpon>201808241522415_APD-1292.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.3\201808241534066_APD-1245.resx">
+      <DependentUpon>201808241534066_APD-1245.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.3\201808241628225_APD-157.resx">
+      <DependentUpon>201808241628225_APD-157.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.3\201808241840547_APD-1353.resx">
+      <DependentUpon>201808241840547_APD-1353.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.2\201808171833469_APD-1400.resx">
+      <DependentUpon>201808171833469_APD-1400.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.2\201808161540146_APD-1396.resx">
+      <DependentUpon>201808161540146_APD-1396.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.2\201808072219331_APD-1257.resx">
+      <DependentUpon>201808072219331_APD-1257.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.1\201807102258023_APD-916.resx">
+      <DependentUpon>201807102258023_APD-916.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.1\201807112324384_APD-1178.resx">
+      <DependentUpon>201807112324384_APD-1178.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.1\201807121937520_APD-1246.resx">
+      <DependentUpon>201807121937520_APD-1246.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.1\201807132216278_APD-969.resx">
+      <DependentUpon>201807132216278_APD-969.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201807052129440_APD-1036.resx">
+      <DependentUpon>201807052129440_APD-1036.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806200838254_APD-1112.resx">
+      <DependentUpon>201806200838254_APD-1112.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806211724351_APD-1099.resx">
+      <DependentUpon>201806211724351_APD-1099.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806241207282_APD-1040.resx">
+      <DependentUpon>201806241207282_APD-1040.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806250106180_APD-752.resx">
+      <DependentUpon>201806250106180_APD-752.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806250302422_APD-888.resx">
+      <DependentUpon>201806250302422_APD-888.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806251831524_APD-294.resx">
+      <DependentUpon>201806251831524_APD-294.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806252227108_APD-1083.resx">
+      <DependentUpon>201806252227108_APD-1083.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806252322155_APD-1034.resx">
+      <DependentUpon>201806252322155_APD-1034.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201806281433115_APD-292.resx">
+      <DependentUpon>201806281433115_APD-292.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\3.0.0\201807011717543_APD-965.resx">
+      <DependentUpon>201807011717543_APD-965.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Migrations\0-2.9.5\201606122234174_v2_1.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201606220601229_v2_5.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201608212123089_v2_7_7.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201609031817284_v2_7_9.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\0-2.9.5\201611201258145_v2.8.3.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AirPro.Common\AirPro.Common.csproj">
+      <Project>{469d19db-ccf9-45a1-825a-5d47c44d1bfb}</Project>
+      <Name>AirPro.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppSettingsSecrets.config" "$(TargetDir)"
+if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppConnectionsSecrets.config" "$(TargetDir)"
+if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppSettingsSecrets.config" "$(ProjectDir)"
+if $(ConfigurationName) == Debug xcopy /yc "$(SolutionDir)AppConnectionsSecrets.config" "$(ProjectDir)"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

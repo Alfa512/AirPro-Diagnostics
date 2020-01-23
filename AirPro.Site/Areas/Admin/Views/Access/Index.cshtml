@@ -1,0 +1,684 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using Microsoft.AspNet.Identity
+@model AirPro.Site.Areas.Admin.Models.Access.AccessViewModel
+
+@{
+    ViewBag.Title = "Access Management";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style type="text/css">
+    .well {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+        text-align: left;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    table.table tbody td {
+        line-height: 2em;
+    }
+
+    .search.form-group,
+    .actions.btn-group {
+        margin: 0 10px;
+    }
+</style>
+
+<div id="manageBody">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        @if (Model.DisplayAccountTab)
+        {
+            <li role="presentation"><a href="#accounts" aria-controls="accounts" role="tab" data-toggle="tab">Accounts</a></li>
+        }
+        @if (Model.DisplayShopTab)
+        {
+            <li role="presentation"><a href="#shops" aria-controls="shops" role="tab" data-toggle="tab">Shops</a></li>
+        }
+        @if (Model.DisplayGroupTab)
+        {
+            <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab">Groups</a></li>
+        }
+        @if (Model.DisplayUserTab)
+        {
+            <li role="presentation"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
+        }
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        @if (!Model.DisplayAccountTab && !Model.DisplayShopTab && !Model.DisplayGroupTab && !Model.DisplayUserTab)
+        {
+            <div class="alert alert-danger" style="margin-top: 10px;">
+                <em>You do not have access to this page.</em>
+            </div>
+        }
+        @if (Model.DisplayAccountTab)
+        {
+            <div role="tabpanel" class="tab-pane" id="accounts">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Account Administration</span>&nbsp;@AddButton("manageAccount();", "Account", ApplicationRoles.AccountCreate.ToString())</h4>
+                    </div>
+                    <table id="accounts-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+                        <thead>
+                            <tr>
+                                <th data-column-id="accountGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                <th data-column-id="name">Name</th>
+                                <th data-column-id="phone">Phone</th>
+                                <th data-column-id="fax">Fax</th>
+                                <th data-column-id="address1">Address 1</th>
+                                <th data-column-id="address2">Address 2</th>
+                                <th data-column-id="city">City</th>
+                                <th data-column-id="state">State</th>
+                                <th data-column-id="accountRep" data-visible="false">Account Rep</th>
+                                <th data-column-id="activeInd" data-converter="bool" data-align="center" data-header-align="center">Enabled</th>
+                                <th data-column-id="editAccount" data-visible-in-selection="false" data-formatter="rowMenu" data-sortable="false" data-align="center" data-width="90"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        }
+        @if (Model.DisplayShopTab)
+        {
+            <div role="tabpanel" class="tab-pane" id="shops">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Shop Administration</span>&nbsp;@AddButton("manageShop();", "Shop", ApplicationRoles.ShopCreate.ToString())</h4>
+                    </div>
+                    <table id="shops-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+                        <thead>
+                            <tr>
+                                <th data-column-id="shopGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                <th data-column-id="shopNumber" data-width="100">Number</th>
+                                <th data-column-id="name">Name</th>
+                                <th data-column-id="accountName" data-sortable="false">Account</th>
+                                <th data-column-id="phone">Phone</th>
+                                <th data-column-id="fax">Fax</th>
+                                <th data-column-id="address1">Address 1</th>
+                                <th data-column-id="address2">Address 2</th>
+                                <th data-column-id="city">City</th>
+                                <th data-column-id="state">State</th>
+                                <th data-column-id="shopRep" data-visible="false">Shop Rep</th>
+                                <th data-column-id="accountRep" data-visible="false">Account Rep</th>
+                                <th data-column-id="activeInd" data-converter="bool" data-align="center" data-header-align="center">Enabled</th>
+                                <th data-column-id="allowSelfScan" data-converter="bool" data-align="center" data-header-align="center" data-visible="false">Self Scan</th>
+                                <th data-column-id="editShop" data-visible-in-selection="false" data-formatter="rowMenu" data-sortable="false" data-align="center" data-width="90"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        }
+        @if (Model.DisplayGroupTab)
+        {
+            <div role="tabpanel" class="tab-pane" id="groups">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Group Administration</span>&nbsp;@AddButton("manageGroup();", "Group", ApplicationRoles.GroupCreate.ToString())</h4>
+                    </div>
+                    <table id="groups-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+                        <thead>
+                            <tr>
+                                <th data-column-id="groupGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                <th data-column-id="name">Group Name</th>
+                                <th data-column-id="description">Group Description</th>
+                                <th data-column-id="roleList" data-formatter="roleList" data-sortable="false">Roles</th>
+                                <th data-column-id="editGroup" data-visible-in-selection="false" data-formatter="editGroup" data-sortable="false" data-align="center" data-width="45"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        }
+        @if (Model.DisplayUserTab)
+        {
+            <div role="tabpanel" class="tab-pane" id="users">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">User Administration</span>&nbsp;@AddButton("manageUser();", "User", ApplicationRoles.UserCreate.ToString())</h4>
+                    </div>
+                    <table id="users-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+                        <thead>
+                            <tr>
+                                <th data-column-id="userGuid" data-identifier="true" data-visible="false" data-visible-in-selection="false"></th>
+                                <th data-column-id="email">Email</th>
+                                <th data-column-id="emailConfirmed" data-converter="bool" data-align="center" data-visible="false">Email Confirmed</th>
+                                <th data-column-id="phoneNumber">Phone Number</th>
+                                <th data-column-id="phoneNumberConfirmed" data-converter="bool" data-align="center" data-visible="false">Phone Confirmed</th>
+                                <th data-column-id="contactNumber">Contact Number</th>
+                                <th data-column-id="lastName">Last Name</th>
+                                <th data-column-id="firstName">First Name</th>
+                                <th data-column-id="jobTitle">Job Title</th>
+                                <th data-column-id="twoFactorEnabled" data-converter="bool" data-align="center" data-visible="false">Two Factor</th>
+                                <th data-column-id="accountLocked" data-converter="bool" data-align="center" data-visible="false" data-sortable="false">Locked</th>
+                                <th data-column-id="accessFailedCount" data-visible="false">Failed Logins</th>
+                                <th data-column-id="shopBillingNotification" data-converter="bool" data-align="center" data-visible="false">Billing Notification</th>
+                                <th data-column-id="shopReportNotification" data-converter="bool" data-align="center" data-visible="false">Report Notification</th>
+                                <th data-column-id="employeeInd" data-converter="bool" data-align="center" data-visible="false">AirPro Employee</th>
+                                <th data-column-id="editUser" data-visible-in-selection="false" data-formatter="editUser" data-sortable="false" data-align="center" data-width="80"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@helper AddButton(string function, string type, string role)
+{
+    if (User.IsInRole(role))
+    {
+        <a onclick="@function" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add @type</a>
+    }
+}
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal();" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Confirm Action</h4>
+            </div>
+            <div class="modal-body">
+                <p class="content"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "No")>No</button>
+                <button type="button" class="btn btn-danger btn-ok" @Html.DisableOnAjax(DisableButtonType.Submit, "Yes")>Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @Scripts.Render("~/jqueryval/js")
+    @Scripts.Render("~/admin/access/js")
+
+    <script type="text/javascript">
+        var allowShopDelete = @User.IsInRole(ApplicationRoles.ShopDelete.ToString()).ToString().ToLower();
+        var allowAccountDelete = @User.IsInRole(ApplicationRoles.AccountDelete.ToString()).ToString().ToLower();
+        var allowDeleteMyShopRelation = @User.IsInRole(ApplicationRoles.ShopShowAll.ToString()).ToString().ToLower();
+        var allowDeleteMyAccountRelation =
+            @User.IsInRole(ApplicationRoles.AccountShowAll.ToString()).ToString().ToLower();
+        var currentUserGuid = '@User.Identity.GetUserId()';
+        var hash = window.location.hash.split('&');
+        if (hash.length > 1) {
+            var type = hash[0].toLowerCase();
+            var id = hash[1];
+            if (type == '#shops') {
+                manageShop(id);
+            } else if (type == '#accounts') {
+                manageAccount(id);
+            } else if (type == '#users') {
+                manageUser(id);
+            } else if (type == '#groups') {
+                manageGroup(id);
+            }
+        }
+
+        function clearIdFromUrl() {
+            var hash = window.location.hash.split('&');
+            window.location.hash = hash[0];
+        }
+
+        function setIdToHash(id) {
+            if (id && window.location.hash.split('&').length == 1) {
+                window.location.hash = window.location.hash + '&' + id;
+            }
+        }
+
+        $("#accounts-grid").bootgrid({
+            url: '@Url.Action("GetAccountsByPage")',
+            multiSort: true,
+            formatters: {
+                "rowMenu": function(c, r) {
+                    return rowMenu("Account", r.accountGuid, r.activeInd);
+                }
+            },
+            converters: {
+                bool: {
+                    to: boolConverter
+                }
+            }
+        });
+
+        $("#shops-grid").bootgrid({
+            url: '@Url.Action("GetShopsByPage")',
+            multiSort: true,
+            formatters: {
+                "rowMenu": function(c, r) {
+                    return rowMenu("Shop", r.shopGuid, r.activeInd);
+                }
+            },
+            converters: {
+                bool: {
+                    to: boolConverter
+                }
+            }
+        });
+
+        $("#groups-grid").bootgrid({
+            url: '@Url.Action("GetGroupsByPage")',
+            formatters: {
+                "editGroup": function(column, row) {
+                    return rowMenu("Group", row.groupGuid, false);
+                },
+                "roleList": function(column, row) {
+                    var result = "<ul>";
+                    $.each(row.roles,
+                        function(k, v) {
+                            result += "<li>" + v.value + "</li>";
+                        });
+                    result += "</ul>";
+                    return result;
+                }
+            }
+        });
+
+        var userId = '@User.Identity.GetUserId()';
+        $("#users-grid").bootgrid({
+            url: '@Url.Action("GetUsersByPage")',
+            multiSort: true,
+            formatters: {
+                "editUser": function(column, row) {
+                    var disableLock =
+                        '@Html.Raw(User.IsInRole(ApplicationRoles.UserDelete.ToString()) ? string.Empty : "disabled")';
+                    var lockButton = '<a href="#" onclick="lockUser(\'' +
+                        row.userGuid +
+                        '\', \'' +
+                        row.accountLocked +
+                        '\')" class="btn btn-sm btn-danger" ' +
+                        disableLock +
+                        '><i class="glyphicon glyphicon-ban-circle"></i></a>';
+                    var disableEdit =
+                        '@Html.Raw(User.IsInRole(ApplicationRoles.UserEdit.ToString()) ? string.Empty : "disabled")';
+                    var format = '<div class="btn-group btn-group-sm pull-right" role="group">' +
+                        (row.accountLocked == false && row.userGuid != userId ? lockButton : '') +
+                        '<a href="#" onclick="manageUser(\'' +
+                        row.userGuid +
+                        '\', this)" class="btn btn-sm btn-warning" ' +
+                        disableEdit +
+                        '><i class="glyphicon glyphicon-edit"></i></a>' +
+                        '</div>';
+
+                    return format;
+                }
+            },
+            converters: {
+                bool: {
+                    to: boolConverter
+                }
+            }
+        });
+
+        function rowMenu(func, id, active) {
+            var editButton = "<a onclick = 'manage" +
+                func +
+                "(\"" +
+                id +
+                "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a>";
+            var deleteButton = "<a onclick = 'delete" +
+                func +
+                "(\"" +
+                id +
+                "\");' class='btn btn-danger'><i class='glyphicon glyphicon-remove'></i></a>";
+
+            var result = "<div class='btn-group btn-group-sm' role='group'>" + editButton;
+            if (active &&
+            ((func === "Shop" && allowShopDelete) ||
+                (func === "Account" && allowAccountDelete))) result += deleteButton;
+            result += "</div>";
+
+            return result;
+        }
+
+        function boolConverter(value) {
+            return value
+                ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+        }
+
+        $(document).ready(function() {
+            $('#confirm-modal').on('click',
+                '.btn-ok',
+                function(e) {
+                    var $modalDiv = $(e.delegateTarget);
+                    var model = $(this).data('model');
+                    if (model) {
+                        var promise = $.ajax({
+                            url: '@Url.Action("User", "Access", new {@Area = "Admin"})',
+                            dataType: "json",
+                            type: "DELETE",
+                            contentType: 'application/json; charset=utf-8',
+                            data: JSON.stringify({ userGuid: model.userId })
+                        });
+
+                        $modalDiv.addClass('loading');
+                        $.when(promise).done(function(data) {
+                            if (data.success) {
+                                refreshUsers();
+                                updateComplete("<div class='alert alert-success'>User Updated</div>");
+                            } else {
+                                updateComplete("<div class='alert alert-danger'>" + (data.message ? data.message : "Error Updating User") + "</div>");
+                            }
+                            $modalDiv.modal('hide').removeClass('loading');
+                        });
+                    } else {
+                        $modalDiv.modal('hide').removeClass('loading');
+                    }
+                });
+
+            $('#accounts-grid-header').prependTo('#accounts .panel-heading');
+            $('#accounts .panel-title').prependTo('#accounts-grid-header .actionBar');
+
+            $('#shops-grid-header').prependTo('#shops .panel-heading');
+            $('#shops .panel-title').prependTo('#shops-grid-header .actionBar');
+
+            $('#groups-grid-header').prependTo('#groups .panel-heading');
+            $('#groups .panel-title').prependTo('#groups-grid-header .actionBar');
+
+            $('#users-grid-header').prependTo('#users .panel-heading');
+            $('#users .panel-title').prependTo('#users-grid-header .actionBar');
+        });
+
+        $(document)
+            .ready(function() {
+                $('#manageModal')
+                    .on('hidden.bs.modal',
+                        function(e) {
+                            $('#manageModalBody').html('Loading...');
+                            $('#manageModal button[type=submit]').css('display', '');
+                            clearIdFromUrl();
+                        });
+
+                // Handle Tab Navigation.
+                $('ul.nav.nav-tabs a:first').tab('show');
+                $('ul.nav.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+                $('ul.nav.nav-tabs a[data-toggle="tab"]')
+                    .on('shown.bs.tab',
+                        function(event) { // Update the location hash to current tab
+                            window.location.hash = event.target.hash;
+                            $(window).scrollTop(0);
+                        });
+
+                $(window).scrollTop(0);
+            });
+
+        function disableEntry() {
+            $('#manageModal input').prop('disabled', true);
+            $('#manageModal select').prop('disabled', true);
+            $('#manageModal textarea').prop('disabled', true);
+            $('#manageModal button[type=submit]').css('display', 'none');
+        }
+
+        function displayModal(title) {
+            if (typeof membershipIsValid == 'function' && membershipIsValid) membershipIsValid = undefined;
+            $('#manageModalLabel').text('Manage ' + title);
+            $('#manageModal').modal('show');
+        }
+
+        function loadModal(url) {
+            $.get({ url: url, cache: false },
+                    function(data) {
+                        $('#manageModalBody').html(data);
+                    })
+                .fail(function(err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            if (!form.valid()) {
+                return false;
+            }
+
+            if (typeof membershipIsValid == 'function') {
+                if (!membershipIsValid() && !confirm('Membership changes have NOT been committed, changes will be LOST, do you wish to continue?')) return false;
+            }
+
+            if (window.shopViewModel &&
+                !window.shopViewModel.isValid() &&
+                !window.shopViewModel.isEstimaePlanAddValid()) {
+                alert('Please fix errors in Billing tab');
+                return false;
+            }
+
+            if (window.shopContactsViewModel && !window.shopContactsViewModel.isValid()) {
+                alert('Please fix errors in Contacts tab');
+                return false;
+            }
+
+            if ($('span.validationMessage:visible').length > 0) {
+                alert('Please fix errors in form');
+                return false;
+            }
+
+            @if (!User.IsInRole(ApplicationRoles.UserShowAll.ToString()))
+            {
+                <text>
+                    if ($('[name="AccountMemberships"]').length <= 0 && $('[name="ShopMemberships"]').length <= 0) {
+                        alert('Either as Account or Shop selection is Required.');
+                        return;
+                    }
+                </text>
+            }
+
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function(data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function(err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function updateComplete(html) {
+            $('#manageBody').prepend(html);
+            $('#manageBody > .alert').fadeTo(3000, 500).slideUp(500,
+                function() {
+                    $('#manageBody > .alert').slideUp(500);
+                    $('#manageBody > .alert').remove();
+                });
+            $('#manageModal').modal('hide');
+        }
+
+        @if (Model.DisplayAccountTab)
+        {
+            <text>
+                function manageAccount(accountGuid) {
+                    displayModal('Account');
+                    var url = '@Url.Action("AccountManage")/' + ((accountGuid) ? accountGuid : '');
+                    loadModal(url);
+                    setIdToHash(accountGuid);
+                }
+
+                function deleteAccount(accountGuid) {
+                    $.post('@Url.Action("AccountDelete")/' + accountGuid,
+                        function(data) {
+                            if (data.success) {
+                                refreshAccounts();
+                                refreshShops();
+                            } else {
+                                alert(
+                                    'Error: Account Delete Failed\n\nPlease make sure all Repairs are Canceled or Paid in all Shops before deleting the Account.');
+                            }
+                        });
+                }
+
+                function refreshAccounts() {
+                    $('#accounts-grid').bootgrid("reload");
+                }
+            </text>
+        }
+
+        @if (Model.DisplayShopTab)
+        {
+            <text>
+                function manageShop(shopGuid) {
+                    displayModal('Shop');
+                    var url = '@Url.Action("ShopManage")/' + ((shopGuid) ? shopGuid : '');
+                    loadModal(url);
+                    setIdToHash(shopGuid);
+                }
+
+                function deleteShop(shopGuid) {
+                    $.post('@Url.Action("ShopDelete")/' + shopGuid,
+                        function(data) {
+                            if (data.success) {
+                                refreshShops();
+                            } else {
+                                alert(
+                                    'Error: Shop Delete Failed\n\nPlease make sure all Repairs are Canceled or Paid before deleting a Shop.');
+                            }
+                        });
+                }
+
+                function refreshShops() {
+                    $('#shops-grid').bootgrid("reload");
+                }
+            </text>
+        }
+
+        @if (Model.DisplayGroupTab)
+        {
+            <text>
+                function manageGroup(groupGuid) {
+                    displayModal('Group');
+                    var url = '@Url.Action("GroupManage")/' + ((groupGuid) ? groupGuid : '');
+                    loadModal(url);
+                    setIdToHash(groupGuid);
+                }
+
+                function refreshGroups() {
+                    $('#groups-grid').bootgrid("reload");
+                }
+            </text>
+        }
+
+        @if (Model.DisplayUserTab)
+        {
+            <text>
+                function manageUser(userId, elem) {
+                    if ($(elem).attr('disabled') === 'disabled') {
+                        return;
+                    }
+
+                    displayModal('User');
+                    var url = '@Url.Action("UserManage")/' + ((userId) ? userId : '');
+                    loadModal(url);
+            setIdToHash(userId);
+                }
+
+                function refreshUsers() {
+                    $('#users-grid').bootgrid("reload");
+                }
+
+                function lockUser(userId) {
+                    @if (User.IsInRole(ApplicationRoles.UserDelete.ToString()))
+                    {
+                        <text>
+                            $('#confirm-modal').modal();
+                            $('#confirm-modal p.content').text('Are you sure you want to lock this user?');
+                            $('#confirm-modal .btn-ok').data('model', { userId: userId });
+                        </text>
+                    }
+                    return false;
+                }
+
+                function deleteShopUserAssociation(userId, shopId, link) {
+                    var row = $(link).parents("tr");
+                    var rowId = $(row).data("row-id");
+
+                    var url = '@Url.Action("DeleteShopUserAssociation")?userGuid=' + userId + '&shopGuid=' + shopId;
+                    $.post(url).then(function() {
+                        $("#shop-users-grid").bootgrid("remove", [rowId]);
+                    });
+
+                }
+
+                function deleteAccountUserAssociation(userId, accountId, link) {
+                    var row = $(link).parents("tr");
+                    var rowId = $(row).data("row-id");
+
+                    var url = '@Url.Action("DeleteAccountUserAssociation")?userGuid=' + userId + '&accountGuid=' + accountId;
+                    $.post(url).then(function() {
+                        row.parents('table').bootgrid("remove", [rowId]);
+                    });
+                }
+            </text>
+        }
+    </script>
+}

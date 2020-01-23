@@ -1,0 +1,1063 @@
+﻿@model AirPro.Site.Areas.Admin.Models.Registration.ManageRegistrationViewModel
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@using AirPro.Common.Enumerations
+@using UniMatrix.Common.Extensions
+
+@{
+    Layout = null;
+    var cantEdit = Model.RegistrationStatus == RegistrationStatus.Completed || Model.RegistrationStatus == RegistrationStatus.Withdrawn;
+}
+
+<style>
+    hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .hiddenIgnore + span.validationMessage {
+        display: none;
+    }
+
+    span.validationMessage {
+        color: red;
+    }
+
+    .form-horizontal .checkbox, .form-horizontal .radio {
+        min-height: 34px;
+    }
+
+    label.error {
+        display: none !important;
+    }
+
+    .change-status {
+        display: inline-block;
+        margin-left: 15px;
+    }
+
+    .selectionList {
+        padding-left: 5px;
+    }
+
+    .checkbox {
+        padding-left: 15px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.RegistrationId)
+        @Html.HiddenFor(model => model.Account.RegistrationAccountId)
+        @Html.HiddenFor(model => model.Shop.RegistrationShopId)
+        @Html.HiddenFor(model => model.User.RegistrationUserId)
+        @Html.HiddenFor(model => model.RegistrationStatus)
+
+        @if (Model.RegistrationId != Guid.Empty)
+        {
+            @Html.HiddenFor(model => model.ShopGuid)
+            @Html.HiddenFor(model => model.AccountGuid)
+            @Html.HiddenFor(model => model.ClientUserGuid)
+            @Html.HiddenFor(model => model.Email)
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationId, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        @Model.RegistrationId.ToShortGuid()
+                    </label>
+                    @Html.ValidationMessageFor(model => model.RegistrationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationStatus, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label status-label">
+                        @Model.RegistrationStatusString
+                    </label>
+
+                    @if (Model.RegistrationStatus != RegistrationStatus.Completed && Model.RegistrationStatus != RegistrationStatus.Withdrawn)
+                    {
+                        <div class="dropdown change-status">
+                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                                Change Status
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                @if (Model.RegistrationStatus == RegistrationStatus.Sent || Model.RegistrationStatus == RegistrationStatus.Viewed || Model.RegistrationStatus == RegistrationStatus.InProgress)
+                                {
+                                    <li><a href="#" onclick="changeStatus('@RegistrationStatus.Resent')">Resend</a></li>
+                                    <li><a href="#" onclick="changeStatus('@RegistrationStatus.Completed')">Complete</a></li>
+                                    <li><a href="#" onclick="changeStatus('@RegistrationStatus.Withdrawn')">Withdraw</a></li>
+                                }
+                                @if (Model.RegistrationStatus == RegistrationStatus.Contract)
+                                {
+                                    <li><a href="#" onclick="changeStatus('@RegistrationStatus.Completed')">Complete</a></li>
+                                    <li><a href="#" onclick="changeStatus('@RegistrationStatus.Withdrawn')">Withdraw</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    @Html.ValidationMessageFor(model => model.RegistrationStatus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.StatusUpdateDt, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        @Model.StatusUpdateDt.Value.ToString("g")
+                    </label>
+                    @Html.ValidationMessageFor(model => model.StatusUpdateDt, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CreatedDt, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        @Model.CreatedDt.Value.ToString("g")
+                    </label>
+                    @Html.ValidationMessageFor(model => model.CreatedDt, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <hr />
+        }
+
+        @if (Model.RegistrationStatus == RegistrationStatus.Completed)
+        {
+            @Html.HiddenFor(model => model.Email)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CompletedDt, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        @Model.CompletedDt.Value.ToString("g")
+                    </label>
+                    @Html.ValidationMessageFor(model => model.CompletedDt, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CreatedAccount, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        <a href="/Admin/Access#accounts&@Model.AccountGuid" target="_blank">@Model.CreatedAccount</a>
+                    </label>
+                    @Html.ValidationMessageFor(model => model.CreatedAccount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CreatedShop, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        <a href="/Admin/Access#shops&@Model.ShopGuid" target="_blank">@Model.CreatedShop</a>
+                    </label>
+                    @Html.ValidationMessageFor(model => model.CreatedShop, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CreatedUser, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <label class="control-label">
+                        <a href="/Admin/Access#users&@Model.ClientUserGuid" target="_blank">@Model.CreatedUser</a>
+                    </label>
+                    @Html.ValidationMessageFor(model => model.CreatedUser, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @if (Model.RegistrationId != Guid.Empty)
+        {
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item active in">
+                    <a class="nav-link" id="client-setup-tab" data-toggle="tab" href="#client-setup" role="tab" aria-controls="client-setup" aria-selected="true">Client Setup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="client-entry-tab" data-toggle="tab" href="#client-entry" role="tab" aria-controls="client-entry" aria-selected="false">Client Entry</a>
+                </li>
+            </ul>
+        }
+        <div class="tab-content">
+            <div class="@(Model.RegistrationId != Guid.Empty ? "tab-pane" : "") in active" id="client-setup" role="tabpanel" aria-labelledby="home-tab">
+                <div>
+                    <h4>User Information</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @if (Model.RegistrationId != Guid.Empty)
+                            {
+                                <label class="control-label">@Model.Email</label>
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccessGroupIds, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @if (Model.GroupSelection != null && Model.GroupSelection.Any())
+                            {
+                                var groupSelectionList = Model.GroupSelection.Select(x => new SelectListItem() { Text = x.Value, Value = x.Key, Selected = Model.AccessGroupIds?.Any(d => d.ToString() == x.Key) ?? false });
+                                @Html.MultiCheckBoxListFor(m => m.AccessGroupIds, groupSelectionList, 2)
+                            }
+                            else
+                            {
+                                <em><strong>No Selections Available.</strong></em>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Shop Close Settings</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowAutoRepairClose, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.AllowAutoRepairClose).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AllowAutoRepairClose, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowScanAnalysisAutoClose, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.AllowScanAnalysisAutoClose).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AllowScanAnalysisAutoClose, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowAllRepairAutoClose, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.AllowAllRepairAutoClose).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AllowAllRepairAutoClose, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AutomaticRepairCloseDays, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Shop.AutomaticRepairCloseDays, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.AutomaticRepairCloseDays, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Request Types</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowedRequestTypes, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 190px; overflow-y: auto;">
+                                <ul class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                    @foreach (var item in Model.RequestTypeSelection)
+                                    {
+                                        <li>
+                                            <label for="art@(item.Value)">
+                                                <input type="checkbox"
+                                                       name="Shop.@nameof(Model.Shop.AllowedRequestTypes)"
+                                                       value="@item.Key"
+                                                       id="art@(item.Key)"
+                                                       @(Model.Shop.AllowedRequestTypes != null && Model.Shop.AllowedRequestTypes.Contains(int.Parse(item.Key)) ? "checked" : "") />
+                                                @item.Value
+                                            </label>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.DefaultInsuranceCompanyId, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.Shop.DefaultInsuranceCompanyId, new SelectList(Model.InsuranceCompaniesSelection, "Key", "Value"), new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.DefaultInsuranceCompanyId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Account Billing</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Account.DiscountPercentage, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Account.DiscountPercentage, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Account.DiscountPercentage, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Shop Billing</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.DiscountPercentage, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Shop.DiscountPercentage, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.DiscountPercentage, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.CurrencyId, htmlAttributes: new { @class = "control-label col-sm-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.Shop.CurrencyId, new SelectList(Model.CurrencySelection, "Key", "Value"), new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.CurrencyId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.ShopFixedPriceInd, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.ShopFixedPriceInd).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.ShopFixedPriceInd, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group div-fixed-pricing">
+                        @Html.LabelFor(model => model.Shop.FirstScanCost, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Shop.FirstScanCost, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.FirstScanCost, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group div-fixed-pricing">
+                        @Html.LabelFor(model => model.Shop.AdditionalScanCost, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Shop.AdditionalScanCost, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.AdditionalScanCost, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="divPricingPlan">
+                        @Html.LabelFor(model => model.Shop.PricingPlanId, new { @class = "control-label col-sm-4" })
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(model => model.Shop.PricingPlanId, new SelectList(Model.PricingPlanSelection, "Key", "Value"), "<-- Select Pricing Plan -->", new { @class = "form-control" }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.Shop.PricingPlanId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-horizontal" id="shop_overrides">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <table class="table table-striped" style="margin-bottom: 0;">
+                                <colgroup>
+                                    <col style="width: 50%" />
+                                    <col style="width: 50%" />
+                                    <col />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Insurance Company</th>
+                                        <th>Pricing Plan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: shopInsuranceCompanies">
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" class="hiddenIgnore"
+                                                   data-bind="value: insuranceCompanyId, attr: { name: 'Shop.InsuranceCompanyPricingPlans[' + $index() +'].insuranceCompanyId' }" />
+                                            <select data-bind="options: insuranceCompanies, optionsText: 'InsuranceCompanyName',
+                                                                optionsValue: 'InsuranceCompanyId', optionsCaption:'Select a insurance company',
+                                                                value: insuranceCompanyId, attr: { disabled: insuranceCompanyId() != undefined }"
+                                                    class="form-control" required></select>
+                                        </td>
+                                        <td>
+                                            <select data-bind="options: $parent.pricingPlans, optionsText: 'PricingPlanName',
+                                                                optionsValue: 'PricingPlanId', optionsCaption:'Select a pricing plan', value: planId,
+                                                                attr: { name: 'Shop.InsuranceCompanyPricingPlans['+ $index() +'].planId' }"
+                                                    class="form-control" required @(cantEdit ? "disabled='disabled;" : "")></select>
+                                        </td>
+                                        <td>
+                                            @if (!cantEdit)
+                                            {
+                                                <button data-bind="click: $parent.removeInsuranceCompany" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (!cantEdit)
+                        {
+                            <div class="col-sm-12" style="margin-top: 10px;">
+                                <button data-bind="click: addInsuranceCompany, enable: shopInsuranceCompanies().length == 0 || isValid" class="btn btn-sm btn-success pull-left">Add Insurance Pricing Plan</button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <table class="table table-striped" style="margin-bottom: 0;">
+                                <colgroup>
+                                    <col style="width: 50%" />
+                                    <col style="width: 50%" />
+                                    <col />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Make</th>
+                                        <th>Pricing Plan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: shopVehicleMakes">
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" class="hiddenIgnore" data-bind="value: vehicleMakeId, attr: { name: 'Shop.VehicleMakesPricingPlans[' + $index() +'].vehicleMakeId' }" />
+                                            <select data-bind="options: vehicleMakes, optionsText: 'VehicleMakeName',
+                                                            optionsValue: 'VehicleMakeId', optionsCaption:'Select a Vehicle Make',
+                                                            value: vehicleMakeId, attr: { disabled: vehicleMakeId() != undefined }"
+                                                    class="form-control" required></select>
+                                        </td>
+                                        <td>
+                                            <select data-bind="options: $parent.pricingPlans, optionsText: 'PricingPlanName',
+                                                            optionsValue: 'PricingPlanId', optionsCaption:'Select a pricing plan', value: pricingPlanId,
+                                                            attr: { name: 'Shop.VehicleMakesPricingPlans['+ $index() +'].pricingPlanId' }"
+                                                    class="form-control" required @(cantEdit ? "disabled='disabled;" : "")></select>
+                                        </td>
+                                        <td>
+                                            @if (!cantEdit)
+                                            {
+                                                <button data-bind="click: $parent.removeVehicleMake" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (!cantEdit)
+                        {
+                            <div class="col-sm-12" style="margin-top: 10px">
+                                <button data-bind="click: addVehicleMake, enable: shopVehicleMakes().length == 0 || isValid" class="btn btn-sm btn-success pull-left">Add Vehicle Pricing Plan</button>
+                            </div>
+                        }
+                    </div>
+
+                    <div>
+                        <h4>Shop Estimations</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.AllowSelfScanAssessment, new { @class = "control-label col-sm-4" })
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.Shop.AllowSelfScanAssessment)
+                                    @Html.ValidationMessageFor(model => model.Shop.AllowSelfScanAssessment, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (User.IsInRole(ApplicationRoles.EstimatePlanView.ToString()))
+                        {
+                            <div class="estimate-plan-cnt @(Model.Shop.AllowSelfScanAssessment ? "" : "hide")">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Shop.EstimatePlanId, new { @class = "control-label col-sm-4" })
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(model => model.Shop.EstimatePlanId, new SelectList(Model.EstimatePlanSelection, "Key", "Value"), "<-- Select Estimate Plan -->", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Shop.EstimatePlanId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <table class="table table-striped" style="margin-bottom: 0;">
+                                            <colgroup>
+                                                <col style="width: 50%" />
+                                                <col style="width: 50%" />
+                                                <col />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th>Insurance Company</th>
+                                                    <th>Estimate Plan</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-bind="foreach: shopEstimateInsuranceCompanies">
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden" class="hiddenIgnore"
+                                                               data-bind="value: insuranceCompanyId, attr: { name: 'Shop.InsuranceCompanyEstimatePlans[' + $index() +'].insuranceCompanyId' }" />
+                                                        <select data-bind="options: insuranceCompanies, optionsText: 'InsuranceCompanyName',
+                                                                optionsValue: 'InsuranceCompanyId', optionsCaption:'Select a insurance company',
+                                                                value: insuranceCompanyId, attr: { disabled: insuranceCompanyId() != undefined }"
+                                                                class="form-control" required></select>
+                                                    </td>
+                                                    <td>
+                                                        <select data-bind="options: $parent.estimatePlans, optionsText: 'EstimatePlanName',
+                                                                optionsValue: 'EstimatePlanId', optionsCaption:'Select an estimate plan', value: planId,
+                                                                attr: { name: 'Shop.InsuranceCompanyEstimatePlans['+ $index() +'].planId' }"
+                                                                class="form-control" required @(cantEdit ? "disabled='disabled;" : "")></select>
+                                                    </td>
+                                                    <td>
+                                                        @if (!cantEdit)
+                                                        {
+                                                            <button data-bind="click: $parent.removeEstimatePlanInsuranceCompany" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @if (!cantEdit)
+                                    {
+                                        <div class="col-sm-12" style="margin-top: 10px;">
+                                            <button data-bind="click: addEstimatePlanInsuranceCompany, enable: shopEstimateInsuranceCompanies().length == 0 || isEstimatePlanAddValid" class="btn btn-sm btn-success pull-left">Add Insurance Estimate Plan</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(model => model.Shop.EstimatePlanId)
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Shop Notifications</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowShopBillingNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.AllowShopBillingNotification).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AllowShopBillingNotification, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.AllowShopStatementNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.AllowShopStatementNotification).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AllowShopStatementNotification, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Shop Options</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Shop.HideFromReports, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.Shop.HideFromReports).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.HideFromReports, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Registration Options</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CallbackUrl, htmlAttributes: new { @class = "control-label col-sm-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.CallbackUrl, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.CallbackUrl, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.RegistrationId != Guid.Empty)
+            {
+                <div class="tab-pane" id="client-entry" role="tabpanel" aria-labelledby="profile-tab">
+                    <h4>User Details</h4>
+                    <hr />
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.User.FirstName, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.User.FirstName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.User.LastName, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.User.LastName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.JobTitle, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.User.JobTitle, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.User.JobTitle, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.ContactNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.User.ContactNumber, new { htmlAttributes = new { @class = "form-control inputmask-phone" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.User.ContactNumber, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.User.PhoneNumber, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } }).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.User.PhoneNumber, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TimeZoneInfoId, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Selections.TimeZoneSelectionList(Model.TimeZoneInfoId).DisableIf(() => cantEdit)
+                            @Html.ValidationMessageFor(model => model.TimeZoneInfoId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.ShopBillingNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.User.ShopBillingNotification).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.User.ShopBillingNotification, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.User.ShopReportNotification, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.User.ShopReportNotification).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.User.ShopReportNotification, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Account Information</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Name, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Address1, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Address1, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Address1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Address2, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Address2, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Address2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.City, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.City, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.City, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.StateId, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.DropDownListFor(model => model.Account.StateId, new SelectList(Model.StateSelection, "Key", "Value"), new { @class = "form-control" }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.StateId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Zip, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Zip, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Zip, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Phone, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Phone, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Phone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Account.Fax, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Account.Fax, new { htmlAttributes = new { @class = "form-control inputmask-phone" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Account.Fax, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.BillingCycleId, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.DropDownListFor(model => model.Shop.BillingCycleId, new SelectList(Model.BillingCycleSelection, "Key", "Value"), new { @class = "form-control" }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.BillingCycleId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DifferentShopInfo, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.DifferentShopInfo).DisableIf(() => cantEdit)
+                                    @Html.ValidationMessageFor(model => model.DifferentShopInfo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shop-information-cnt">
+                        <h4>Shop Information</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Name, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Name, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Address1, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Address1, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Address1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Address2, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Address2, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Address2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.City, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.City, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.City, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.StateId, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.DropDownListFor(model => model.Shop.StateId, new SelectList(Model.StateSelection, "Key", "Value"), new { @class = "form-control" }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.StateId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Zip, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Zip, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Zip, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Phone, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Phone, new { htmlAttributes = new { @class = "form-control inputmask-phone10" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Phone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.Fax, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.Fax, new { htmlAttributes = new { @class = "form-control inputmask-phone" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.Fax, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>Shop Information</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.AverageVehiclesPerMonth, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.TextBoxFor(model => model.Shop.AverageVehiclesPerMonth, new { @class = "form-control" }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.AverageVehiclesPerMonth, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.InsuranceCompanies, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-sm-8">
+                                <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 300px; overflow-y: auto;">
+                                    <ul class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                        @foreach (var item in Model.DirectPartnersSelection)
+                                        {
+                                            <li>
+                                                <label for="drp@(item.Key)">
+                                                    <input type="checkbox"
+                                                           name="Shop.@nameof(Model.Shop.InsuranceCompanies)"
+                                                           value="@item.Key"
+                                                           id="drp@(item.Key)"
+                                                           @(Model.Shop.InsuranceCompanies != null && Model.Shop.InsuranceCompanies.Contains(int.Parse(item.Key)) ? "checked" : "") />
+                                                    @item.Value
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.VehicleMakes, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <div class="well well-sm" style="margin: 0; background-color: white; border-color: #cccccc; height: 300px; overflow-y: auto;">
+                                    <ul class="selectionList" style="columns: 2; -webkit-columns: 2; -moz-columns: 2; list-style: none; margin: 0; padding-left: 5px;">
+                                        @foreach (var item in Model.Programs)
+                                        {
+                                            <li>
+                                                <label for="oem@(item.Key)">
+                                                    <input type="checkbox"
+                                                           id="oem@(item.Key)"
+                                                           name="Shop.@nameof(Model.Shop.VehicleMakes)"
+                                                           value="@item.Key"
+                                                           @(Model.Shop.VehicleMakes != null && Model.Shop.VehicleMakes.Contains(int.Parse(item.Key)) ? "checked" : "") />
+                                                    @item.Value
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>External Services</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.CCCShopId, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.Shop.CCCShopId, new { htmlAttributes = new { @class = "form-control" } }).DisableIf(() => cantEdit)
+                                @Html.ValidationMessageFor(model => model.Shop.CCCShopId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Shop.SendToMitchellInd, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.Shop.SendToMitchellInd).DisableIf(() => cantEdit)
+                                    @Html.ValidationMessageFor(model => model.Shop.SendToMitchellInd, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+
+
+    $.validator.setDefaults({
+        ignore: '.no-validation'
+    });
+
+        $("#Email").rules("add", {
+            email: true,
+            messages: { email: "Email is in wrong format" }
+        });
+
+    @if(cantEdit)
+    {
+        @: $('input[type=checkbox]').attr('disabled', 'disabled');
+    }
+
+    function addRequiredRule(selector, text) {
+        $(selector).rules("add", {
+            required: true,
+            messages: { required: text + " is required" }
+        });
+    }
+
+    function removeRequiredRule(selector) {
+        $(selector).rules("remove", "required");
+    }
+
+    function changeStatus(status) {
+        $("#RegistrationStatus").val(status);
+        $(".status-label").text(status);
+
+        if ($(".status-label").text() == '@RegistrationStatus.Completed') {
+            addRequiredRule("#Account_Name", "Account Name");
+            addRequiredRule("#User_FirstName", "First Name");
+            addRequiredRule("#User_LastName", "Last Name");
+            addRequiredRule("#Account_StateId", "State");
+        }
+        else {
+            removeRequiredRule("#Account_Name");
+            removeRequiredRule("#User_FirstName");
+            removeRequiredRule("#User_LastName");
+            removeRequiredRule("#Account_StateId");
+        }
+        updateValidationOnShop();
+    }
+
+    function updateValidationOnShop() {
+        var checked = $('#DifferentShopInfo').prop('checked');
+        if ($(".status-label").text() == '@RegistrationStatus.Completed' && checked) {
+            addRequiredRule("#Shop_StateId", "State");
+            addRequiredRule("#Shop_Name", "Shop Name");
+        }
+        else {
+            removeRequiredRule("#Shop_StateId");
+            removeRequiredRule("#Shop_Name");
+        }
+    }
+
+    function checkDifferentShopChecked() {
+        var checked = $('#DifferentShopInfo').prop('checked');
+        if (checked) {
+            $(".shop-information-cnt").removeClass('hide');
+            $(".shop-information-cnt").find('input,select').removeClass('no-validation');
+        } else {
+            $(".shop-information-cnt").addClass('hide');
+            $(".shop-information-cnt").find('input,select').addClass('no-validation');
+            $(".shop-information-cnt").find('input,select').val('');
+        }
+        updateValidationOnShop();
+    }
+
+    function checkFixedInd() {
+        if ($('#Shop_ShopFixedPriceInd').is(':checked')) {
+            $('#divPricingPlan').hide();
+            $('#divPricingPlan').find('select,input').addClass('no-validation');
+            $('.div-fixed-pricing').show();
+        } else {
+            $('#divPricingPlan').show();
+            $('#divPricingPlan').find('select,input').removeClass('no-validation');
+            $('.div-fixed-pricing').hide();
+        }
+    }
+
+    $(document).ready(function () {
+        checkFixedInd();
+        $('#Shop_ShopFixedPriceInd').on('click', checkFixedInd);
+        $('#DifferentShopInfo').change(checkDifferentShopChecked);
+            checkDifferentShopChecked();
+            checkDifferentShopChecked();
+
+            var shopOverrides = $('#shop_overrides')[0];
+
+            //Clean Binding if exists
+            if (shopOverrides && ko.dataFor(shopOverrides)) {
+                ko.cleanNode(shopOverrides);
+            }
+
+            if (shopOverrides) {
+                var insuranceCompaniesDrpChoices = @Html.Raw(JsonConvert.SerializeObject(Model.DirectPartnersSelection));
+                var insuranceCompaniesChoices = @Html.Raw(JsonConvert.SerializeObject(Model.InsuranceCompaniesSelection.Skip(1)));
+                var pricingPlansChoices = @Html.Raw(JsonConvert.SerializeObject(Model.PricingPlanSelection));
+                var estimatePlansChoices = @Html.Raw(JsonConvert.SerializeObject(Model.EstimatePlanSelection));
+                var vehicleMakesChoices = @Html.Raw(JsonConvert.SerializeObject(Model.Programs));
+                var allVehicleMakesChoices = @Html.Raw(JsonConvert.SerializeObject(Model.VehicleMakes.Select(x => new SelectListItem { Text = x.Value, Value = x.Key }).ToList()));
+
+                var model = {
+                    shopInsuranceCompaniesPricingPlans: @Html.Raw(JsonConvert.SerializeObject(Model.Shop.ShopInsuranceCompanyPlans)) || [],
+                    shopInsuranceCompaniesEstimatePlans: @Html.Raw(JsonConvert.SerializeObject(Model.Shop.ShopInsuranceCompanyEstimatePlans)) || [],
+                    shopVehicleMakes: @Html.Raw(JsonConvert.SerializeObject(Model.Shop.ShopVehicleMakesPricingPlans)) || [],
+                    insuranceCompanies: @Html.Raw(JsonConvert.SerializeObject(Model.AllInsuranceCompanies.Skip(1))) || [],
+                    vehicleMakes: @Html.Raw(JsonConvert.SerializeObject(Model.Programs.Select(x => new SelectListItem { Text = x.Value, Value = x.Key }).ToList())) || []
+                };
+
+            window.shopViewModel = new ShopManageViewModel(model,
+                insuranceCompaniesChoices,
+                insuranceCompaniesDrpChoices,
+                pricingPlansChoices,
+                estimatePlansChoices,
+                allVehicleMakesChoices);
+            ko.applyBindings(window.shopViewModel, shopOverrides);
+        }
+        enableInputMasking();
+    });
+
+
+    $('#@Html.IdFor(m => m.Shop.DiscountPercentage), #@Html.IdFor(m => m.Account.DiscountPercentage)').on('keyup',
+        function() {
+            if ($(this).val().length && parseFloat($(this).val()) > 100) {
+                $(this).val('100');
+            }
+        }
+    );
+
+    $("#Shop_AllowSelfScanAssessment").change(function () {
+        if ($(this).prop("checked")) {
+            $(".estimate-plan-cnt").removeClass("hide");
+        } else {
+            $(".estimate-plan-cnt").addClass("hide");
+        }
+    });
+</script>

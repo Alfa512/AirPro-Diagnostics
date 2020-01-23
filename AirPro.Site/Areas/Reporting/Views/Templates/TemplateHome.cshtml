@@ -1,0 +1,32 @@
+﻿@model IEnumerable<AirPro.Site.Areas.Reporting.Models.Templates.ReportTemplateViewModel>
+
+@{
+    ViewBag.Title = "Report Templates";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var template in Model)
+    {
+        <hr/>
+
+        <h4><a href="@Url.Action("Download", "Templates", new { Area = "Reporting", id = template.TemplateId })">@template.TemplateName</a></h4>
+
+        if (!string.IsNullOrEmpty(template.TemplateDescription))
+        {
+            <p>
+                @template.TemplateDescription
+            </p>
+        }
+    }
+
+    <hr/>
+}
+else
+{
+    <div class="alert alert-warning">
+        No Templates Found.
+    </div>
+}

@@ -1,0 +1,93 @@
+﻿@model AirPro.Library.Models.Concrete.ScanRequestTypeEditViewModel
+
+@{
+    ViewBag.Title = "Request Type Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TypeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TypeName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ActiveFlag)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ActiveFlag)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BillableFlag)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BillableFlag)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DefaultPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DefaultPrice)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SortOrder)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SortOrder)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Instructions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Instructions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReportTemplateHtml)
+        </dt>
+
+        <dd>
+            <div class="panel panel-default">
+                @Html.Raw(Model.ReportTemplateHtml)
+            </div>
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedDt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedDt)
+        </dd>
+
+    </dl>
+</div>
+<hr />
+<p>
+    @AirPro.Site.Helpers.Buttons.BackButton()
+    &nbsp;
+    @AirPro.Site.Helpers.Buttons.EditButton(new { id = Model.RequestTypeID })
+</p>

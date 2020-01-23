@@ -1,0 +1,278 @@
+﻿@model AirPro.Library.Models.Concrete.AcceptPaymentViewModel
+
+<div class="form-horizontal">
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentDate, htmlAttributes: new { @class = "control-label" }),
+        @Html.TextBoxFor(model => model.PaymentDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date" }),
+        true
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentReceivedFromShopGuid, htmlAttributes: new { @class = "control-label" }),
+        @Html.DropDownListFor(model => model.PaymentReceivedFromShopGuid, new SelectList(Model.PaymentReceivedFromShopSelectListItems, "Value", "Text", Model.PaymentReceivedFromShopGuid), new { @class = "form-control" }),
+        true
+        )
+    
+    @FormRow(
+        @Html.LabelFor(model => model.CurrencyId, htmlAttributes: new { @class = "control-label" }),
+        @Html.DropDownListFor(model => model.CurrencyId, ViewBag.Currencies as IEnumerable<SelectListItem>, new { @class = "form-control" }),
+        true
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentTypeID, htmlAttributes: new { @class = "control-label" }),
+        @Html.DropDownListFor(model => model.PaymentTypeID, Model.PaymentTypeSelectListItems, new { @class = "form-control" }),
+        true
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentReferenceNumber, htmlAttributes: new { @class = "control-label" }),
+        @Html.EditorFor(model => model.PaymentReferenceNumber, new { htmlAttributes = new { @class = "form-control" } })
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentDiscountPercentage, htmlAttributes: new { @class = "control-label" }),
+        @Html.EditorFor(model => model.PaymentDiscountPercentage, new { htmlAttributes = new { @class = "form-control", @type = "number", @step = "any", @min = "0", @max = "100", @maxlength = "3" } })
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentAmount, htmlAttributes: new { @class = "control-label" }),
+        @Html.EditorFor(model => model.PaymentAmount, new { htmlAttributes = new { @class = "form-control", @type = "number", @step = "any", @min = "0" } })
+        )
+
+    @FormRow(
+        @Html.LabelFor(model => model.PaymentMemo, htmlAttributes: new { @class = "control-label" }),
+        @Html.EditorFor(model => model.PaymentMemo, new { htmlAttributes = new { @class = "form-control" } })
+        )
+
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <label style="margin: 0;" class="pull-left">Invoice Selection</label> @Required()
+            <a href="#" class="pull-right select-all-invoices">Select All</a>
+        </div>
+        <div id="invoiceGrid">
+            @{ Html.RenderPartial("_AcceptPaymentGrid", Model.ShopOutstandingInvoiceItems); }
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row form-group" style="margin-bottom: 0">
+        <div class="col-sm-9 text-right">
+            <label class="control-label">Selected Total</label>
+        </div>
+        <div class="col-sm-3 text-center">
+            <label id="selectedAmount" class="form-control-static">
+                ???
+            </label>
+        </div>
+    </div>
+
+    <div class="row form-group" style="margin-bottom: 0">
+        <div class="col-sm-9 text-right">
+            <label class="control-label">Discount Amount</label>
+        </div>
+        <div class="col-sm-3 text-center">
+            <label id="discountAmount" class="form-control-static">
+                ???
+            </label>
+        </div>
+    </div>
+
+    <div class="row form-group" style="margin-bottom: 0">
+        <div class="col-sm-9 text-right">
+            <label class="control-label">Remaining Total</label>
+        </div>
+        <div class="col-sm-3 text-center" style="border-top: 1px solid black;">
+            <label id="remainingAmount" class="form-control-static">
+                ???
+            </label>
+        </div>
+    </div>
+
+    <div class="row form-group" style="margin-bottom: 0">
+        <div class="col-sm-9 text-right">
+            <label class="control-label">Payment Amount</label>
+        </div>
+        <div class="col-sm-3 text-center">
+            <label id="paymentAmount" class="form-control-static">
+                ???
+            </label>
+        </div>
+    </div>
+
+    <div class="row form-group" style="margin-bottom: 0">
+        <div class="col-sm-9 text-right">
+            <label class="control-label">Remaining Balance</label>
+        </div>
+        <div class="col-sm-3 text-center" style="border-top: 1px solid black;">
+            <label id="balanceAmount" class="form-control-static">
+                ???
+            </label>
+        </div>
+    </div>
+
+</div>
+
+@helper FormRow(string label, string value, bool required = false)
+        {
+    @FormRow(new MvcHtmlString(label), new MvcHtmlString(value), required)
+}
+
+@helper FormRow(MvcHtmlString label, MvcHtmlString value, bool required = false)
+        {
+    <div class="row form-group">
+        <div class="col-sm-2" style="white-space: nowrap;">
+            @label@if (required)
+            {
+                @Required()
+            }
+        </div>
+        <div class="col-sm-10">
+            @value
+        </div>
+    </div>
+}
+
+@helper Required()
+{
+    <i class="glyphicon glyphicon-asterisk" style="font-size: 10px; color: red;"></i>
+}
+    <script type="text/javascript">
+    $(document)
+        .ready(function () {
+            loadDiscountPercentage();
+
+            $('#@Html.IdFor(m => m.PaymentDiscountPercentage)').wrap(
+                '<div class="input-group"></div>').before('<span class="input-group-addon">%</span>');
+
+            $("#invoiceGrid").on('click',
+                "input[name='ShopInvoicesSelected']",
+                function() {
+                    calculateBalances();
+                });
+
+            $('#@Html.IdFor(model => model.PaymentAmount)')
+                .on('keyup',
+                    function () {
+                        calculateBalances();
+                    });
+
+            $('#@Html.IdFor(model => model.PaymentDiscountPercentage)')
+                .on('keyup',
+                    function () {
+                        if ($(this).val().length && parseFloat($(this).val()) > 100) {
+                            $(this).val('100');
+                        }
+                        calculateBalances();
+                });
+
+            $('#@Html.IdFor(model => model.PaymentTypeID)')
+                .on('change',
+                    function () {
+                        calculateBalances();
+                    });
+
+            var prevShop;
+            $('#@Html.IdFor(model => model.PaymentReceivedFromShopGuid), #@Html.IdFor(model => model.CurrencyId)')
+                .on('focus', function () {
+                    prevShop = $(this).val();
+                })
+                .on('change',
+                function () {
+                        var cont = ($(this).val() !== "0") && ((prevShop === "0") || confirm("This will reset your current selections, do you wish to continue?"));
+                        if (cont) {
+                            loadDiscountPercentage();
+                            prevShop = $(this).val();
+                            var shopGuid = $('#@Html.IdFor(model => model.PaymentReceivedFromShopGuid)').val();
+                            var currencyId = $('#@Html.IdFor(model => model.CurrencyId)').val();
+                            var url = '@Url.Action("AcceptPaymentGrid")/?currencyId=' + currencyId + '&id=' + shopGuid;
+
+                            var q = $.Deferred();
+                            var promise = $.get(url)
+                                .fail(function(err) {
+                                    alert('An Error has Occurred, please refresh the page and try again.');
+                                    console.log(err);
+                                });
+
+                            //Ajax is complete (Success callback)
+                            $.when(promise).then(function (data) {
+                                $('#invoiceGrid').html(data);
+                                q.resolve();
+                            });
+
+                            //Only execute after ajax has finished (No pending on network tab)
+                            $.when(q).then(function () {
+                                setTimeout(function() {
+                                    calculateBalances();
+                                }, 50);
+                            });
+                        } else {
+                            $(this).val(prevShop);
+                        }
+                });
+
+            $(".select-all-invoices").click(function() {
+                $('#invoiceGrid .grid-row .invoice-checkbox').prop("checked", true);
+                calculateBalances();
+            });
+
+            setTimeout(calculateBalances, 500);
+        });
+
+    function loadDiscountPercentage() {
+        $.get('@Url.Action("GetShopDiscountPercentage")/' + $('#@Html.IdFor(model => model.PaymentReceivedFromShopGuid)').val(),
+            function(data) {
+                $('#@Html.IdFor(m => m.PaymentDiscountPercentage)').val(data);
+            })
+            .fail(function() {
+                alert('There was an error loading the Discount for the selected Shop, please enter it manually.');
+            });
+    }
+
+    function calculateBalances() {
+        var payment = parseCurrency($('#@Html.IdFor(model => model.PaymentAmount)').val().length ? $('#@Html.IdFor(model => model.PaymentAmount)').val() : 0);
+        var discount = parseFloat($('#@Html.IdFor(model => model.PaymentDiscountPercentage)').val().length ? $('#@Html.IdFor(model => model.PaymentDiscountPercentage)').val() : 0) / 100;
+
+        // Calculate Selected.
+        var selected = parseFloat(0);
+        var discounted = parseFloat(0);
+        $("input[name='ShopInvoicesSelected']:checked")
+            .each(function () {
+                var amount = parseCurrency($(this).parent().parent().children().last().html().replace(/[^\d.-]/g, ''));
+                selected += parseCurrency(amount);
+                discounted += parseCurrency(amount * discount);
+            });
+
+        // Calculate Amounts.
+        var remaining = parseCurrency(selected - discounted);
+        var balance = parseCurrency(payment - remaining);
+
+        // Set Selected Total.
+        $('#selectedAmount').html('<span style="color: ' + (selected >= 0 ? "green" : "red") + '">' + formatBalance(selected) + '</span>');
+
+        // Set Selected Discount.
+        $('#discountAmount').html('<span style="color: ' + (discounted >= 0 ? "green" : "red") + '">' + formatBalance(discounted) + '</span>');
+
+        // Set Remaining Amount.
+        $('#remainingAmount').html('<span style="color: ' + (remaining >= 0 ? "green" : "red") + '">' + formatBalance(remaining) + '</span>');
+
+        // Set Payment Discount.
+        $('#paymentAmount').html('<span style="color: ' + (payment >= 0 ? "green" : "red") + '">' + formatBalance(payment) + '</span>');
+
+        // Set Balance Total.
+        $('#balanceAmount').html('<span style="color: ' + (balance <= 0 ? "green" : "red") + '">' + formatBalance(balance) + '</span>');
+
+        // Update Save.
+        var typeSelected = $('#@Html.IdFor(model => model.PaymentTypeID)').val() > 0;
+        var shopSelected = $('#@Html.IdFor(model => model.PaymentReceivedFromShopGuid)').val() !== '0';
+        var disableSave = !($("input[name='ShopInvoicesSelected']:checked").length > 0 && typeSelected && shopSelected && balance <= 0);
+        $('#btnSavePayment').prop('disabled', disableSave);
+    }
+
+    function formatBalance(value) {
+        return '$' + parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+    }
+
+    </script>

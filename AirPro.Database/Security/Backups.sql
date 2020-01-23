@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [Backups]
+    AUTHORIZATION [dbo];
+

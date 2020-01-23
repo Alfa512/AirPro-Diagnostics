@@ -1,0 +1,271 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Work Type Administration";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+</style>
+
+<hr />
+
+<div id="manageBody">
+
+    <div id="worktypegroups" class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Group Administration</span>&nbsp;@AddButton("manageWorkTypeGroup();", "Group", ApplicationRoles.WorkTypeAdmin.ToString())</h4>
+        </div>
+        <table id="worktypegroups-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="workTypeGroupId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="100">Group Id</th>
+                    <th data-column-id="workTypeGroupName" data-formatter="groupName">Name</th>
+                    <th data-column-id="workTypeGroupSortOrder" data-width="100">Sort Order</th>
+                    <th data-column-id="workTypeGroupActiveInd" data-converter="bool" data-align="center" data-width="125">Active</th>
+                    <th data-column-id="workTypesAssigned" data-width="135">Types Assigned</th>
+                    <th data-column-id="editGroup" data-visible-in-selection="false" data-formatter="editGroup" data-sortable="false" data-align="center" data-width="45"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <hr />
+
+    <div id="worktypes" class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Type Administration</span>&nbsp;@AddButton("manageWorkType();", "Type", ApplicationRoles.WorkTypeAdmin.ToString())</h4>
+        </div>
+        <table id="worktypes-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="workTypeId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="100">Type Id</th>
+                    <th data-column-id="workTypeName" data-formatter="typeName">Type Name</th>
+                    <th data-column-id="workTypeSortOrder" data-width="150">Type Sort Order</th>
+                    <th data-column-id="workTypeActiveInd" data-converter="bool" data-align="center" data-visible="false">Type Active</th>
+                    <th data-column-id="workTypeGroupId" data-visible="false">Group Id</th>
+                    <th data-column-id="workTypeGroupName" data-formatter="groupName">Group Name</th>
+                    <th data-column-id="workTypeGroupSortOrder" data-width="150">Group Sort Order</th>
+                    <th data-column-id="workTypeGroupActiveInd" data-converter="bool" data-align="center" data-visible="false">Group Active</th>
+                    <th data-column-id="editType" data-visible-in-selection="false" data-formatter="editType" data-sortable="false" data-align="center" data-width="45"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal();" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper AddButton(string function, string type, string role)
+{
+    if (User.IsInRole(role))
+    {
+        <a onclick="@function" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add @type</a>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#manageModal')
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#manageModalBody').html('Loading...');
+                        $('#manageModal button[type=submit]').css('display', '');
+                });
+
+            $('#worktypegroups-grid-header').appendTo('#worktypegroups .panel-heading');
+            $('#worktypegroups .panel-title').appendTo('#worktypegroups-grid-header .actionBar');
+
+            $('#worktypes-grid-header').appendTo('#worktypes .panel-heading');
+            $('#worktypes .panel-title').appendTo('#worktypes-grid-header .actionBar');
+        });
+
+        $("#worktypegroups-grid").bootgrid({
+            url: '@Url.Action("GetWorkTypeGroupsByPage")',
+            multiSort: true,
+            formatters: {
+                "editGroup": function (column, row) {
+                    return editButtonFormat("WorkTypeGroup", row.workTypeGroupId);
+                },
+                "groupName": function(col, row) {
+                    return activeNameDisplay(row.workTypeGroupActiveInd, row.workTypeGroupName);
+                }
+            },
+            converters: {
+                bool: {
+                    to: function (value) { return value ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>" : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>"; }
+                }
+            }
+        });
+
+        $("#worktypes-grid").bootgrid({
+            url: '@Url.Action("GetWorkTypesByPage")',
+            multiSort: true,
+            formatters: {
+                "editType": function (column, row) {
+                    return editButtonFormat("WorkType", row.workTypeId);
+                },
+                "requestTypeList": function (column, row) {
+                    if ($.isEmptyObject(row.workTypeRequestTypes)) {
+                        return "<i>None Assigned</i>";
+                    } else {
+                        var result = "<ul>";
+                        $.each(row.workTypeRequestTypes,
+                            function(k, v) {
+                                result += "<li>" + v + "</li>";
+                            });
+                        result += "</ul>";
+                        return result;
+                    }
+                },
+                "typeName": function(col, row) {
+                    return activeNameDisplay(row.workTypeActiveInd, row.workTypeName);
+                },
+                "groupName": function(col, row) {
+                    return activeNameDisplay(row.workTypeGroupActiveInd, row.workTypeGroupName);
+                }
+            },
+            converters: {
+                bool: {
+                    to: function (value) { return value ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>" : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>"; }
+                }
+            }
+        });
+
+        function activeNameDisplay(active, name) {
+            if (active)
+                return "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>&nbsp;" + name;
+            else
+                return "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>&nbsp;" + name;
+        }
+
+        function editButtonFormat(func, id) {
+            return "<div class='btn-group btn-group-sm' role='group'><a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a></div>";
+        }
+
+        function manageWorkTypeGroup(workTypeGroupId) {
+            displayModal('Work Type Group');
+            var url = '@Url.Action("ManageTypeGroup", "WorkTypes")/' + ((workTypeGroupId) ? workTypeGroupId : '');
+            loadModal(url);
+        }
+
+        function manageWorkType(workTypeId) {
+            displayModal('Work Type');
+            var url = '@Url.Action("ManageType", "WorkTypes")/' + ((workTypeId) ? workTypeId : '');
+            loadModal(url);
+        }
+
+        function refreshWorkTypeGroups() {
+            $('#worktypegroups-grid').bootgrid("reload");
+        }
+
+        function refreshWorkTypes() {
+            $('#worktypes-grid').bootgrid("reload");
+        }
+
+        function displayModal(title) {
+            $('#manageModalLabel').text('Manage ' + title);
+            $('#manageModal').modal('show');
+        }
+
+        function loadModal(url) {
+            $.get(url,
+                    function (data) {
+                        $('#manageModalBody').html(data);
+                    })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function (data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function updateComplete(html) {
+            $('#manageBody').prepend(html);
+            $('#manageBody > .alert').fadeTo(3000, 500).slideUp(500, function () {
+                $('#manageBody > .alert').slideUp(500);
+                $('#manageBody > .alert').remove();
+            });
+            $('#manageModal').modal('hide');
+        }
+    </script>
+}

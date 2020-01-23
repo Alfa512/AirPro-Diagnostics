@@ -1,0 +1,7 @@
+﻿IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = 'Billing' AND TABLE_NAME = 'vwOutstandingInvoices')
+	DROP VIEW Billing.vwOutstandingInvoices
+GO
+
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'usp_GetOutstandingInvoicesByShop' AND ROUTINE_SCHEMA = 'Billing')
+	DROP PROCEDURE Billing.usp_GetOutstandingInvoicesByShop
+GO

@@ -1,0 +1,184 @@
+﻿@using AirPro.Common.Enumerations
+
+@{
+    ViewBag.Title = "Invoicing Dashboard";
+}
+
+<style type="text/css">
+    #status {
+        width: 125px;
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    .bootgrid-header .actionBar {
+        padding: 0;
+    }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    .invoiceMenu {
+        overflow: visible !important;
+    }
+
+    #gridSearch > .bootgrid-header {
+        margin: 0;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .bootgrid-header .actionBar {
+            text-align: left !important;
+        }
+
+        .panel-heading #gridSearch {
+            padding-top: 4px;
+        }
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div id="invoices" class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-2">
+                <h4 class="panel-title">
+                    <span style="position: relative; top: 2px;">Repair Billing</span>
+                </h4>
+            </div>
+            <div class="col-md-10" id="gridSearch">
+                @Html.DropDownList("status", SelectListItemCache.RepairStatusSelectItems().Where(s => s.Value == RepairStatuses.Completed.ToString() || s.Value == RepairStatuses.Invoiced.ToString()).ToList(), new { @class = "form-control input-sm" })
+            </div>
+        </div>
+    </div>
+    <div style="overflow-y: auto;">
+        <div style="min-width: 700px;">
+            <table id="invoices-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                <thead>
+                    <tr>
+                        <th data-column-id="repairId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="90">Repair ID</th>
+                        <th data-column-id="repairStatusName">Status</th>
+                        <th data-column-id="shopName">Shop Name</th>
+                        <th data-column-id="shopPhone" data-visible="false">Shop Phone</th>
+                        <th data-column-id="shopFax" data-visible="false">Shop Fax</th>
+                        <th data-column-id="shopAddress1" data-visible="false">Shop Address 1</th>
+                        <th data-column-id="shopAddress2" data-visible="false">Shop Address 2</th>
+                        <th data-column-id="shopCity" data-visible="false">Shop City</th>
+                        <th data-column-id="shopState" data-visible="false">Shop State</th>
+                        <th data-column-id="shopZip" data-visible="false">Shop Zip</th>
+                        <th data-column-id="shopRoNumber">RO Number</th>
+                        <th data-column-id="insuranceCompanyName">Insurance Co</th>
+                        <th data-column-id="insuranceClaimNumber">Claim Number</th>
+                        <th data-column-id="vehicleVIN">Vehicle VIN</th>
+                        <th data-column-id="vehicleMake" data-visible="false">Vehicle Make</th>
+                        <th data-column-id="vehicleModel" data-visible="false">Vehicle Model</th>
+                        <th data-column-id="vehicleYear" data-visible="false">Vehicle Year</th>
+                        <th data-column-id="vehicleTransmission" data-visible="false">Vehicle Tran</th>
+                        <th data-column-id="repairLastUpdatedDt" data-converter="date">Updated</th>
+                        <th data-column-id="invoicedDt" data-converter="date">Invoiced</th>
+                        <th data-column-id="invoiceMenu" data-visible-in-selection="false" data-formatter="invoiceMenu" data-sortable="false" data-align="center" data-css-class="invoiceMenu" data-width="60"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#invoices-grid-header').appendTo('#gridSearch');
+        $('#status').prependTo('.actionBar');
+        $('.panel-heading .btn-group').addClass('btn-group-sm');
+        $('.panel-heading .input-group').addClass('input-group-sm');
+
+        $('#status').on('change',
+            function() {
+                $('#invoices-grid').bootgrid("reload");
+            });
+    });
+
+    $("#invoices-grid").bootgrid({
+        url: '@Url.Action("GetInvoicesByPage")',
+        post: function() {
+            return {
+                statusFilter: $('#status').val()
+            }
+        },
+        rowCount: [10, 25, 50, 100],
+        searchSettings: {
+            delay: 500,
+            characters: 4
+        },
+        formatters: {
+            "invoiceMenu": function(column, row) {
+                return invoiceMenu(row);
+            }
+        },
+        converters: {
+            bool: {
+                to: function(value) {
+                    return value
+                        ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                        : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+                }
+            },
+            date: {
+                to: function(value) {
+                    var date = moment(value);
+                    if (date && date.isValid())
+                        return moment(value).format('MM/DD/YYYY hh:mm A');
+                    else
+                        return '<em>Not Set</em>';
+                }
+            }
+        }
+    }).on("loaded.rs.jquery.bootgrid",
+        function(e) {
+            $("body").tooltip({
+                selector: '[data-toggle="tooltip"]',
+                container: 'body'
+            });
+        });
+
+    function invoiceMenu(invoice) {
+        var btn =
+            "<a href='{3}' class='btn btn-{0} {4}' data-toggle='tooltip' data-html='true' data-placement='top' title='{2}'><i class='glyphicon glyphicon-{1}'></i></a>";
+        var result = "<div id='grpActions' class='btn-group btn-group-xs pull-right' role='group'>";
+
+        if (invoice.repairStatus && invoice.repairStatus == @((int) RepairStatuses.Invoiced))
+            result += btn.format('success',
+                'save-file',
+                'Download&nbsp;Invoice',
+                '@Url.Action("Invoice", "Download", new { @Area = "" })/' +
+                invoice.repairId);
+
+        @if (User.IsInRole(ApplicationRoles.InvoiceCreate.ToString())
+             || User.IsInRole(ApplicationRoles.InvoiceEdit.ToString())
+             || User.IsInRole(ApplicationRoles.InvoiceDelete.ToString()))
+        {
+            <text>
+                result += btn.format('warning', 'edit', 'Edit Invoice', '@Url.Action("Invoice")/' + invoice.repairId, 'btn-edit');
+            </text>
+        }
+
+        return result;
+    }
+</script>

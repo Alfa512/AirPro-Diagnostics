@@ -1,0 +1,43 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = "Application Error";
+}
+
+<style type="text/css">
+    .error {
+        height: auto !important;
+        height: 100%;
+        min-height: 100%;
+        font-family: 'Open Sans', sans-serif;
+        color: #555555;
+    }
+
+        .error .error-number {
+            font-size: 200px;
+        }
+
+        .error .error-text h1 {
+            font-size: 40px;
+            margin: 30px 0 25px;
+        }
+
+        .error .error-text p {
+            font-size: 30px;
+            line-height: 45px;
+            margin: 0 0 25px;
+        }
+</style>
+
+<div class="error">
+    <div class="error-text">
+        <h1>APPLICATION ERROR</h1>
+        <p>Something went wrong. We'll look into it!</p>
+    </div>
+</div>
+
+@if (Model != null && Model.Exception != null && Model.Exception.StackTrace != null)
+{
+    <div id="exceptionStackTrace" style="display: none;">
+        @Model.Exception.StackTrace.ToString()
+    </div>
+}

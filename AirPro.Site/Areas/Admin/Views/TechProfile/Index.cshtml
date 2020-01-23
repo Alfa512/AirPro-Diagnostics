@@ -1,0 +1,290 @@
+﻿
+@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Technician Profile Admin";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr/>
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .bootgrid-header .actionBar {
+            text-align: left !important;
+        }
+
+        .panel-heading #gridSearch,
+        .panel-heading #addNew {
+            padding-top: 4px;
+        }
+    }
+
+    .margin-left-15 {
+        margin-left: 15px;
+    }
+</style>
+
+<div id="manageBody">
+    <div id="technicianProfiles" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-2">
+                    <h4 class="panel-title">
+                        <span style="position: relative; top: 2px; white-space: nowrap;">Technician Profiles</span>
+                    </h4>
+                </div>
+                <div class="col-md-5" id="addNew">
+                    @Html.AddButton("manageTechnicianProfile();", "Profile", ApplicationRoles.TechProfileAdmin)
+                    @if (User.IsInRole(ApplicationRoles.TechProfileAdmin.ToString()))
+                    {
+                        <a onclick="showTechnicianProfileCoverage();" class="btn btn-sm btn-success margin-left-15">Tech Coverage</a>
+                    }
+                </div>
+                <div class="col-md-5" id="gridSearch">
+                </div>
+            </div>
+        </div>
+        <table id="technicianProfiles-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="userName" data-formatter="userName" data-sortable="true">User Name</th>
+                    <th data-column-id="displayName" data-sortable="true">Display Name</th>
+                    <th data-column-id="employeeId" data-sortable="true">Employee ID</th>
+                    <th data-column-id="otherNotes" data-sortable="true">Notes</th>
+                    <th data-column-id="vehicleMakes" data-sortable="false" data-formatter="vehicleMakeList">Vehicle Makes</th>
+                    <th data-column-id="location" data-sortable="true">Location</th>
+                    <th data-column-id="editType" data-visible-in-selection="false" data-formatter="editType" data-sortable="false" data-align="center" data-width="85"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Manage Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody" style="overflow: auto;">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal()" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tech Coverage Modal -->
+<div class="modal fade" id="techCoverageModal" tabindex="-1" role="dialog" aria-labelledby="techCoverageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Technician Coverage</h4>
+            </div>
+            <div class="modal-body" id="techCoverageModalBody" style="overflow: auto;">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" />
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+    @Scripts.Render("~/admin/techprofile/js")
+
+    <script type="text/javascript">
+        window.common.gridManage.id = 'technicianProfiles-grid';
+        window.common.gridManage.modal.id = 'manageModal';
+
+        $(document).ready(function () {
+            $('#' + window.common.gridManage.modal.id)
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#' + window.common.gridManage.modal.bodyId).html('Loading...');
+                        $('#' + window.common.gridManage.modal.id + ' button[type=submit]').css('display', '');
+                    });
+
+            $('#techCoverageModal')
+                .on('hidden.bs.modal',
+                    function (e) {
+                        $('#techCoverageModalBody').html('Loading...');
+                    });
+
+            window.common.gridManage.setHeaders();
+            window.common.gridManage.modal.title = 'Manage Technician Profile';
+
+            moveActionMenu();
+            $(window).resize(moveActionMenu);
+        });
+
+        $("#" + window.common.gridManage.id).bootgrid({
+            url: '@Url.Action("GetTechnicianProfilesByPage")',
+            multiSort: true,
+            formatters: {
+                "editType": function(column, row) {
+                    return editButtonFormat("TechnicianProfile", row.userGuid);
+                },
+                'vehicleMakeList': function(column, row) {
+                    var result = "<ul>";
+                    $.each(row.vehicleMakes, function (k, v) {
+                        result += "<li>" + v.value + "</li>";
+                    });
+                    result += "</ul>";
+                    return result;
+                },
+                "userName": function(col, row) {
+                    return activeNameDisplay(!row.userLocked, row.userName);
+                }
+            }
+        });
+
+        function showTechnicianProfileCoverage() {
+            $('#techCoverageModal').modal('show');
+            var url = '@Url.Action("TechnicianProfilesCoverage", "TechProfile")';
+            $.get(url,
+                    function (data) {
+                        $('#techCoverageModalBody').html(data);
+                    })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#techCoverageModal').modal('hide');
+                });
+        }
+
+        function activeNameDisplay(active, name) {
+            if (active)
+                return "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>&nbsp;" + name;
+            else
+                return "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>&nbsp;" + name;
+        }
+
+        function moveActionMenu() {
+            var menu = $('.actionBar .actions');
+            if (menu && $(menu).offset().left < 27) {
+                $(menu).find('.dropdown-menu.pull-right').removeClass('pull-right').addClass('pull-left');
+            } else {
+                $(menu).find('.dropdown-menu.pull-left').removeClass('pull-left').addClass('pull-right');
+            }
+        }
+
+        function editButtonFormat(func, id) {
+            return "<div class='btn-group btn-group-sm' role='group'><a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a><a onclick = 'delete" + func + "(\"" + id + "\");' class='btn btn-danger'><i class='glyphicon glyphicon-remove'></i></a></div>";
+        }
+
+        function manageTechnicianProfile(userGuid) {
+            window.common.gridManage.modal.show();
+            var url = '@Url.Action("ManageProfile", "TechProfile")/' +
+                ((userGuid) ? userGuid : '');
+            window.common.gridManage.modal.load(url);
+        }
+
+        function deleteTechnicianProfile(userGuid) {
+            var url = '@Url.Action("Delete", "TechProfile")';
+            $.post(url, { id: userGuid }).then(function (response) {
+                $("#" + window.common.gridManage.id).bootgrid('reload');
+            }).fail(function (err) {
+                console.log(err.message);
+                alert('There was an error contacting the server, please refresh the page and try again.');
+                $('#techCoverageModal').modal('hide');
+            });
+        }
+
+        function refreshTechnicianProfiles() {
+            $('#' + window.common.gridManage.id).bootgrid("reload");
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            if (!form.valid()) {
+                return;
+            }
+
+            window.scheduleViewModel.validate();
+            if (!window.scheduleViewModel.isValid()) {
+                $('a[href="#tech_schedule"]').trigger('click');
+                return;
+            }
+
+            window.technicianTimeOffViewModel.validate();
+            if (!window.technicianTimeOffViewModel.isValid()) {
+                $('a[href="#tech_timeoff"]').trigger('click');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize()
+            })
+                .done(function (data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+    </script>
+}

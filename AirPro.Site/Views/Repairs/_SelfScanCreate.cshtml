@@ -1,0 +1,453 @@
+﻿@using AirPro.Site.Helpers
+@using GridMvc.Html
+@model AirPro.Site.Models.Request.SelfScanViewModel
+
+@{
+    var shopGuid = Model?.ShopGuid;
+    var showCatDropdown = Model.CategoryTypesSelectList.Count() > 1;
+    var firstCat = Model.CategoryTypesSelectList.FirstOrDefault();
+    if (!showCatDropdown)
+    {
+        Model.CategoryId = Convert.ToInt32(firstCat?.Value);
+    }
+}
+
+<style type="text/css">
+    label {
+        margin-top: 10px;
+    }
+</style>
+
+<form id="selfScanForm" enctype="multipart/form-data">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Scan Category</div>
+        <div class="panel-body">
+            <div class="row form-group">
+                @Html.LabelFor(model => model.CategoryTypesSelectList, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @if (showCatDropdown)
+                    {
+                        @Html.DropDownListFor(model => model.CategoryId, new SelectList(Model.CategoryTypesSelectList, "Value", "Text"), "<-- Select Category -->", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.CategoryId);
+                        <label>@firstCat.Text</label>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html.HiddenFor(model => model.DiagnosticResultId)
+    <div class="panel panel-primary" id="scanQueue" style="@(showCatDropdown ? "display: none;" : "")">
+        <div class="panel-heading">Scan Queue</div>
+        <div style="max-height: 240px; overflow-y: auto;">
+            @Html.Grid(Model.AvailableScans).Columns(columns =>
+            {
+                columns.Add().Encoded(false).Sanitized(false).Titled("").RenderValueAs(c => SelfScanQueueMenu(c.ResultId));
+                columns.Add(c => c.VehicleVin).Titled("VIN");
+                columns.Add(c => c.VehicleMake).Titled("Make");
+                columns.Add(c => c.VehicleModel).Titled("Model");
+                columns.Add(c => c.VehicleYear).Titled("Year");
+                columns.Add(c => c.ScanDateTime).Titled("Scanned");
+            }).Sortable(false).Filterable(false)
+        </div>
+    </div>
+
+    <div class="panel panel-primary" id="fileInfo" style="@(showCatDropdown ? "display: none;" : "")">
+        <div class="panel-heading">Scan Upload</div>
+        <div class="panel-body">
+            <label for="file" style="margin-top: 0;">Scan File:</label>
+            <input type="file" name="file" id="file" />
+        </div>
+    </div>
+    @{ string formId = "selfScanForm"; }
+    @Html.Partial("_AssistedRequestAlert", formId)
+
+    <div class="panel panel-primary" id="vehicleInfo" style="display: none;">
+        <div class="panel-heading">Vehicle Info</div>
+        <div class="panel-body">
+            <div class="row form-group">
+                @Html.LabelFor(model => model.VehicleVIN, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    <div class="input-group">
+                        @Html.EditorFor(model => model.VehicleVIN, new { htmlAttributes = new { @class = "form-control inputmask-vin", maxlength = "17" } })
+                        <span class="input-group-btn">
+                            <a class="btn btn-default" id="btnVinSearch" onclick="searchVehicle();"><i class="glyphicon glyphicon-search"></i></a>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.VehicleVIN, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div id="vehicleDetails" style="display: none;">
+                <div class="row form-group">
+                    @Html.LabelFor(model => model.VehicleMakeId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.VehicleMakeId, new SelectList(Model.VehicleSelectList, "Value", "Text"), "<-- Select Make -->", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.VehicleMakeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    @Html.LabelFor(model => model.VehicleModel, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.VehicleModel, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.VehicleModel, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    @Html.LabelFor(model => model.VehicleYear, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.VehicleYear, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.VehicleYear, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    @Html.LabelFor(model => model.VehicleTransmission, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.VehicleTransmission, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.VehicleTransmission, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary" id="repairInfo" style="display: none;">
+        <div class="panel-heading">Repair Info</div>
+        <div class="panel-body">
+            @Html.HiddenFor(model => model.ShopGuid)
+            @Html.HiddenFor(model => model.RepairOrderId)
+            <div class="row form-group">
+                @Html.LabelFor(model => model.ShopName, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.ShopName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                @Html.LabelFor(model => model.ShopReferenceNumber, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.ShopReferenceNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ShopReferenceNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @Html.InsuranceSelectFor(model => model)
+
+            <div class="row form-group">
+                @Html.LabelFor(model => model.Odometer, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.Odometer, new { htmlAttributes = new { @class = "form-control", maxlength = "6" } })
+                    @Html.ValidationMessageFor(model => model.Odometer, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                @Html.LabelFor(model => model.AirBagsDeployed, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.AirBagsDeployed)
+                        @Html.ValidationMessageFor(model => model.AirBagsDeployed, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                @Html.LabelFor(model => model.DrivableInd, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.DrivableInd)
+                        @Html.ValidationMessageFor(model => model.DrivableInd, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                @Html.LabelFor(model => model.ImpactPoints, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.PointOfImpactSelectionFor(model => model.ImpactPoints)
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@helper SelfScanQueueMenu(int resultId)
+{
+    <a data-result-id="@resultId" class="btn btn-xs btn-primary select-upload"><i class="glyphicon glyphicon-check"></i></a>
+}
+
+<script src="@Url.Content("~/Scripts/app/common.js")"></script>
+@Scripts.Render("~/jqueryval/js")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CategoryId').on('change',
+            function () {
+                var queue = @(Model?.AvailableScans?.Count() ?? 0);
+                if (this.value) {
+                    $('#fileInfo').show();
+                    if (queue > 0) $('#scanQueue').show();
+                } else {
+                    $('#fileInfo').hide();
+                    $('#scanQueue').hide();
+                }
+            });
+
+        $('#file').on('change',
+            function () {
+                var file = this.files[0];
+                if (file && file.size > 0) {
+                    var formData = new FormData($('#selfScanForm')[0]);
+                    $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("SelfScanUpload")/@shopGuid',
+                            data: formData,
+                            cache: false,
+                            contentType: false,
+                            processData: false
+                        })
+                        .done(function(data) {
+                            $('#scanQueue').hide();
+                            $('#file').on('click',
+                                function(event) {
+                                    event.preventDefault();
+                                    alert('File already selected, please start over to select another file.');
+                                });
+
+                            $('#CategoryId').prop('disabled', true);
+                            loadVehicleInfo(data);
+                            loadRepairInfo(data);
+                        })
+                        .fail(function(e) {
+                            alert(
+                                'There was an Error uploading your file, please check the file format and try again.');
+                        });
+                }
+            });
+
+        $('.select-upload').on('click',
+            function (e) {
+                var row = $(this).parents('tr');
+                var resultId = $(this).data('result-id');
+                var shopGuid = '@shopGuid';
+                $.post('@Url.Action("SelfScanUploadSelect")',
+                    { id: shopGuid, resultId: resultId },
+                    function (data) {
+                        $('#@Html.IdFor(model => model.DiagnosticResultId)').val(data.DiagnosticResultId);
+
+                        $('#CategoryId').prop('disabled', true);
+                        row.css('background-color', 'yellow');
+                        $('.select-upload').hide();
+                        $('#fileInfo').hide();
+
+                        loadVehicleInfo(data);
+                        loadRepairInfo(data);
+                    });
+            });
+    });
+
+    var searching = false;
+    function searchVehicle() {
+        if (searching) return;
+        if ($('#@Html.IdFor(model => model.VehicleVIN)').val().length === 17) {
+            searching = true;
+            $.post('@Url.Action("SelfScanVehicleSearch")/@shopGuid' +
+                    '?vin=' + $('#@Html.IdFor(model => model.VehicleVIN)').val(),
+                function (data) {
+                        loadVehicleInfo(data);
+                        loadRepairInfo(data);
+
+                        if (!data.VehicleFound && confirm('Vehicle VIN was NOT Found, would you like to enter manually?')) {
+                            $('#vehicleDetails').css('display', '');
+                            $('#repairInfo').css('display', '');
+                        }
+                    })
+                .always(function() {
+                    searching = false;
+                });
+        } else {
+            alert('Valid VIN Number (17 digits) Required to Perform Search.');
+        }
+    }
+
+    function loadVehicleInfo(data) {
+        $('#vehicleInfo').css('display', '');
+
+        //Remove all but the empty selection value
+        $('#@Html.IdFor(model => model.VehicleMakeId)  option:not([value=""])').remove();
+        for (var i = 0; i < data.VehicleSelectList.length; i++) {
+            var o = $('<option/>', { value: data.VehicleSelectList[i].Value })
+                .text(data.VehicleSelectList[i].Text)
+                .prop('selected', data.VehicleMakeId == data.VehicleSelectList[i].Value);
+            o.appendTo($('#@Html.IdFor(model => model.VehicleMakeId)'));
+        }
+
+        $('#@Html.IdFor(model => model.VehicleVIN)').val(data.VehicleVIN);
+        $('#@Html.IdFor(model => model.VehicleMakeId)').val(data.VehicleMakeId === 0 ? "" : data.VehicleMakeId);
+        $('#@Html.IdFor(model => model.VehicleModel)').val(data.VehicleModel);
+        $('#@Html.IdFor(model => model.VehicleYear)').val(data.VehicleYear);
+        $('#@Html.IdFor(model => model.VehicleTransmission)').val(data.VehicleTransmission);
+
+        if (data.VehicleFound) {
+            $('#btnVinSearch').parent().css('display', 'none').parent().removeClass('input-group');
+
+            $('#@Html.IdFor(model => model.VehicleVIN)').prop('readonly', true);
+            $('#@Html.IdFor(model => model.VehicleMakeId)').prop('disabled', true);
+            $('#@Html.IdFor(model => model.VehicleModel)').prop('readonly', true);
+            $('#@Html.IdFor(model => model.VehicleYear)').prop('readonly', true);
+            $('#@Html.IdFor(model => model.VehicleTransmission)').prop('readonly', true);
+
+            $('#vehicleDetails').css('display', '');
+            $('#repairInfo').css('display', '');
+        }
+
+        if (data.ShowAssistedScanRecommended) {
+            @(formId)showAssistedRequest();
+        }
+    }
+
+    function loadRepairInfo(data) {
+        if (data.RepairFound) {
+            $('#@Html.IdFor(model => model.RepairOrderId)').val(data.RepairOrderId);
+
+            $('#@Html.IdFor(model => model.ShopReferenceNumber)').val(data.ShopReferenceNumber);
+            $('#@Html.IdFor(model => model.ShopReferenceNumber)').prop('readonly', !data.CccSourceInd);
+
+            $('#@Html.IdFor(model => model.InsuranceCompanyId)').val(data.InsuranceCompanyId);
+            $('#@Html.IdFor(model => model.InsuranceCompanyId)').prop('disabled', !data.CccSourceInd);
+
+            $('#@Html.IdFor(model => model.InsuranceCompanyOther)').val(data.InsuranceCompanyOther);
+            $('#@Html.IdFor(model => model.InsuranceCompanyOther)').prop('readonly', !data.CccSourceInd);
+
+            $('#@Html.IdFor(model => model.Odometer)').val(data.Odometer);
+            $('#@Html.IdFor(model => model.Odometer)').prop('readonly', !data.CccSourceInd);
+
+            $('#@Html.IdFor(model => model.AirBagsDeployed)').val(data.AirBagsDeployed);
+            $('#@Html.IdFor(model => model.AirBagsDeployed)').prop('checked', data.AirBagsDeployed);
+            $('#@Html.IdFor(model => model.AirBagsDeployed)').prop('disabled', !data.CccSourceInd);
+
+            $('#@Html.IdFor(model => model.DrivableInd)').val(data.DrivableInd);
+            $('#@Html.IdFor(model => model.DrivableInd)').prop('checked', data.DrivableInd);
+            $('#@Html.IdFor(model => model.DrivableInd)').prop('disabled', !data.CccSourceInd);
+
+            $.each(data.ImpactPoints,
+                function () {
+                    setLocation(this);
+                });
+
+            if (data.CccSourceInd === false) {
+                $('.poi-imageV2').prop('readonly', true);
+            }
+
+            @(formId)showAssistedRequestLink(data.RepairOrderId);
+        } else {
+            @(formId)hideAssistedRequestLink();
+        }
+    }
+
+    var submitted = false;
+    function selfScanCreate() {
+        if (submitted) return;
+        if (!$('#selfScanForm').valid()) return;
+
+        var formData = new FormData();
+        formData.append('ShopGuid', '@shopGuid');
+        formData.append('ShopReferenceNumber', $('#@Html.IdFor(model => model.ShopReferenceNumber)').val());
+
+        var file = $("#file")[0].files[0];
+        if ((!file || file.size === 0) && $('#@Html.IdFor(model => model.DiagnosticResultId)').val().length === 0) {
+            alert('Please Upload a file or select an Upload to Create Self Scan.');
+            return;
+        }
+        if ((file && file.size > 0))
+            formData.append('file', file);
+        else
+            formData.append('DiagnosticResultId', $('#@Html.IdFor(model => model.DiagnosticResultId)').val());
+
+        if ($('#@Html.IdFor(model => model.CategoryId)').val() === '') {
+            alert('Category ID is required to Create Self Scan.');
+            return;
+        }
+        formData.append('CategoryId', $('#@Html.IdFor(model => model.CategoryId)').val());
+
+        if ($('#@Html.IdFor(model => model.VehicleVIN)').val().length === 0) {
+            alert('Vehicle VIN is Required to Create Self Scan.');
+            return;
+        }
+        formData.append('VehicleVIN', $('#@Html.IdFor(model => model.VehicleVIN)').val());
+
+        if (!$(".request-assisted-scan-cnt").hasClass('hide')) {
+            formData.append('IsAssistedScanRecommended', true);
+        }
+
+        if ($('#vehicleDetails:hidden').length === 0) {
+            if ($('#@Html.IdFor(model => model.VehicleMakeId)').val().length === 0) {
+                alert('Vehicle Make is Required to Create Self Scan.');
+                return;
+            }
+            formData.append('VehicleMakeId', $('#@Html.IdFor(model => model.VehicleMakeId)').val());
+
+            if ($('#@Html.IdFor(model => model.VehicleModel)').val().length === 0) {
+                alert('Vehicle Model is Required to Create Self Scan.');
+                return;
+            }
+            formData.append('VehicleModel', $('#@Html.IdFor(model => model.VehicleModel)').val());
+
+            if ($('#@Html.IdFor(model => model.VehicleYear)').val().length === 0) {
+                alert('Vehicle Year is Required to Create Self Scan.');
+                return;
+            }
+            formData.append('VehicleYear', $('#@Html.IdFor(model => model.VehicleYear)').val());
+
+            if ($('#@Html.IdFor(model => model.VehicleTransmission)').val().length === 0) {
+                alert('Vehicle Transmission is Required to Create Self Scan.');
+                return;
+            }
+            formData.append('VehicleTransmission', $('#@Html.IdFor(model => model.VehicleTransmission)').val());
+        } else {
+            alert('Please search Vehicle VIN to Find or Enter Manually.');
+            return;
+        }
+
+        formData.append('InsuranceCompanyId', $('#@Html.IdFor(model => model.InsuranceCompanyId)').val());
+        formData.append('InsuranceCompanyOther', $('#@Html.IdFor(model => model.InsuranceCompanyOther)').val());
+
+        formData.append('AirBagsDeployed', $('#AirBagsDeployed[type="checkbox"]').prop('checked'));
+        formData.append('DrivableInd', $('#DrivableInd[type="checkbox"]').prop('checked'));
+
+        formData.append('Odometer', $('#@Html.IdFor(model => model.Odometer)').val());
+
+        $('#selfScanForm [name="ImpactPoints"]').map(function () { return $(this).val(); })
+            .each(function (i,v) {
+                formData.append('ImpactPoints[' + i + ']', v);
+            });
+
+        submitted = true;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SelfScanCreate")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false
+        })
+        .done(function(data) {
+            alert('Self Scan Report Completed!');
+            window.location.replace('@Url.Action("Dashboard")/@shopGuid');
+        })
+        .fail(function(e) {
+            console.log(e);
+            alert('Error: ' + e.statusText);
+        })
+        .always(function () {
+            submitted = false;
+        });
+    }
+</script>

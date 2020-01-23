@@ -1,0 +1,194 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@model AirPro.Site.Models.Repairs.CreateRepairViewModel
+
+<style type="text/css">
+    .validationMessage {
+        color: red;
+        font-weight: bold;
+        font-size: 12px;
+    }
+</style>
+
+<div class="modal fade" id="divRepairCreate" tabindex="-1" role="dialog" data-bind="modal: showDialog">
+    <div class="modal-dialog" role="document">
+        <form id="frmCreateRepair" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="globalModalLabel" data-bind="text: title">Create Repair</h4>
+            </div>
+            <div class="modal-body">
+                <div id="" class="form-horizontal">
+                    <div class="panel panel-primary" id="vehicleInfo">
+                        <div class="panel-heading">Vehicle Info</div>
+                        <div class="panel-body">
+                            <div class="row form-group">
+                                @Html.LabelFor(model => model.Vehicle.VehicleVIN, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(model => model.Vehicle.VehicleVIN,
+                                            new {@class = "form-control inputmask-vin", maxlength = "17", data_bind = "value: vehicleVin, valueUpdate: 'afterkeydown', disable: editMode, enterKey: search"})
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default" data-bind="click: search, disable: editMode"><i class="glyphicon glyphicon-search"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="vehicleDetails" data-bind="visible: vehicle, with: vehicle">
+                                <div class="row form-group">
+                                    @Html.LabelFor(model => model.Vehicle.VehicleMakeId, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <select class="form-control" data-bind="options: $parent.vehicles, optionsText: 'Text', optionsCaption: '<-- Select Make -->', value: selectedVehicle, disable: $parent.readOnly() || $parent.editMode() || enabled() == false"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group">
+                                    @Html.LabelFor(model => model.Vehicle.VehicleModel, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.Vehicle.VehicleModel,
+                                            new {@class = "form-control", data_bind = "value: vehicleModel, disable: $parent.readOnly() || $parent.editMode() || enabled() == false"})
+                                    </div>
+                                </div>
+
+                                <div class="row form-group">
+                                    @Html.LabelFor(model => model.Vehicle.VehicleYear, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.Vehicle.VehicleYear,
+                                            new {@class = "form-control", data_bind = "value: vehicleYear, disable: $parent.readOnly() || $parent.editMode() || enabled() == false"})
+                                    </div>
+                                </div>
+
+                                <div class="row form-group">
+                                    @Html.LabelFor(model => model.Vehicle.VehicleTransmission, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.Vehicle.VehicleTransmission,
+                                            new {@class = "form-control", data_bind = "value: vehicleTransmission, disable: $parent.readOnly() || $parent.editMode() || enabled() == false"})
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary" id="repairInfo" data-bind="visible: showRepair">
+                        <div class="panel-heading">Repair Info</div>
+                        <div class="panel-body">
+                            <div class="alert alert-warning" role="alert" data-bind="visible: showWarning" style="display: none;">
+                                <button type="button" class="close" aria-label="Close" data-bind="click: function() { showWarning(false) }"><span aria-hidden="true">&times;</span></button>
+                                <strong>Warning:</strong>&nbsp;<span data-bind="text: warningMsg"></span>
+                            </div>
+                            <div class="form-horizontal">
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.ShopGuid, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(model => model.RepairOrder.ShopGuid, Model.ShopSelectListItems as List<SelectListItem>, "<-- Select Shop -->",
+                                            new {@class = "form-control", data_bind = "value: shopGuid, disable: $parent.readOnly"})
+                                    </div>
+                                </div>
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.ShopRONumber, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.EditorFor(model => model.RepairOrder.ShopRONumber,
+                                            new {htmlAttributes = new {@class = "form-control", data_bind = "value: shopRoNumber, disable: $parent.readOnly"}})
+                                    </div>
+                                </div>
+                                <div>
+                                    @Html.InsuranceSelectFor(model => model.RepairOrder, "value: repair().insuranceCompanyId, disable: readOnly", "value: repair().insuranceCompanyOther, disable: readOnly")
+                                </div>
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.InsuranceReferenceNumber, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.EditorFor(model => model.RepairOrder.InsuranceReferenceNumber,
+                                            new {htmlAttributes = new {@class = "form-control", data_bind = "value: insuranceReferenceNumber, disable: $parent.readOnly"}})
+                                    </div>
+                                </div>
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.Odometer, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.RepairOrder.Odometer,
+                                            new {@class = "form-control", type = "number", maxlength = "6", data_bind = "value: odometer, disable: $parent.readOnly"})
+                                    </div>
+                                </div>
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.AirBagsDeployed, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="checkbox">
+                                            @Html.EditorFor(model => model.RepairOrder.AirBagsDeployed,
+                                                new {htmlAttributes = new {data_bind = "checked: airbagsDeployed, disable: $parent.readOnly"}})
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--ko with: repair -->
+                                <div class="form-group" data-bind="visible: airbagsDeployed">
+                                    @Html.LabelFor(model => model.RepairOrder.AirBagsVisualDeployments, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="checkbox">
+                                            @Html.EditorFor(model => model.RepairOrder.AirBagsVisualDeployments,
+                                                new {htmlAttributes = new {@class = "form-control",data_bind = "value: airbagsVisualDeployments, disable: $parent.readOnly" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+
+                                <div class="form-group" data-bind="with: repair">
+                                    @Html.LabelFor(model => model.RepairOrder.DrivableInd, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="checkbox">
+                                            @Html.EditorFor(model => model.RepairOrder.DrivableInd,
+                                                new {htmlAttributes = new {data_bind = "checked: drivableInd, disable: $parent.readOnly"}})
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.RepairOrder.PointsOfImpact, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.PointOfImpactSelectionFor(model => model.RepairOrder.PointsOfImpact)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="repair-uploads" data-bind="visible: readOnly() == true || editMode() == true">
+                        @Html.UploadControl(UploadType.RepairOrders, Model.RepairOrder.RepairId.ToString(), "Repair Uploads")
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Cancel</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Create") data-bind="click: save, visible: showRepair() && readOnly() == false && editMode() == false, text: btnText">Create</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Create And Request") data-bind="click: saveAndRequest, visible: showRepair() && readOnly() == false && editMode() == false && canCreateRequest(), text: btnText2">Create And Request</button>
+                <button type="button" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Update") data-bind="click: save, visible: readOnly() == false && editMode() == true">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/jqueryval/js")
+@Scripts.Render("~/repairs/js")
+
+<script type="text/javascript">
+    var options = {
+        vehicleMakes: @Html.Raw(JsonConvert.SerializeObject(Model.VehicleSelectList)),
+        urlMethods: {
+            vehicleSearch: '@Url.Action("VehicleVinSearch", "Repairs")',
+            save: '@Url.Action("CreateRepair","Repairs")',
+            requestScan: '@Url.Action("RequestScan", "Repairs")'
+        },
+        readOnly: false
+    };
+
+    window.repairViewModel = new RepairViewModel(options);
+    ko.applyBindings(window.repairViewModel, $('#divRepairCreate')[0]);
+
+    window.repairViewModel.repair.subscribe(function (value) {
+        if (value) {
+            $('#repair-uploads').load('@Url.Action("UploadControl", "Upload", new { type = UploadType.RepairOrders} )&key=' + value.repairId());
+        }
+    });
+
+    window.repairViewModel.showDialog.subscribe(function (value) {
+        if (!value) {
+            $('#repair-uploads').html('');
+        }
+    });
+</script>

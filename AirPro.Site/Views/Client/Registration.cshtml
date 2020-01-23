@@ -1,0 +1,465 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@model AirPro.Site.Models.Client.CreateViewModel
+@{
+    ViewBag.Title = "Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .step-image {
+        height: 40px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        margin-bottom: 35px;
+        position: relative;
+    }
+
+    .step-image-label {
+        position: absolute;
+        top: 40px;
+        color: gray;
+    }
+
+        .step-image-label.active {
+            font-weight: bold;
+            color: black;
+        }
+
+    .step-header {
+        margin-top: 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+    .step-form hr {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .direct-repair-partners {
+        height: 200px;
+        overflow: auto;
+    }
+
+    .direct-repair-partners {
+        border: 1px solid #cccccc;
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+        .direct-repair-partners .checkbox input[type="checkbox"] {
+            margin-left: -20px;
+        }
+
+    .form-horizontal .direct-repair-partners .checkbox {
+        padding-top: 0;
+    }
+
+    .checkbox .validationMessage {
+        margin-left: 20px;
+    }
+
+    .wizard-4-step > .label-1 {
+        left: calc(50% - 147px);
+    }
+
+    .wizard-4-step > .label-2 {
+        left: calc(50% - 61px);
+    }
+
+    .wizard-4-step > .label-3 {
+        left: calc(50% + 25px);
+    }
+
+    .wizard-4-step > .label-4 {
+        left: calc(50% + 110px);
+    }
+
+    .wizard-4-step > .label-5 {
+        display: none;
+    }
+
+    .wizard-5-step > .label-1 {
+        left: calc(50% - 190px);
+    }
+
+    .wizard-5-step > .label-2 {
+        left: calc(50% - 105px);
+    }
+
+    .wizard-5-step > .label-3 {
+        left: calc(50% - 20px);
+    }
+
+    .wizard-5-step > .label-4 {
+        left: calc(50% + 66px);
+    }
+
+    .wizard-5-step > .label-5 {
+        left: calc(50% + 151px);
+    }
+</style>
+
+<h2 class="text-center">Registration</h2>
+
+<div id="divClientRegistrationViewModel">
+    <!--Wizard Progress-->
+    <div class="step-image" data-bind="style: { 'background-image': getCurrentStepImage }, css: getWizardType">
+        <div class="step-image-label label-1" data-bind="css: getActiveStep(1)">Step 1</div>
+        <div class="step-image-label label-2" data-bind="css: getActiveStep(2)">Step 2</div>
+        <div class="step-image-label label-3" data-bind="css: getActiveStep(3)">Step 3</div>
+        <div class="step-image-label label-4" data-bind="css: getActiveStep(4)">Step 4</div>
+        <div class="step-image-label label-5" data-bind="css: getActiveStep(5)">Step 5</div>
+    </div>
+    <!--Wizard Form-->
+    <div class="row">
+        <div class="col-sm-offset-3 col-sm-6">
+            <form class="form-horizontal step-form">
+                <!--Step 1-->
+                <div class="step step-1" data-bind="if: showStep(1)">
+                    <div data-bind="with: userDetails">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="step-header">User Details</h3>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email-address" class="col-sm-4 control-label">Email Address:</label>
+                            <div class="col-sm-8">
+                                <input type="hidden" id="email-address" class="form-control" placeholder="email@domain.com" data-bind="value: emailAddress">
+                                <label class="control-label" data-bind="text: emailAddress"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="first-name" class="col-sm-4 control-label">First Name:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="first-name" placeholder="Bruce" data-bind="value: firstName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name" class="col-sm-4 control-label">Last Name:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="last-name" placeholder="Wayne" data-bind="value: lastName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="job-title" class="col-sm-4 control-label">Job Title:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="job-title" placeholder="Director" data-bind="value: jobTitle">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-number" class="col-sm-4 control-label">Contact Number:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone" id="contact-number" placeholder="(555) 555-5555" data-bind="value: contactNumber">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile-number" class="col-sm-4 control-label">Mobile Number:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone10" id="mobile-number" placeholder="(555) 555-5555" data-bind="value: phoneNumber">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="timezone" class="col-sm-4 control-label">Timezone:</label>
+                            <div class="col-sm-8">
+                                @AirPro.Site.Helpers.Selections.TimeZoneSelectionList("", "value: timeZoneInfoId")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="i-notification" class="col-sm-4 control-label">Invoice Notification:</label>
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    <input id="i-notification" type="checkbox" data-bind="checked: shopBillingNotification">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="r-notification" class="col-sm-4 control-label">Report Notification:</label>
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    <input id="r-notification" type="checkbox" data-bind="checked: shopReportNotification">
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label for="password" class="col-sm-4 control-label">Password</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="password" placeholder="********" data-bind="value: password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password" class="col-sm-4 control-label">Confirm Password</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="confirm-password" placeholder="********" data-bind="value: confirmPassword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 2-->
+                <div class="step step-2" data-bind="if: showStep(2)">
+                    <div data-bind="with: accountInformation">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="step-header">Account Information</h3>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-name" class="col-sm-4 control-label">Business Name:</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="account-name" class="form-control" placeholder="Account Name" data-bind="value: name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address-1" class="col-sm-4 control-label">Address 1:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="address-1" placeholder="" data-bind="value: address1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address-2" class="col-sm-4 control-label">Address 2: (Optional)</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="address-2" placeholder="" data-bind="value: address2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="city" class="col-sm-4 control-label">City:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="city" placeholder="New York" data-bind="value: city">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="state" class="col-sm-4 control-label">State:</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="state" placeholder="State Selection" data-bind="value: stateId, options: $root.states, optionsText: function(item) {return item.Value}, optionsValue: function(item) {return item.Key}"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="zip" class="col-sm-4 control-label">Zip:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="zip" placeholder="123456" data-bind="value: zip">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="col-sm-4 control-label">Phone:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone10" id="phone" placeholder="(555) 555-5555" data-bind="value: phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fax" class="col-sm-4 control-label">Fax:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone" id="fax" placeholder="(555) 555-5555" data-bind="value: fax">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="billing-cycle" class="col-sm-4 control-label">Billing Cycle:</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="billing-cycle" placeholder="Billing Cycle Selection" data-bind="value: billingCycleId, options: $root.billingCycles, optionsText: function(item) {return item.Value}, optionsValue: function(item) {return item.Key}"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dif-info" class="col-sm-4 control-label">Different Shop Info?:</label>
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    <input id="dif-info" type="checkbox" data-bind="checked: difShopInfo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 3-->
+                <div class="step step-3" data-bind="if: showStep(3)">
+                    <div data-bind="with: shopInformation">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="step-header">Shop Information</h3>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-name" class="col-sm-4 control-label">Shop Name:</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="shop-name" class="form-control" placeholder="Shop Name" data-bind="value: name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-address-1" class="col-sm-4 control-label">Address 1:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="shop-address-1" placeholder="" data-bind="value: address1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-address-2" class="col-sm-4 control-label">Address 2: (Optional)</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="shop-address-2" placeholder="" data-bind="value: address2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-city" class="col-sm-4 control-label">City:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="shop-city" placeholder="New York" data-bind="value: city">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-state" class="col-sm-4 control-label">State:</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="shop-state" placeholder="State Selection" data-bind="value: stateId, options: $root.states, optionsText: function(item) {return item.Value}, optionsValue: function(item) {return item.Key}"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-zip" class="col-sm-4 control-label">Zip:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="shop-zip" placeholder="123456" data-bind="value: zip">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-phone" class="col-sm-4 control-label">Phone:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone10" id="shop-phone" placeholder="(555) 555-5555" data-bind="value: phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-fax" class="col-sm-4 control-label">Fax:</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control inputmask-phone" id="shop-fax" placeholder="(555) 555-5555" data-bind="value: fax">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 4-->
+                <div class="step step-4" data-bind="if: showStep(4)">
+                    <div data-bind="with: repairInformation">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="step-header">Repair Information</h3>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="average-mo-volume" class="col-sm-4 control-label">Average Mo Volume:</label>
+                            <div class="col-sm-8">
+                                <input type="number" id="average-mo-volume" class="form-control" placeholder="Volume" data-bind="value: averageMoVolume">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Direct Repair Partners:</label>
+                            <div class="col-sm-8">
+                                <div class="direct-repair-partners">
+                                    <div class="row" data-bind="foreach: $root.directRepairPartners">
+                                        <div class="checkbox col-xs-6">
+                                            <label>
+                                                <input type="checkbox" data-bind="event: { change: $root.changeDirectRepairPartners}, checked: $root.checkDirectRepairPartners($data.Key)">
+                                                <span data-bind="text: $data.Value, value: $data.Key"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">OEM Certification:</label>
+                            <div class="col-sm-8">
+                                <div class="direct-repair-partners">
+                                    <div class="row" data-bind="foreach: $root.oemCertifications">
+                                        <div class="checkbox col-xs-6">
+                                            <label>
+                                                <input type="checkbox" data-bind="event: { change: $root.changeOEMCertifications}, checked: $root.checkOEMCertifications($data.Key)">
+                                                <span data-bind="text: $data.Value, value: $data.Key"> </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 5-->
+                <div class="step step-5" data-bind="if: showStep(5)">
+                    <div data-bind="with: externalServices">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="step-header">External Services</h3>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ccc-shop-id" class="col-sm-4 control-label"> CCC Shop ID:</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="ccc-shop-id" class="form-control" placeholder="11111" data-bind="value: cccShopId">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="send-to-mitchell" class="col-sm-4 control-label">Send To Mitchell:</label>
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    <input id="send-to-mitchell" type="checkbox" data-bind="checked: sendToMitchell">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Wizard Controls-->
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div data-bind="if: $root.prevButtonVisible">
+                            <button type="button" class="btn btn-default" data-bind="click: $root.decrementStepClick, text: $root.prevButtonText"></button>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <div data-bind="if: $root.nextButtonVisible">
+                            <button type="button" class="btn btn-primary" data-bind="click: $root.incrementStepClick, text: $root.nextButtonText"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+    @Scripts.Render("~/client/registration/js")
+
+    <script type="text/javascript">
+        @{ var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+        }
+
+        var options = {
+            dropdown: {
+                states: @Html.Raw(JsonConvert.SerializeObject(Model.States)),
+                billingCycles: @Html.Raw(JsonConvert.SerializeObject(Model.BillingCycles)),
+                directRepairPartners: @Html.Raw(JsonConvert.SerializeObject(Model.DirectRepairPartners)),
+                oemCertifications: @Html.Raw(JsonConvert.SerializeObject(Model.OEMCertifications)),
+            },
+            urlMethods: {
+                create: '@Url.Action("Create", "Client")'
+            },
+            registrationModel: {
+                registrationId: @Html.Raw(JsonConvert.SerializeObject(Model.RegistrationId)),
+                passedStep: @Html.Raw(JsonConvert.SerializeObject(Model.PassedStep)),
+                emailAddress: @Html.Raw(JsonConvert.SerializeObject(Model.Email)),
+                differentShopInfo: @Html.Raw(JsonConvert.SerializeObject(Model.DifferentShopInfo)),
+                billingCycleId: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation.BillingCycleId)),
+                registrationUserModel: @Html.Raw(JsonConvert.SerializeObject(Model.UserDetails, settings)),
+                registrationAccountModel: @Html.Raw(JsonConvert.SerializeObject(Model.AccountInformation, settings)),
+                registrationShopModel: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation, settings)),
+                registrationRepairModel: {
+                    averageMoVolume: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation.AverageVehiclesPerMonth)),
+                    directRepairPartners: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation.InsuranceCompanies)),
+                    oemCertifications: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation.VehicleMakes))
+                },
+                registrationExternalServicesModel: {
+                    cccShopId: '@Model.ShopInformation.CCCShopId',
+                    sendToMitchell: @Html.Raw(JsonConvert.SerializeObject(Model.ShopInformation.SendToMitchellInd))
+                }
+            },
+            readOnly: false
+        };
+
+        window.clientRegistrationViewModel = new ClientRegistrationViewModel(options);
+        ko.applyBindings(window.clientRegistrationViewModel, $('#divClientRegistrationViewModel')[0]);
+    </script>
+}

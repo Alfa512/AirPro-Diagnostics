@@ -1,0 +1,36 @@
+﻿@model AirPro.Site.Models.Account.SendCodeViewModel
+@{
+    ViewBag.Title = "Send Code";
+}
+
+@section Styles
+{
+    <style type="text/css">
+        .form-control-inline {
+            min-width: 0;
+            width: auto;
+            display: inline;
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("SendCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("rememberMe", @Model.RememberMe)
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            Select Two-Factor Authentication Provider:
+            @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers, new { @class = "form-control form-control-inline input-sm" })
+            &nbsp;
+            <input type="submit" value="Send" class="btn btn-sm btn-primary" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/jqueryval/js")
+}

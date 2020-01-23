@@ -1,0 +1,9 @@
+{
+  "registry": "https://registry.bower.io",
+  "scripts": {
+    "postinstall": "bower-installer"
+  },
+  "ignoredDependencies": [
+    "bootstrap"
+  ]
+}

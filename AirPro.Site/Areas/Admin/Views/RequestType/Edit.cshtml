@@ -1,0 +1,156 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Library.Models.Concrete
+@using AirPro.Site.Helpers
+@model AirPro.Library.Models.Concrete.ScanRequestTypeEditViewModel
+
+@{
+    ViewBag.Title = "Request Type Edit";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.RequestTypeID)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TypeName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.TypeName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.TypeName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Instructions, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Instructions, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Instructions, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReportTemplateHtml, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ReportTemplateHtml, new { htmlAttributes = new { @class = "form-control report-template" } })
+            @Html.ValidationMessageFor(model => model.ReportTemplateHtml, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.InvoiceMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.InvoiceMemo, new { @class = "form-control", @rows = "3", maxlength = "800" })
+            @Html.ValidationMessageFor(model => model.InvoiceMemo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ActiveFlag, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox" style="padding-left: 15px">
+                @Html.EditorFor(model => model.ActiveFlag)
+                @Html.ValidationMessageFor(model => model.ActiveFlag, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.BillableFlag, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox" style="padding-left: 15px">
+                @Html.EditorFor(model => model.BillableFlag)
+                @Html.ValidationMessageFor(model => model.BillableFlag, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DefaultPrice, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox" style="padding-left: 15px">
+                @Html.EditorFor(model => model.DefaultPrice, new { htmlAttributes = new { @class = "form-control inputmask-currency", @style = "max-width: 100px;" } })
+                @Html.ValidationMessageFor(model => model.DefaultPrice, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CategoryTypes, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @{ var index = 0; }
+            @foreach (var item in ViewBag.RequestCategories as IEnumerable<RequestCategoryViewModel>)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="@item.RequestCategoryId"
+                           id="CategoryTypes[@index]" name="CategoryTypes"
+                           checked="@Model.CategoryTypes.Contains(item.RequestCategoryId)" />
+                    <label class="form-check-label" for="CategoryTypes[@index]">@item.RequestCategoryName</label>
+                </div>
+                index++;
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.UpdatedBy, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="padding-top: 7px">
+            @Html.DisplayFor(model => model.UpdatedBy)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.UpdatedDt, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="padding-top: 7px">
+            @Html.DisplayFor(model => model.UpdatedDt)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary" @Html.DisableOnSubmit(DisableButtonType.Submit, "Save") onclick="$(this).button('loading')">Save</button>
+        </div>
+    </div>
+</div>
+}
+<hr />
+<div>
+    @AirPro.Site.Helpers.Buttons.BackButton()
+</div>
+
+@section Scripts {
+    <script src="@Url.Content("~/Content/tinymce/tinymce.min.js")"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: 'textarea.report-template',
+            plugins: "textcolor paste advlist lists",
+            paste_use_dialog: false,
+            paste_auto_cleanup_on_paste: true,
+            paste_convert_headers_to_strong: false,
+            paste_strip_class_attributes: "all",
+            paste_remove_spans: true,
+            paste_remove_styles: true,
+            paste_retain_style_properties: "",
+            browser_spellcheck: true,
+            height: "200",
+            menubar: false,
+            statusbar: false,
+            fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt",
+            toolbar: "newdocument | undo redo | paste cut copy | fontsizeselect bold italic underline strikethrough forecolor | bullist numlist outdent indent | removeformat | fields"
+        });
+
+        $(document).ready(function() {
+            $('#@Html.IdFor(m => m.InvoiceMemo)').on('keyup',
+                function (e) {
+                    if ($(this) && $(this).val().length > 800) {
+                        $(this).val($(this).val().substring(0, 800));
+                    }
+                });
+        });
+    </script>
+}

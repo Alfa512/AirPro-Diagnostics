@@ -1,0 +1,18 @@
+﻿@model IEnumerable<AirPro.Library.Models.Concrete.OutstandingInvoiceItemViewModel>
+    
+@using GridMvc.Html;
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add().RenderValueAs(x => InvoiceSelect("ShopInvoicesSelected", x.InvoiceId, x.Selected)).Encoded(false).Sanitized(false);
+    columns.Add(x => x.InvoiceId).Titled("Invoice ID").Sortable(true);
+    columns.Add(x => x.InvoiceDateTime).Titled("Invoiced").Sortable(true).Format("{0:MM/dd/yyyy}");
+    columns.Add(x => x.InvoiceReportCount).Titled("Reports").Sortable(true);
+    columns.Add(x => x.InvoiceBalanceAmount).Titled("Balance").Sortable(true).Format("{0:c}");
+})
+
+@helper InvoiceSelect(string name, int value, bool selected)
+{
+    var id = name + "_" + value;
+    <input type="checkbox" id="@id" name="@name" value="@value" class="invoice-checkbox" @(selected ? "checked" : "") />
+}

@@ -1,0 +1,258 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Service.DTOs.Interface
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@model AirPro.Site.Areas.Admin.Models.VehicleMakes.VehicleMakeViewModel
+
+<style type="text/css">
+    tr.errorRow {
+        background: #ea9a9a !important;
+    }
+
+    .validationMessage {
+        color: red;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    div#VehicleMakeIds.well {
+        overflow: auto;
+        max-height: 150px;
+    }
+
+    .tab-content {
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 400px;
+        max-height: 660px;
+    }
+
+    #tech_schedule td.day span {
+        font-size: 13px;
+        line-height: 33px;
+    }
+
+    .program-tools {
+        min-height: 70px;
+        margin-bottom: 10px;
+    }
+
+    .height34 {
+        height: 34px;
+        display: inline-block;
+    }
+    .input-xs {
+        width: auto;
+        height: 21px;
+        padding: 2px 6px;
+        font-size: 13px;
+    }
+    .multi-select-list ul {
+        columns: 1;
+        -webkit-columns: 1;
+        -moz-columns: 1;
+        list-style: none;
+        margin: 0;
+        padding-left: 10px;
+    }
+    .multi-select-list {
+        margin: 0;
+        padding: 0;
+        background: none;
+        height: 250px;
+        overflow-y: auto;
+    }
+    .marginRight10 {
+        margin-right: 10px;
+    }
+    .note-container > .col-md-9 {
+        height: 25px;
+    }
+</style>
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshVehicleMakes();
+                    window.common.gridManage.modal.showUpdateMessage("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+    return;
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@using (Html.BeginForm())
+{
+    <div id="manage-vehicle-make">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.VehicleMakeId)
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.VehicleMakeName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.VehicleMakeName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.VehicleMakeName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.VehicleMakeTypeId, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.DropDownListFor(model => model.VehicleMakeTypeId, ViewBag.VehicleMakeTypes as List<SelectListItem>, "<-- Select Type -->", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.VehicleMakeTypeId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProgramName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.ProgramName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProgramInstructions, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.ProgramInstructions, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProgramTools, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="well well-sm multi-select-list" style="padding-top: 10px; height: 215px;">
+                            <ul data-bind="foreach: programTools">
+                                <li>
+                                    <div class="row note-container">
+                                        <div class="col-sm-8">
+                                            <input type="hidden" data-bind="value: vehicleMakeToolId, attr: { name: 'ProgramTools['+ $index() +'].vehicleMakeToolId' }" />
+                                            <input type="hidden" data-bind="value: name, attr: { name: 'ProgramTools['+ $index() +'].name' }" />
+                                            <input type="text" class="form-control input-xs" data-bind="value: updatedName, visible: !readonly(), valueUpdate: 'keyup'" />
+                                            <label><span data-bind="text: name, visible: readonly" style="position: relative; bottom: 2px;"></span></label>
+                                        </div>
+                                        <div class="col-sm-4" style="text-align: right;">
+                                            <div class="btn-group marginRight10" role="group" data-bind="visible: readonly()">
+                                                <button data-bind="click: $parent.removeProgramTool, enable: $parent.canEdit" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+                                                <button data-bind="click: $parent.editProgramTool, enable: $parent.canEdit" class="btn btn-xs btn-warning"><i class='glyphicon glyphicon-edit'></i></button>
+                                            </div>
+                                            <button data-bind="click: $parent.updateProgramTool, visible: !readonly(), enable: name().length > 0" class="btn btn-xs btn-default pull-right marginRight10"><i class='glyphicon glyphicon-ok'></i></button>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            </ul>
+                            <div data-bind="if: programTools().length == 0" style="margin-left: 10px;">
+                                <em>No Tools</em>
+                            </div>
+                        </div>
+                        <div class="panel-footer" style="padding: 2px 3px;">
+                            <div class="dropdown large-text-dropdown">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" placeholder="Add Tool" data-bind="value: newProgramTool, valueUpdate: 'keyup'">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-success" type="button" data-bind="click: addProgramTool, enable: newProgramTool().length > 0" disabled="">Add</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            @if ((Model?.VehicleMakeId ?? 0) > 0)
+            {
+                @Html.UploadControl(UploadType.VehicleMakes, Model.VehicleMakeId.ToString(), "Vehicle Make Attachments")
+            }
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var form = $('#manageModalBody form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+
+    $(document).ready(function () {
+        var manageVehicleMake = $('#manage-vehicle-make')[0];
+
+        //Clean Binding if exists
+        if (manageVehicleMake && ko.dataFor(manageVehicleMake)) {
+            ko.cleanNode(manageVehicleMake);
+        }
+
+        if (manageVehicleMake) {
+                var model = {
+                    programTools: @Html.Raw(JsonConvert.SerializeObject(Model.ProgramTools ?? new List<IVehicleMakeToolDto>())) || []
+                };
+
+            function VehicleMakeToolViewModel(name, readonly, vehicleMakeToolId) {
+                var self = this;
+                self.vehicleMakeToolId = ko.observable(vehicleMakeToolId);
+                self.name = ko.observable(name);
+                self.updatedName = ko.observable(name);
+                self.readonly = ko.observable(readonly);
+            }
+
+            function ManageVehicleMakeViewModel(model) {
+                var self = this;
+                self.newProgramTool = ko.observable('');
+                self.toolSearch = ko.observable('');
+                self.programTools = ko.observableArray();
+                for (var i = 0; i < model.programTools.length; i++) {
+                    var pt = model.programTools[i];
+                    self.programTools.push(new VehicleMakeToolViewModel(pt.Name, true, pt.VehicleMakeToolId));
+                }
+
+                self.addProgramTool = function() {
+                    self.programTools.push(new VehicleMakeToolViewModel(self.newProgramTool(), true));
+                    self.newProgramTool('');
+                }
+
+                self.removeProgramTool = function (tool) {
+                    if (confirm('Are you sure you want to delete program tool?')) {
+                        self.programTools.remove(tool);
+                    }
+                }
+
+                self.editProgramTool = function(tool) {
+                    tool.readonly(false);
+                }
+
+                self.updateProgramTool = function(tool) {
+                    tool.readonly(true);
+                    tool.name(tool.updatedName());
+                }
+
+                self.canEdit = ko.pureComputed(function () {
+                    for (var i = 0; i < self.programTools().length; i++) {
+                        var tool = self.programTools()[i];
+
+                        if (!tool.readonly()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+            }
+
+            window.manageVehicleMakeViewModel = new ManageVehicleMakeViewModel(model);
+             ko.applyBindings(window.manageVehicleMakeViewModel, manageVehicleMake);
+        }
+    });
+</script>

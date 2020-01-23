@@ -1,0 +1,188 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    #vehicleInfo {
+        margin-top: 15px;
+    }
+</style>
+
+<div data-bind="allowBindings: false" id="change-request-cnt">
+    <div class="form-horizontal">
+        <div id="repairInfoCnt" class="form-horizontal">
+            <div class="panel panel-primary" id="repairInfo">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Repair Info</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row form-group">
+                        <label for="OldVIN" class="control-label col-md-3">Repair Id</label>
+                        <div class="col-md-9">
+                            <input name="OldRepairId" type="text" class="form-control change-request-selected-oldRepairId" data-bind="value: oldRepairId, valueUpdate: 'keyup'" maxlength="17" />
+                        </div>
+                    </div>
+
+                    <div class="text-center" data-bind="visible: !repairDetails() && delayedOldRepairId() && !searchingRepair()">
+                        Repair Not Found!
+                    </div>
+
+                    <div class="text-center" data-bind="visible: !repairDetails() && searchingRepair()">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </div>
+
+                    <div id="repairDetails" data-bind="visible: repairDetails, with: repairDetails">
+                        <div class="row form-group">
+                            <label for="RepairStatusName" class="control-label col-md-3">Repair Status</label>
+                            <div class="col-md-9">
+                                <input name="RepairStatusName" type="text" class="form-control" data-bind="value: repairStatusName" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="ShopName" class="control-label col-md-3">Shop Name</label>
+                            <div class="col-md-9">
+                                <input name="ShopName" type="text" class="form-control" data-bind="value: shopName" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="ShopRONumber" class="control-label col-md-3">Shop RO</label>
+                            <div class="col-md-9">
+                                <input name="ShopRONumber" type="text" class="form-control" data-bind="value: shopRONumber" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="VIN" class="control-label col-md-3">Vehicle VIN</label>
+                            <div class="col-md-9">
+                                <input name="ShopRONumber" type="text" class="form-control" data-bind="value: vehicleVIN" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="VehicleMake" class="control-label col-md-3">Vehicle Make</label>
+                            <div class="col-md-9">
+                                <input name="VehicleMake" type="text" class="form-control" data-bind="value: vehicleMake" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="VehicleModel" class="control-label col-md-3">Vehicle Model</label>
+                            <div class="col-md-9">
+                                <input name="VehicleModel" type="text" class="form-control" data-bind="value: vehicleModel" disabled />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="VehicleYear" class="control-label col-md-3">Vehicle Year</label>
+                            <div class="col-md-9">
+                                <input name="VehicleYear" type="text" class="form-control" data-bind="value: vehicleYear" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary" id="vehicleInfo">
+            <div class="panel-heading">
+                <h4 class="panel-title">Vehicle Info</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row form-group">
+                    <label for="NewVIN" class="control-label col-md-3">New VIN </label>
+                    <div class="col-md-9">
+                        <input name="NewVIN" type="text" class="form-control change-request-selected-newVIN" data-bind="value: newVIN, valueUpdate: 'keyup'" maxlength="17" />
+                    </div>
+                </div>
+
+                <div class="text-center" data-bind="visible: !vehicleDetails() && delayedNewVIN() && delayedNewVIN().length == 17 && !searchingVehicle()">
+                    Vehicle Not Found!
+                </div>
+
+                <div class="text-center" data-bind="visible: !vehicleDetails() && searchingVehicle()">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+
+                <div id="vehicleDetails" data-bind="visible: vehicleDetails, with: vehicleDetails">
+                    <div class="row form-group">
+                        <label for="VehicleMakeName" class="control-label col-md-3">Make</label>
+                        <div class="col-md-9">
+                            <input name="VehicleMakeName" type="text" class="form-control" data-bind="value: vehicleMakeName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="VehicleYear" class="control-label col-md-3">Year</label>
+                        <div class="col-md-9">
+                            <input name="VehicleYear" type="text" class="form-control" data-bind="value: vehicleYear" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="VehicleModel" class="control-label col-md-3">Model</label>
+                        <div class="col-md-9">
+                            <input name="VehicleModel" type="text" class="form-control" data-bind="value: vehicleModel" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    ko.bindingHandlers.allowBindings = {
+        init: function(elem, valueAccessor) {
+            // Let bindings proceed as normal *only if* my value is false
+            var shouldAllowBindings = ko.unwrap(valueAccessor());
+            return { controlsDescendantBindings: !shouldAllowBindings };
+        }
+    };
+
+    $(document).ready(function() {
+        var model = new ChangeRequestModel();
+        var control = document.getElementById('change-request-cnt');
+        ko.applyBindingsToDescendants(model, control);
+    });
+
+    var ChangeRequestModel = function() {
+        var self = this;
+        self.newVIN = ko.observable();
+        self.oldRepairId = ko.observable();
+        self.delayedNewVIN = ko.pureComputed(self.newVIN)
+            .extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 1200 } });
+        self.delayedOldRepairId = ko.pureComputed(self.oldRepairId)
+            .extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 1200 } });
+
+        self.vehicleDetails = ko.observable();
+        self.repairDetails = ko.observable();
+
+        self.searchingRepair = ko.observable();
+        self.searchingVehicle = ko.observable();
+
+        self.delayedNewVIN.subscribe(function(val) {
+            if (val.length == 17) {
+                self.searchingVehicle(true);
+                self.vehicleDetails(false);
+                $.post('@Url.Action("GetVehicleDetailsByVIN", "Support", new {area = ""})', { vin: val }).then(
+                    function(response) {
+                        self.vehicleDetails(response);
+                        self.searchingVehicle(false);
+                    }).catch(function(err) { self.searchingVehicle(false); });
+            } else {
+                self.vehicleDetails("");
+            }
+        }, this);
+        self.delayedOldRepairId.subscribe(function (val) {
+            self.repairDetails(false);
+            self.searchingRepair(true);
+            $.post('@Url.Action("GetRepairDetails", "Support", new {area = ""})', { id: val }).then(function (response) {
+                self.repairDetails(response);
+                self.searchingRepair(false);
+
+            }).catch(function (err) { self.searchingRepair(false); });
+                    }, this);
+
+        };
+</script>

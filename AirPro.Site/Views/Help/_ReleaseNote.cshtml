@@ -1,0 +1,20 @@
+﻿@model AirPro.Site.Models.Help.ReleaseNoteInfoViewModel
+<style>
+
+    .release-note-item {
+        margin-bottom: 25px;
+    }
+
+        .release-note-item h4 {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+</style>
+@foreach (var releaseNote in Model.ReleaseNotes)
+{
+    <div class="release-note-item">
+        <h4>@releaseNote.DevelopmentId - @releaseNote.Summary</h4>
+        <p>@releaseNote.ReleaseNote</p>
+    </div>
+    <hr/>
+}

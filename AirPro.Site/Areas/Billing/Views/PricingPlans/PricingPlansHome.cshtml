@@ -1,0 +1,289 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Pricing Plan Administration";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style type="text/css">
+    .tab-pane {
+        padding-top: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .bootgrid-header {
+        margin: 0;
+    }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    td.text-left > ul {
+        padding-left: 10px;
+    }
+</style>
+
+<hr />
+
+<div id="manageBody">
+    <div id="pricingplans" class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title pull-left"><span style="position: relative; top: 2px;">Pricing Plans</span>&nbsp;@AddButton("managePricingPlan();", "Plan", ApplicationRoles.PricingPlanCreate.ToString())</h4>
+        </div>
+        <table id="pricingplans-grid" class="table table-condensed table-hover table-striped" data-toggle="bootgrid" data-ajax="true">
+            <thead>
+                <tr>
+                    <th data-column-id="pricingPlanId" data-identifier="true" data-visible="false" data-visible-in-selection="true" data-width="100">Plan Id</th>
+                    <th data-column-id="pricingPlanName">Name</th>
+                    <th data-column-id="pricingPlanDescription">Description</th>
+                    <th data-column-id="currencyName">Currency</th>
+                    <th data-column-id="createdByName" data-visible="false">Created By</th>
+                    <th data-column-id="createdDateTime" data-converter="date" data-visible="false">Created Date</th>
+                    <th data-column-id="updatedByName">Updated By</th>
+                    <th data-column-id="updatedDateTime" data-converter="date">Updated Date</th>
+                    <th data-column-id="pricingPlanActiveInd" data-converter="bool" data-align="center" data-width="100" data-header-align="center">Active</th>
+                    <th data-column-id="editPlan" data-visible-in-selection="false" data-formatter="editPlan" data-sortable="false" data-align="center" data-width="80"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="manageModal" tabindex="-1" role="dialog" aria-labelledby="manageModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="manageModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body" id="manageModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                @if (User.IsInRole(ApplicationRoles.PricingPlanCreate.ToString()))
+                {
+                    <button type="button" class="btn btn-info pull-left" id="btnClone" onclick="clonePricingPlan()" @Html.DisableOnAjax(DisableButtonType.Cancel, "Clone") style="display: none;">Clone</button>
+                }
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                <button type="submit" onclick="postModal();" class="btn btn-primary" @Html.DisableOnAjax(DisableButtonType.Submit, "Save")>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)>×</button>
+                <h4 class="modal-title" id="myModalLabel">Clone Pricing Plan "<span></span>"</h4>
+            </div>
+            <div class="modal-body">
+                <p class="content">Are you sure you want to continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Submit, "No")>No</button>
+                <button type="button" class="btn btn-success btn-ok" @Html.DisableOnAjax(DisableButtonType.Submit, "Yes")>Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper AddButton(string function, string type, string role)
+{
+    if (User.IsInRole(role))
+    {
+        <a onclick="@function" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add @type</a>
+    }
+}
+
+@section Scripts{
+    @Scripts.Render("~/jqueryval/js")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#manageModal').on('hidden.bs.modal',
+                function(e) {
+                    $('#manageModalBody').html('Loading...');
+                    $('#manageModal button[type=submit]').css('display', '');
+                    $('#manageModal #btnClone').hide();
+                });
+
+            $('#confirm-modal').on('click',
+                '.btn-ok',
+                function(e) {
+                    var $modalDiv = $(e.delegateTarget);
+                    var model = $(this).data('model');
+                    if (model) {
+                        var promise = $.post('@Url.Action("ClonePlan", "PricingPlans")', { id: model.pricingPlanId });
+
+                        $modalDiv.addClass('loading');
+                        $.when(promise).done(function(response) {
+                            if (response.success) {
+                                refreshPricingPlans();
+                                updateComplete("<div class='alert alert-success'>Pricing Plan '" + response.data.name + "' Created Successfully.</div>");
+                            } else {
+                                updateComplete("<div class='alert alert-danger'>Error Clonning Pricing Plan.</div>");
+                            }
+                            $modalDiv.modal('hide').removeClass('loading');
+                        });
+                    } else {
+                        $modalDiv.modal('hide').removeClass('loading');
+                    }
+                });
+
+            $('#pricingplans-grid-header').appendTo('#pricingplans .panel-heading');
+            $('#pricingplans .panel-title').appendTo('#pricingplans-grid-header .actionBar');
+        });
+
+        $("#pricingplans-grid").bootgrid({
+            url: '@Url.Action("GetPricingPlansByPage")',
+            multiSort: true,
+            formatters: {
+                "editPlan": function(column, row) {
+                    return editButtonFormat("PricingPlan", row.pricingPlanId, row.pricingPlanName);
+                }
+            },
+            converters: {
+                bool: {
+                    to: function(value) {
+                        return value
+                            ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                            : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+                    }
+                },
+                date: {
+                    to: function(value) { return value ? moment(value).format('MM/DD/YYYY hh:mm A') : ""; }
+                }
+            }
+        });
+
+        function editButtonFormat(func, id, extra) {
+            var cloneButton = '';
+            @if (User.IsInRole(ApplicationRoles.PricingPlanCreate.ToString()))
+            {
+                <text>
+                cloneButton = "<a onclick = 'clone" + func + "(\"" + id + "\", \"" + extra + "\");' class='btn btn-info'><i class='glyphicon glyphicon-copy'></i></a>";
+                </text>
+            }
+
+            return "<div class='btn-group btn-group-sm' role='group'>" +
+                cloneButton +
+                "<a onclick = 'manage" + func + "(\"" + id + "\");' class='btn btn-warning'><i class='glyphicon glyphicon-edit'></i></a>" +
+                "</div>";
+        }
+
+        function managePricingPlan(pricingPlanId) {
+            displayModal('Pricing Plan');
+            var url = '@Url.Action("ManagePricingPlan", "PricingPlans")/' + ((pricingPlanId) ? pricingPlanId : '');
+            loadModal(url);
+            $('#manageModal #btnClone').hide();
+        }
+
+        function clonePricingPlan(pricingPlanId, name) {
+            if (!pricingPlanId) {
+                $('#manageModal #PricingPlanId').val('0');
+                var $name = $('#manageModal #PricingPlanName');
+                $name.val($name.val() + ' (Copy)');
+
+                $('#manageModal #btnClone').hide();
+                return;
+            }
+
+            $('#confirm-modal .modal-title span').text(name);
+            $('#confirm-modal').modal();
+            $('#confirm-modal .btn-ok').data('model', { pricingPlanId: pricingPlanId });
+        }
+
+        function refreshPricingPlans() {
+            $('#pricingplans-grid').bootgrid("reload");
+        }
+
+        function displayModal(title) {
+            $('#manageModalLabel').text('Manage ' + title);
+            $('#manageModal').modal('show');
+        }
+
+        function loadModal(url) {
+            $.get(url,
+                    function(data) {
+                        $('#manageModalBody').html(data);
+                        var $form = $(data);
+                        if ($form) {
+                            var val = $form.find('#PricingPlanId').val();
+                            if (val && val == '0') {
+                                $('#manageModal #btnClone').hide();
+                                return;
+                            }
+                        }
+
+                        $('#manageModal #btnClone').show();
+                    })
+                .fail(function(err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function postModal() {
+            var form = $('#manageModalBody > form');
+            if (!form.valid()) {
+                return;
+            }
+
+            $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize()
+                })
+                .done(function (data) {
+                    $('#manageModalBody').html(data);
+                })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $('#manageModal').modal('hide');
+                });
+        }
+
+        function updateComplete(html) {
+            $('#manageBody').prepend(html);
+            $('#manageBody > .alert').fadeTo(3000, 500).slideUp(500, function () {
+                $('#manageBody > .alert').slideUp(500);
+                $('#manageBody > .alert').remove();
+            });
+            $('#manageModal').modal('hide');
+        }
+    </script>
+}

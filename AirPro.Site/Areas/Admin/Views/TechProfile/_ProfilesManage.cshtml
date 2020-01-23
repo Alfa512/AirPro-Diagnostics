@@ -1,0 +1,490 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Service.DTOs.Interface
+@using AirPro.Site.Helpers
+@using Newtonsoft.Json
+@model AirPro.Site.Areas.Admin.Models.TechProfile.TechnicianProfileViewModel
+@{
+    var pendingUsers = ViewBag.PendingUsers as IEnumerable<SelectListItem>;
+    var canViewNotes = User.IsInRole(ApplicationRoles.TechProfileNoteView.ToString()) || User.IsInRole(ApplicationRoles.TechProfileNoteEdit.ToString());
+}
+
+<style type="text/css">
+    tr.errorRow {
+        background: #ea9a9a !important;
+    }
+
+    .validationMessage {
+        color: red;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    div#VehicleMakeIds.well {
+        overflow: auto;
+        max-height: 150px;
+    }
+
+    .tab-content {
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 400px;
+        max-height: 660px;
+    }
+
+    #tech_schedule td.day span {
+        font-size: 13px;
+        line-height: 33px;
+    }
+
+    ul.pagination {
+        margin: 10px;
+    }
+
+    .dataGrid {
+        margin-top: 10px;
+    }
+
+    .panel-heading > .bootgrid-header {
+        margin: 0;
+    }
+
+    .bootgrid-header .actionBar {
+        padding: 0;
+    }
+
+    .panel-heading {
+        padding: 5px 10px;
+    }
+
+    .panel-title {
+        margin: 2px;
+        font-size: 20px;
+    }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+    .dropdown-item {
+        color: black;
+    }
+
+    a.column-header-anchor {
+        color: gray !important;
+        text-decoration: none;
+    }
+
+    #repairs .panel,
+    #repairs .table-responsive {
+        overflow: visible !important;
+    }
+
+    #gridSearch > .bootgrid-header, #aging-repairs-grid-header.bootgrid-header {
+        margin: 0;
+    }
+</style>
+
+@if (Model?.UpdateResult?.Success ?? false)
+{
+    <script type="text/javascript">
+        $(document)
+            .ready(function() {
+                try {
+                    refreshTechnicianProfiles();
+                    window.common.gridManage.modal.showUpdateMessage("@Html.UpdateResultAlert(Model?.UpdateResult)");
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+    </script>
+}
+else
+{
+    @Html.UpdateResultAlert(Model?.UpdateResult)
+}
+
+@if (Model?.ShouldCreate == true && (pendingUsers == null || !pendingUsers.Any()))
+{
+    <div class="alert alert-warning" role="alert">
+        There are no users with pending profiles.
+    </div>
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                $('#' + window.common.gridManage.modal.id + ' button[type="submit"]').hide();
+            });
+    </script>
+    return;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ShouldCreate)
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active in" role="presentation"><a href="#tech_info" aria-controls="tech_info" role="tab" data-toggle="tab">Info</a></li>
+        <li role="presentation"><a href="#tech_schedule" aria-controls="tech_schedule" role="tab" data-toggle="tab">Schedule</a></li>
+        <li role="presentation"><a href="#tech_timeoff" aria-controls="tech_timeoff" role="tab" data-toggle="tab">Time Off</a></li>
+        @if (!Model?.ShouldCreate ?? false)
+        {
+            <li role="presentation"><a href="#attachments" aria-controls="attachments" role="tab" data-toggle="tab">Attachments</a></li>
+            if (canViewNotes)
+            {
+                <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
+            }
+            <li role="presentation"><a href="#tech_reports" aria-controls="tech_reports" role="tab" data-toggle="tab">Reports</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane in active" id="tech_info">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @if (Model?.ShouldCreate ?? false)
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserGuid, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.UserGuid, pendingUsers, "<-- Select User -->", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserGuid, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => model.UserGuid)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserName, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9" style="padding-top: 7px;">
+                            @Html.DisplayFor(model => model.UserName)
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DisplayName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DisplayName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.EmployeeId, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OtherNotes, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.OtherNotes, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.OtherNotes, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9" style="padding-top: 7px;">
+                        @Html.CheckBoxFor(model => model.IsActive)
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VehicleMakeIds, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.MultiCheckBoxListFor(m => m.VehicleMakeIds, ViewBag.VehicleMakes as IEnumerable<SelectListItem>, 2)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LocationId, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.LocationId, new SelectList(Model.Locations, "Key", "Value"), "<-- Select Location -->", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocationId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="tech_schedule">
+            <div class="form-horizontal table-responsive">
+                <table class="table table-striped" style="margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">Day</th>
+                            <th style="width: 135px;">Start</th>
+                            <th style="width: 135px;">End</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: scheduleDays">
+                        <tr data-bind="css: { errorRow: totalHours() < 0 || !validBreak() }">
+                            <td style="vertical-align: middle;" class="day">
+                                <span data-bind="text: name"></span>
+                                <!-- ko if: enableBreak -->
+                                <br />
+                                <span data-bind="text: name + ' Break'" style="margin-top: 10px;"></span>
+                                <!-- /ko -->
+                                <input type="hidden" data-bind="value: dayOfWeek, attr: { 'name': 'Schedules['+ $index() +'].DayOfWeek' }" />
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <div class="input-group input-group-sm bootstrap-timepicker timepicker">
+                                    <input type="text" class="form-control"
+                                           data-bind="timePickerMoment: start, timePickerOptions: {
+                                                       locale: 'en-US', format: 'HH:mm', minuteStep: 15,
+                                                       showMeridian: false, explicitMode: true,
+                                                       defaultTime: false }, asString: true, widget: sWidget,
+                                                       attr: { 'name': 'Schedules['+ $index() +'].StartTime' }" />
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                    </span>
+                                </div>
+
+                                <div class="input-group input-group-sm bootstrap-timepicker timepicker" data-bind="visible: enableBreak" style="margin-top: 5px;">
+                                    <input type="text" class="form-control"
+                                           data-bind="timePickerMoment: breakStart, timePickerOptions: {
+                                                       locale: 'en-US', format: 'HH:mm', minuteStep: 15,
+                                                       showMeridian: false, explicitMode: true,
+                                                       defaultTime: false }, asString: true, widget: b1SWidget,
+                                                       attr: { 'name': 'Schedules['+ $index() +'].BreakStart' }" />
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                    </span>
+                                </div>
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <div class="input-group input-group-sm bootstrap-timepicker timepicker">
+                                    <input type="text" class="form-control"
+                                           data-bind="timePickerMoment: end, timePickerOptions: {
+                                                          locale: 'en-US', format: 'HH:mm', minuteStep: 15,
+                                                          showMeridian: false, explicitMode: true,
+                                                          defaultTime: false }, asString: true, widget: eWidget,
+                                                          attr: { 'name': 'Schedules['+ $index() +'].EndTime' }" />
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                    </span>
+                                </div>
+
+                                <div class="input-group input-group-sm bootstrap-timepicker timepicker" data-bind="visible: enableBreak" style="margin-top: 5px;">
+                                    <input type="text" class="form-control"
+                                           data-bind="timePickerMoment: breakEnd, timePickerOptions: {
+                                                          locale: 'en-US', format: 'HH:mm', minuteStep: 15,
+                                                          showMeridian: false, explicitMode: true,
+                                                          defaultTime: false }, asString: true, widget: b1EWidget,
+                                                          attr: { 'name': 'Schedules['+ $index() +'].BreakEnd' }" />
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                    </span>
+                                </div>
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <div class="">
+                                    <div class="col-sm-12" style="padding: 0;">
+                                        <span data-bind="text: totalHours() + ' Hrs'"></span>
+                                    </div>
+                                    <div class="btn-group col-sm-12" data-bind="visible: (start && end)" style="padding: 0;">
+                                        <button type="button" class="btn btn-xs btn-danger" data-bind="click: clear">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-primary" data-bind="click: addBreak, visible: enableBreak() == false">
+                                            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-primary" data-bind="click: removeBreak, visible: enableBreak() == true">
+                                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                        </button>
+                                        <!-- ko if: $index() < 6 -->
+                                        <button type="button" class="btn btn-xs btn-success"
+                                                data-bind="click: $parent.copyNext">
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                        </button>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() > 0 -->
+                                        <button type="button" class="btn btn-xs btn-warning"
+                                                data-bind="click: $parent.copyPrevious">
+                                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+                                        </button>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-horizontal row">
+                <div class="col-sm-12">
+                    <h4 class="pull-right" style="display: flex; margin-bottom: 0;">
+                        Total Hours: <span class="label" data-bind="text: totalHours, css: totalHoursCss" style="margin-left: 5px;"></span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div id="tech_timeoff" class="tab-pane">
+            <table class="table table-striped" style="margin-bottom: 0;">
+                <colgroup>
+                    <col style="width: 50%;" />
+                    <col style="" />
+                    <col style="width: 15%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reason</th>
+                        <th>
+                            <button data-bind="click: addEntry" class="btn btn-xs btn-primary">Add</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: timeOffEntries">
+                    <tr data-bind="css: { errorRow: deleteInd }">
+                        <td>
+                            <input type="hidden" data-bind="value: timeOffEntryId, attr: { 'name': 'TimeOffEntries[' + $index() + '].TimeOffEntryId' }" />
+                            <input type="hidden" data-bind="value: deleteInd, attr: { 'name': 'TimeOffEntries[' + $index() + '].Deleted' }" />
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <b style="line-height: 2.3em;" class="col-sm-3">From: </b>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" data-bind="dateTimePicker: startDate, dateTimePickerOptions: { widget: sWidget }, attr: { 'name': 'TimeOffEntries[' + $index() + '].StartDate', readonly: readOnly }" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <b style="line-height: 2.3em;" class="col-sm-3">To: </b>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" data-bind="dateTimePicker: endDate, dateTimePickerOptions: { minDate: startDate, widget: eWidget }, attr: { 'name': 'TimeOffEntries[' + $index() + '].EndDate', readonly: readOnly }" />
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <textarea data-bind="value: reason, attr: { 'name': 'TimeOffEntries[' + $index() + '].Reason', readonly: readOnly }" class="form-control" style="resize: none;" rows="3"></textarea>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- ko if: deleteInd() == false && readOnly() -->
+                                <button type="button" class="btn btn-xs btn-warning" data-bind="click: edit">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                </button>
+                                <!-- /ko -->
+                                <!-- ko if: deleteInd() == false -->
+                                <button type="button" class="btn btn-xs btn-danger" data-bind="click: $parent.remove">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                                <!-- /ko -->
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @if (!Model?.ShouldCreate ?? false)
+        {
+            <div id="attachments" class="tab-pane">
+                @Html.UploadControl(UploadType.TechnicianProfiles, Model.UserGuid.ToString(), "Profile Attachments")
+            </div>
+            if (canViewNotes)
+            {
+                <div id="notes" class="tab-pane">
+                    @Html.NoteControl(NoteType.TechProfile, Model.UserGuid.ToString(), "Profile Notes")
+                </div>
+            }
+            <div id="tech_reports" class="tab-pane">
+                <div id="requests" class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-offset-1 col-sm-11" id="techReportsGridSearch">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="overflow-y: auto;">
+                        <div style="min-width: 540px;">
+                            <table id="reports-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="requestId" data-identifier="true" data-width="100">Request Id</th>
+                                        <th data-column-id="repairId" data-width="100">Repair Id</th>
+                                        <th data-column-id="shopName">Shop Name</th>
+                                        <th data-column-id="vehicleMakeName">Make</th>
+                                        <th data-column-id="vehicleModelName">Model</th>
+                                        <th data-column-id="vehicleYear">Year</th>
+                                        <th data-column-id="reportMenu" data-visible-in-selection="false" data-formatter="reportMenu" data-sortable="false" data-align="center" data-width="80"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model?.Reports ?? new List<ITechReportDto>())
+                                    {
+                                        <tr>
+                                            <td>@item.RequestId</td>
+                                            <td>@item.RepairId</td>
+                                            <td>@item.ShopName</td>
+                                            <td>@item.VehicleMakeName</td>
+                                            <td>@item.VehicleModelName</td>
+                                            <td>@item.VehicleYear</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script src="~/Scripts/knockout/knockout-dateTimePicker.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var schedules = @Html.Raw(JsonConvert.SerializeObject(Model?.Schedules));
+        var timeOffEntries = @Html.Raw(JsonConvert.SerializeObject(Model?.TimeOffEntries));
+
+        window.scheduleViewModel = new TechnicianScheduleViewModel(schedules);
+        window.technicianTimeOffViewModel = new TechnicianTimeOffViewModel(timeOffEntries);
+
+        ko.applyBindings(scheduleViewModel, $('#tech_schedule')[0]);
+        ko.applyBindings(technicianTimeOffViewModel, $('#tech_timeoff')[0]);
+
+        $("#reports-grid").bootgrid({
+            rowCount: [10, 25, 50],
+            caseSensitive: false,
+            searchSettings: {
+                delay: 500,
+                characters: 1
+            },
+            ajax: false,
+            formatters: {
+                "reportMenu": function(column, row) {
+                    return reportMenu(row.requestId, row.completedInd);
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid",
+            function(e) {
+                var children = $("#reports-grid-footer .row").children();
+                $(children[0]).removeClass("col-sm-6");
+                $(children[1]).removeClass("col-sm-6");
+
+                $(children[0]).addClass("col-sm-7");
+                $(children[1]).addClass("col-sm-5");
+            });;
+        
+        $('#reports-grid-header').appendTo('#techReportsGridSearch');
+        $('.panel-heading .btn-group').addClass('btn-group-sm');
+        $('.panel-heading .input-group').addClass('input-group-sm');
+        $("#reports-grid-footer .pagination .button").addClass("btn-sm");
+
+        function reportMenu(requestId, completedInd) {
+            var menu = '<div class="btn-group btn-group-sm pull-right" role="group">';
+
+            menu += '<a href="@Url.Action("ScanReport", "Download", new { area = "" })/' + requestId +'" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Download"><i class="glyphicon glyphicon-file"></i></a>';
+
+            menu += '<a href="@Url.Action("Report", "Request", new { area = "" })/' + requestId + '" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" target="_blank"><i class="glyphicon glyphicon-edit"></i></a>';
+
+            menu += '</div>';
+
+            return menu;
+        }
+    });
+</script>

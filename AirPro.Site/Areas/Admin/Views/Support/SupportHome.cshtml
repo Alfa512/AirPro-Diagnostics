@@ -1,0 +1,154 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+
+@{
+    ViewBag.Title = "Support Home";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="alert alert-success" id="move-request-alert" style="display: none; font-size: 16px;" role="alert">
+    <i class="glyphicon glyphicon-ok"></i>&nbsp;Move Successful.
+</div>
+<div class="alert alert-success" id="change-vin-alert" style="display: none; font-size: 16px;" role="alert">
+    <i class="glyphicon glyphicon-ok"></i>&nbsp;Change VIN Successful.
+</div>
+
+<hr />
+
+@if (User.IsInRole(ApplicationRoles.SupportMoveRequest.ToString()))
+{
+    <h4><a href="#" class="move-request-btn">Request Move</a></h4>
+
+    <p>
+        This function allows you to move a Request to a different Repair.
+    </p>
+
+    <hr />
+
+    <div class="modal fade" id="moveRequestModal" tabindex="-1" role="dialog" aria-labelledby="moveRequestModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="moveRequestModalLabel">Request Move</h4>
+                </div>
+                <div class="modal-body" id="moveRequestModalBody">
+                    Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                    <button type="submit" class="btn btn-primary perfom-move-request-btn" @Html.DisableOnAjax(DisableButtonType.Submit, "Moving")>Move</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole(ApplicationRoles.SupportChangeRepairVin.ToString()))
+{
+    <h4><a href="#" class="change-vin-btn">Change Repair VIN</a></h4>
+
+    <p>
+        This function allows you to change a VIN number on a Repair.
+    </p>
+
+    <hr />
+
+    <div class="modal fade" id="changeVinModal" tabindex="-1" role="dialog" aria-labelledby="changeVinModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @Html.DisableOnAjax(DisableButtonType.Dismiss, string.Empty)><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="changeVinModalLabel">Change Repair VIN</h4>
+                </div>
+                <div class="modal-body" id="changeVinModalBody">
+                    Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @Html.DisableOnAjax(DisableButtonType.Cancel, "Close")>Close</button>
+                    <button type="submit" class="btn btn-primary perfom-change-vin-btn" @Html.DisableOnAjax(DisableButtonType.Submit, "Changing")>Change</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/admin/inventory/js")
+
+    <script>
+        $('.move-request-btn').on('click', function () {
+            $('#moveRequestModal').modal('show');
+            var url = '@Url.Action("ManageRequestMove", "Support")';
+            loadModal(url, '#moveRequestModalBody', '#moveRequestModal');
+        });
+
+        $('.perfom-move-request-btn').on('click', function () {
+            var requestId = $('.move-request-selected-requestid').val();
+            var repairId = $('.move-request-selected-repairid').val();
+            if (!requestId || !repairId || !$.isNumeric(requestId) || !$.isNumeric(repairId) || $('#repairDetails').css('display') === "none" || $('#requestDetails').css('display') === "none") {
+                alert('Please enter a valid Request Id and Repair Id!');
+                return;
+            }
+
+            $.post('@Url.Action("ManageRequestMove", "Support")', { requestId: requestId, repairId: repairId }).then(function () {
+                $('#moveRequestModal').modal('hide');
+                $('#move-request-alert').show();
+                $('#move-request-alert').fadeTo(2000, 500).slideUp(500,
+                    function () {
+                        $('#move-request-alert').slideUp(500);
+                    });
+            }).fail(function (err) {
+                console.log(err.message);
+                alert('There was an error contacting the server, please refresh the page and try again.');
+                $('#moveRequestModal').modal('hide');
+            });
+        });
+
+        $('.change-vin-btn').on('click', function () {
+            $('#changeVinModal').modal('show');
+            var url = '@Url.Action("ManageVinChange", "Support")';
+            loadModal(url, '#changeVinModalBody', '#changeVinModal');
+        });
+
+        $('.perfom-change-vin-btn').on('click', function () {
+            var newVIN = $('.change-request-selected-newVIN').val();
+            var repairId = $('.change-request-selected-oldRepairId').val();
+            if (!newVIN || !repairId || $('#repairDetails').css('display') === "none" || $('#requestDetails').css('display') === "none") {
+                alert('Please enter a valid Repair Id and New VIN!');
+                return;
+            }
+
+            $.post('@Url.Action("ManageVinChange", "Support")', { newVIN: newVIN, oldRepairId: repairId }).then(function (res) {
+                if (res.success) {
+                    $('#changeVinModal').modal('hide');
+                    $('#change-vin-alert').show();
+                    $('#change-vin-alert').fadeTo(2000, 500).slideUp(500,
+                        function () {
+                            $('#change-vin-alert').slideUp(500);
+                        });
+                } else {
+                    console.log(res.message);
+                    alert(res.message);
+                }
+            }).fail(function (err) {
+                console.log(err.message);
+                alert('There was an error contacting the server, please refresh the page and try again.');
+                $('#changeVinModal').modal('hide');
+            });
+        });
+
+        function loadModal(url, bodySelector, modalSelector) {
+            $.get({ url: url, cache: false },
+                    function (data) {
+                        $(bodySelector).html(data);
+                    })
+                .fail(function (err) {
+                    console.log(err.message);
+                    alert('There was an error contacting the server, please refresh the page and try again.');
+                    $(modalSelector).modal('hide');
+                });
+        }
+    </script>
+}

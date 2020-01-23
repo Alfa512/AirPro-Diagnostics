@@ -1,0 +1,177 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    #repairInfoCnt {
+        margin-top: 15px;
+    }
+</style>
+
+<div data-bind="allowBindings: false" id="move-request-cnt">
+    <div class="form-horizontal">
+        <div class="panel panel-primary" id="requestInfo">
+            <div class="panel-heading">
+                <h4 class="panel-title">Request Info</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row form-group">
+                    <label for="RequestId" class="control-label col-md-3">Request Id</label>
+                    <div class="col-md-9">
+                        <input name="RequestId" type="text" class="form-control move-request-selected-requestid" data-bind="value: requestId, valueUpdate: 'keyup'" />
+                    </div>
+                </div>
+
+                <div class="text-center" data-bind="visible: !requestDetails() && delayedRequestId() && !searchingRequest()">
+                    Request Not Found!
+                </div>
+
+                <div class="text-center" data-bind="visible: !requestDetails() && searchingRequest()">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+
+                <div id="requestDetails" data-bind="visible: requestDetails, with: requestDetails">
+                    <div class="row form-group">
+                        <label for="RequestStatus" class="control-label col-md-3">Status</label>
+                        <div class="col-md-9">
+                            <input name="RequestStatus" type="text" class="form-control" data-bind="value: repairStatusName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="RequestCategory" class="control-label col-md-3">Category</label>
+                        <div class="col-md-9">
+                            <input name="RequestCategory" type="text" class="form-control" data-bind="value: requestCategoryName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="RequestType" class="control-label col-md-3">Type</label>
+                        <div class="col-md-9">
+                            <input name="RequestType" type="text" class="form-control" data-bind="value: requestTypeName" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="repairInfoCnt" class="form-horizontal">
+        <div class="panel panel-primary" id="repairInfo">
+            <div class="panel-heading">
+                <h4 class="panel-title">Repair Info</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row form-group">
+                    <label for="RepairId" class="control-label col-md-3">Repair Id</label>
+                    <div class="col-md-9">
+                        <input name="RepairId" type="text" class="form-control move-request-selected-repairid" data-bind="value: repairId, valueUpdate: 'keyup'" />
+                    </div>
+                </div>
+
+                <div class="text-center" data-bind="visible: !repairDetails() && delayedRepairId() && !searchingRepair()">
+                    Repair Not Found!
+                </div>
+
+                <div class="text-center" data-bind="visible: !repairDetails() && searchingRepair()">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+
+                <div id="repairDetails" data-bind="visible: repairDetails, with: repairDetails">
+                    <div class="row form-group">
+                        <label for="RepairStatusName" class="control-label col-md-3">Repair Status</label>
+                        <div class="col-md-9">
+                            <input name="RepairStatusName" type="text" class="form-control" data-bind="value: repairStatusName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="ShopName" class="control-label col-md-3">Shop Name</label>
+                        <div class="col-md-9">
+                            <input name="ShopName" type="text" class="form-control" data-bind="value: shopName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="ShopRONumber" class="control-label col-md-3">Shop RO</label>
+                        <div class="col-md-9">
+                            <input name="ShopRONumber" type="text" class="form-control" data-bind="value: shopRONumber" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="VehicleMake" class="control-label col-md-3">Vehicle Make</label>
+                        <div class="col-md-9">
+                            <input name="VehicleMake" type="text" class="form-control" data-bind="value: vehicleMake" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="VehicleModel" class="control-label col-md-3">Vehicle Model</label>
+                        <div class="col-md-9">
+                            <input name="VehicleModel" type="text" class="form-control" data-bind="value: vehicleModel" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="VehicleYear" class="control-label col-md-3">Vehicle Year</label>
+                        <div class="col-md-9">
+                            <input name="VehicleYear" type="text" class="form-control" data-bind="value: vehicleYear" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    ko.bindingHandlers.allowBindings = {
+        init: function(elem, valueAccessor) {
+            // Let bindings proceed as normal *only if* my value is false
+            var shouldAllowBindings = ko.unwrap(valueAccessor());
+            return { controlsDescendantBindings: !shouldAllowBindings };
+        }
+    };
+
+    $(document).ready(function() {
+        var model = new MoveRequestModel();
+        var control = document.getElementById('move-request-cnt');
+        ko.applyBindingsToDescendants(model, control);
+    });
+
+    var MoveRequestModel = function() {
+        var self = this;
+        self.requestId = ko.observable();
+        self.repairId = ko.observable();
+        self.delayedRequestId = ko.pureComputed(self.requestId)
+            .extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 700 } });
+        self.delayedRepairId = ko.pureComputed(self.repairId)
+            .extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 700 } });
+
+        self.requestDetails = ko.observable();
+        self.repairDetails = ko.observable();
+
+        self.searchingRepair = ko.observable();
+        self.searchingRequest = ko.observable();
+
+        self.delayedRequestId.subscribe(function (val) {
+            self.searchingRequest(true);
+            self.requestDetails(false);
+            $.post('@Url.Action("GetRequestDetails", "Support", new {area = ""})', { id: val }).then(function (response) {
+                self.requestDetails(response);
+                self.searchingRequest(false);
+            }).catch(function (err) { self.searchingRequest(false); });
+                    }, this);
+        self.delayedRepairId.subscribe(function (val) {
+            self.repairDetails(false);
+            self.searchingRepair(true);
+            $.post('@Url.Action("GetRepairDetails", "Support", new {area = ""})', { id: val }).then(function (response) {
+                self.repairDetails(response);
+                self.searchingRepair(false);
+
+            }).catch(function (err) { self.searchingRepair(false); });
+                    }, this);
+
+        };
+</script>

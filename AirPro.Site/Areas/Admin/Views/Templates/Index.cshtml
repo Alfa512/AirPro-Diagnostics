@@ -1,0 +1,30 @@
+﻿@model IEnumerable<AirPro.Library.Models.Concrete.TemplateEditViewModel>
+@using GridMvc.Html
+
+@{
+    ViewBag.Title = "Notification Templates";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Name).Titled("Template Name").Sortable(true);
+    columns.Add(x => x.UpdatedBy).Titled("Updated By").Sortable(true);
+    columns.Add(x => x.UpdatedDt).Titled("Updated Date").Sortable(true);
+    columns.Add().Encoded(false).Sanitized(false).Titled("").SetWidth(60).RenderValueAs(x => (TemplateMenu(x.TemplateID.ToString()))).Filterable(false);
+}).WithPaging(25).Filterable(true)
+
+@helper TemplateMenu(string templateId)
+{
+    <div class='btn-group btn-group-sm' role='group'>
+        @*<a href='@Url.Action("Details", "Templates", new { ID = templateId })' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='View Template'><i class='glyphicon glyphicon-info-sign'></i></a>*@
+        <a href='@Url.Action("Edit", "Templates", new { ID = templateId })' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Edit'><i class='glyphicon glyphicon-edit'></i></a>
+    </div>
+}
+
+@section Scripts{
+    
+}

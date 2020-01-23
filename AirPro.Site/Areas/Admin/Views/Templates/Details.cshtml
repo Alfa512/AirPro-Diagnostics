@@ -1,0 +1,60 @@
+﻿@model AirPro.Library.Models.Concrete.TemplateEditViewModel
+
+@{
+    ViewBag.Title = "Template Preview";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fields)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fields)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmailBody)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmailBody)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedDt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedDt)
+        </dd>
+
+    </dl>
+</div>
+<hr />
+
+<p>
+    @AirPro.Site.Helpers.Buttons.BackButton()
+    &nbsp;
+    @AirPro.Site.Helpers.Buttons.EditButton(new { id = Model.TemplateID })
+</p>

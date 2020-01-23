@@ -1,0 +1,79 @@
+﻿@model AirPro.Site.Models.Home.SignatureGeneratorViewModel
+
+@{
+    ViewBag.Title = "API Signature Generator";
+
+    var signature = Model?.ApiSignature ?? string.Empty;
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            @ViewBag.Title
+        </h3>
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApiKey, new { @class = "control-label col-sm-2" })
+                    <div class="col-sm-10">
+                        @Html.EditorFor(model => model.ApiKey, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ApiKey, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApiUrl, new { @class = "control-label col-sm-2" })
+                    <div class="col-sm-10">
+                        @Html.EditorFor(model => model.ApiUrl, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ApiUrl, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApiBodyText, new { @class = "control-label col-sm-2" })
+                    <div class="col-sm-10">
+                        @Html.EditorFor(model => model.ApiBodyText, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ApiBodyText, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-cog"></i>&nbsp;Generate</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="signatureModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Generated Signature
+                </h4>
+            </div>
+            <div class="modal-body">
+                <span id="signature" style="font-weight: bold;"></span>
+            </div>
+            <div class="modal-footer">
+                <a style="cursor: pointer" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var sig = '@signature';
+        $(document).ready(function () {
+            if (sig.length > 0) {
+                $('#signature').text(sig);
+                $('#signatureModal').modal('show');
+            }
+        });
+    </script>
+}

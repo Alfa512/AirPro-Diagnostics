@@ -1,0 +1,396 @@
+﻿
+@{
+    ViewBag.Title = "System Dashboard";
+}
+
+@Scripts.Render("~/chart/js")
+
+<h2>@ViewBag.Title</h2>
+
+<hr/>
+
+<style>
+    .reporting .panel-heading {
+        padding: 0;
+        min-height: 37px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .reporting .title {
+        padding-top: 9px;
+    }
+
+    .bootstrap-datetimepicker-widget {
+        color: black !important;
+    }
+
+    .pieScansByType-nodata, .pieRepairsByStatus-nodata {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -81px;
+        margin-top: -12px;
+    }
+
+    .relative {
+        position: relative;
+    }
+
+    .input-sm {
+        margin-top: 3px;
+    }
+</style>
+
+<div class="panel panel-primary reporting">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <div class="row">
+                <div class="col-md-6 title">Today's Overview</div>
+
+
+                <div class="col-md-3">
+                    <input type="text" id="today-date-filter" class="form-control input-sm" placeholder="Date" />
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownList("today-shop-filter", ViewBag.ShopList as List<SelectListItem>, "All Shops", new { @class = "form-control input-sm" })
+                </div>
+            </div>
+        </h4>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-6 relative">
+                <canvas id="pieScansByType"></canvas>
+                <h3 class="pieScansByType-nodata hide">No Data Found</h3>
+            </div>
+            <div class="col-sm-6 relative">
+                <canvas id="pieRepairsByStatus"></canvas>
+                <h3 class="pieRepairsByStatus-nodata hide">No Data Found</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Hiding Historical Trending per Request APD-2198.
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a id="chartDownload" class="btn btn-success btn-sm pull-right" style="position: relative; bottom: 6px; margin-left: 5px; display: none;" download="TrendChart.jpg"><i class="fa fa-download"></i></a>
+            <button class="btn btn-default btn-sm pull-right" style="position: relative; bottom: 6px" onclick="loadTrendChart();"><i class="fa fa-refresh"></i></button>
+            Historical Trending
+        </h4>
+    </div>
+    <div class="panel-body">
+        <div class="row" style="padding-bottom: 10px;">
+            <div class="col-md-3">
+                <select id="dimension" class="form-control">
+                    <option value="type" selected="selected">Scans by Type</option>
+                    <option value="tech">Scans by Tech</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="metric" class="form-control">
+                    <option value="count" selected="selected">Count</option>
+                    <option value="cycle">Cycle Time (Avg Mins)</option>
+                    <option value="invoice">Invoiced Total</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="timeframe" class="form-control">
+                    <option value="week" selected="selected">Last Week</option>
+                    <option value="month">Last Month</option>
+                    <option value="year">Last Year</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                @Html.DropDownList("shop", ViewBag.ShopList as List<SelectListItem>, "All Shops", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <canvas id="chartTrending" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+*@
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadRepairsByStatus();
+        loadScansByType();
+        @*loadTrendChart();*@
+
+        hub.on('scanRequestCreated',
+                function () {
+                    loadScansByType();
+                })
+            .on('scanRequestCompleted',
+                function () {
+                    loadScansByType();
+                })
+            .on('repairCreated',
+                function () {
+                    loadRepairsByStatus();
+                })
+            .on('repairCompleted',
+                function () {
+                    loadRepairsByStatus();
+                })
+            .on('invoiceCompleted',
+                function () {
+                    loadRepairsByStatus();
+                });
+        @*
+        $('#dimension').on('change',
+            function() {
+                loadTrendChart();
+            });
+
+        $('#metric').on('change',
+            function() {
+                loadTrendChart();
+            });
+
+        $('#timeframe').on('change',
+            function() {
+                loadTrendChart();
+            });
+
+        $('#shop').on('change',
+            function() {
+                loadTrendChart();
+            });
+        *@
+    });
+
+    var pieRepairsByStatus = new Chart($("#pieRepairsByStatus"),
+        {
+            type: 'pie',
+            options: {
+                title: {
+                    display: true,
+                    position: 'top',
+                    text: 'Repairs By Status',
+                    fontSize: 15
+                },
+                legend: {
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        generateLabels: function (chart) {
+                            return generateLegend(chart);
+                        },
+                        fontSize: 14,
+                        fontStyle: 'bold'
+                    }
+
+                },
+                cutoutPercentage: 50
+            }
+        });
+
+    var pieScansByType = new Chart($("#pieScansByType"),
+        {
+            type: 'pie',
+            options: {
+                title: {
+                    display: true,
+                    position: 'top',
+                    text: 'Scans By Type',
+                    fontSize: 15
+                },
+                legend: {
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        generateLabels: function (chart) {
+                            return generateLegend(chart);
+                        },
+                        fontSize: 14,
+                        fontStyle: 'bold'
+                    }
+                },
+                cutoutPercentage: 50
+            }
+        });
+
+    @*
+    var chartTrending = new Chart($('#chartTrending'), {
+        type: 'line',
+        options: {
+            fill: false,
+            responsive: true,
+            legend: {
+                display: true,
+                position: 'bottom',
+            },
+            elements: {
+                line: {
+                    tension: 0,
+                    fill: false
+                }
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'day'
+                    },
+                    bounds: 'data'
+                }],
+                yAxes: [{
+                    min: 0
+                }]
+            },
+            animation: {
+                onComplete: trendChartImage
+            }
+        }
+    });
+    *@
+
+    function loadRepairsByStatus() {
+        $.post('@Url.Action("RepairsByStatus")' + getQueryForTodayCharts())
+            .done(function (data) {
+                pieRepairsByStatus.data = data;
+                pieRepairsByStatus.update();
+
+                if (data.datasets && data.datasets[0].data.length > 0) {
+                    $('.pieRepairsByStatus-nodata').addClass('hide');
+                } else {
+                    $('.pieRepairsByStatus-nodata').removeClass('hide');
+                }
+            });
+    }
+
+    function loadScansByType() {
+        $.post('@Url.Action("ScansByType")' + getQueryForTodayCharts())
+            .done(function (data) {
+                pieScansByType.data = data;
+                pieScansByType.update();
+                if (data.datasets && data.datasets[0].data.length > 0) {
+                    $('.pieScansByType-nodata').addClass('hide');
+                } else {
+                    $('.pieScansByType-nodata').removeClass('hide');
+                }
+            });
+    }
+
+    function getQueryForTodayCharts() {
+        var query = '?shop=' + $('#today-shop-filter').val() + '&date=' + $('#today-date-filter').val();
+
+        return query;
+    }
+
+    @*
+    function loadTrendChart() {
+        $('#chartDownload').css('display', 'none');
+        var query = '?shop=' + $('#shop').val()
+            + '&timeframe=' + $('#timeframe').val()
+            + '&metric=' + $('#metric').val()
+            + '&dimension=' + $('#dimension').val();
+        $.post('@Url.Action("TrendChart")' + query)
+            .done(function (data) {
+                $.each(data.datasets,
+                    function () {
+                        var r = Math.floor(Math.random() * 255);
+                        var g = Math.floor(Math.random() * 255);
+                        var b = Math.floor(Math.random() * 255);
+                        this.borderColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+                        this.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+                    });
+                chartTrending.data = data;
+                chartTrending.update();
+            });
+    }
+
+    function trendChartImage() {
+        var url = document.getElementById('chartTrending').toDataURL('image/png').replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
+        $('#chartDownload').attr('href', url).css('display', '');
+    }
+    *@
+
+    Chart.pluginService.register({
+        afterDatasetUpdate: function (chart) {
+            if (chart.config.type === 'pie') {
+                var total = 0;
+                chart.data.datasets.forEach(function(e, i) {
+                    var meta = chart.getDatasetMeta(i);
+                    $.each(meta.data,
+                        function () {
+                            if (!this.hidden) {
+                                total += parseInt(chart.data.datasets[i].data[this._index]);
+                            }
+                        });
+                });
+                chart.options.centertext = total;
+            }
+        },
+        beforeDraw: function (chart) {
+            if (chart.options.centertext) {
+                var width = chart.chart.width - chart.legend.width,
+                    height = chart.chart.height + chart.titleBlock.height,
+                    ctx = chart.chart.ctx;
+
+                ctx.restore();
+                var fontSize = (height / 114).toFixed(2);
+                ctx.font = fontSize + "em sans-serif";
+                ctx.textBaseline = "middle";
+
+                var text = chart.options.centertext,
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = height / 2;
+
+                ctx.fillText(text, textX, textY);
+                ctx.save();
+            }
+        }
+    });
+
+    function reloadTodayCharts() {
+        loadScansByType();
+    }
+
+    function generateLegend(chart) {
+        var data = chart.data;
+        if (data.labels.length && data.datasets.length) {
+            return data.labels.map(function (label, i) {
+                var meta = chart.getDatasetMeta(0);
+                var ds = data.datasets[0];
+                var arc = meta.data[i];
+                var custom = arc && arc.custom || {};
+                var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                var arcOpts = chart.options.elements.arc;
+                var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+
+                return {
+                    text: label + " (" + value + ")",
+                    fillStyle: fill,
+                    strokeStyle: stroke,
+                    lineWidth: bw,
+                    hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                    index: i
+                };
+            });
+        } else {
+            return [];
+        }
+    }
+
+    $('#today-date-filter').datetimepicker({
+        format: 'MM/DD/YYYY',
+        maxDate: new Date()
+    });
+    $('#today-shop-filter').on('change', function() {
+        reloadTodayCharts();
+    });
+    $('#today-date-filter').on('dp.change', function () {
+        reloadTodayCharts();
+    })
+</script>

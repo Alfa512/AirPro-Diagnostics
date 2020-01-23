@@ -1,0 +1,134 @@
+﻿@model AirPro.Site.Areas.Admin.Models.TechProfile.TechnicianCoverageViewModel
+
+<style type="text/css">
+    .header-controls {
+        margin-bottom: 15px;
+    }
+
+    #techCoverageTable td, #techCoverageTable th {
+        padding: 4px;
+    }
+
+    .coverage-success {
+        color: white;
+        background-color: green;
+    }
+
+    .coverage-warning {
+        background-color: yellow;
+    }
+
+    .coverage-danger {
+        color: white;
+        background-color: red;
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 640px;
+        }
+    }
+
+    .hour-limit-column-width {
+        width: 65px;
+        text-align: center;
+    }
+
+    #techCoverageTable td {
+        line-height: 26px;
+    }
+
+    #techCoverageTable input[type=number] {
+        height: 26px;
+    }
+</style>
+
+<div class="form-horizontal table-responsive">
+    <table id="techCoverageTable" class="table table-bordered" style="margin-bottom: 0;">
+        <thead>
+            <tr>
+                <th class="hour-limit-column-width">
+                    Min
+                </th>
+                <th class="hour-limit-column-width">Desired</th>
+                <th></th>
+                @foreach (var item in Model.TechnicianCoverageHeader)
+                {
+                    <th class="text-center">@item</th>
+                }
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: scheduleDays">
+            @foreach (var item in Model.TechnicianCoverageCount)
+            {
+                <tr class="coverage-count-row">
+                    <td><input type="number" class="form-control input-sm min" value="@item.Min" /></td>
+                    <td><input type="number" class="form-control input-sm desired" value="@item.Desired" /></td>
+                    <td class="date">@item.Date</td>
+                    @foreach (var count in item.Count)
+                    {
+                        <td class="text-center" data-original-title="@count.Item2" data-container="body"
+                            data-toggle="tooltip" data-placement="top" data-html="true">
+                            @count.Item1
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    function refreshImportance() {
+
+        $("#techCoverageTable tbody td").each(function () {
+            var parent = $(this).parents(".coverage-count-row");
+            var min = parseInt(parent.find(".min").val());
+            var desired = parseInt(parent.find(".desired").val());
+            console.log(min);
+            console.log(desired);
+
+            var this$ = $(this).removeClass('coverage-danger coverage-warning coverage-success');
+
+            var val = parseInt(this$.text());
+            if ($.isNumeric(this$.text())) {
+                if (val <= min) {
+                    this$.addClass('coverage-danger');
+                } else if (val > min && val < desired) {
+                    this$.addClass('coverage-warning');
+                } else {
+                    this$.addClass('coverage-success');
+                }
+            }
+        });
+    }
+
+    function updatePreferences() {
+        var min = parseInt($("#min").val());
+        var desired = parseInt($("#desired").val());
+        var reqByHour = {};
+
+        $(".coverage-count-row").each(function (e, index) {
+            var date = $(this).find(".date").text();
+            var min = $(this).find(".min").val();
+            var desired = $(this).find(".desired").val();
+            reqByHour[date] = { min: min, desired: desired };
+        });
+
+        $.post('@Url.Action("UpdateCoveragePreferences")', { min: min, desired: desired, reqByHour: reqByHour });
+    }
+
+    $("#min, #desired, .min, .desired").keyup(refreshImportance);
+
+
+    $("#min, #desired, .min, .desired").change(function () {
+        updatePreferences();
+        refreshImportance();
+    });
+
+    refreshImportance();
+    $("body").tooltip({
+        selector: '[data-toggle="tooltip"]',
+        container: 'body'
+    });
+
+</script>

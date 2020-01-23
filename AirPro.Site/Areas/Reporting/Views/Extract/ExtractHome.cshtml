@@ -1,0 +1,148 @@
+﻿@using AirPro.Common.Enumerations
+@using AirPro.Site.Helpers
+@model AirPro.Site.Areas.Reporting.Models.Extract.GenerateExtractViewModel
+
+@{
+    ViewBag.Title = "Data Extract";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css"/>
+
+<style type="text/css">
+    .row {
+        margin-top: 5px;
+    }
+
+    .well {
+        padding: 10px;
+    }
+</style>
+
+@if ((ViewBag?.FieldList?.Count ?? 0) > 0)
+{
+    using (Html.BeginForm("Index", "Extract", FormMethod.Post, new { @id = "frmReport", Area = "Reporting" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Build Report
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        @Html.LabelFor(m => m.AccountGuid)
+                        @Html.DropDownListFor(m => m.AccountGuid, ViewBag.AccountList as List<SelectListItem>, "All Accounts", new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.LabelFor(m => m.ShopGuid)
+                        @Html.DropDownListFor(m => m.ShopGuid, ViewBag.ShopList as List<SelectListItem>, "All Shops", new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.LabelFor(m => m.DateFieldFilter)
+                        @Html.DropDownListFor(m => m.DateFieldFilter, ViewBag.DateFieldList as List<SelectListItem>, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        @Html.LabelFor(m => m.RepairStatus)
+                        @Html.DropDownListFor(m => m.RepairStatus, ViewBag.RepairStatusList as List<SelectListItem>, "All Statuses", new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.LabelFor(m => m.RequestType)
+                        @Html.DropDownListFor(m => m.RequestType, SelectListItemCache.RequestTypeSelectItems()?.ToList(), "All Types", new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.LabelFor(m => m.StartDate)
+                        <div class="input-group">
+                            @Html.EditorFor(m => m.StartDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="$('#@Html.IdFor(m => m.StartDate)').focus();"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.LabelFor(m => m.EndDate)
+                        <div class="input-group">
+                            @Html.EditorFor(m => m.EndDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="$('#@Html.IdFor(m => m.EndDate)').focus();"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="pull-right"><a style="font-size: 12px" onclick="fieldsSelectAll();">Select All</a>&nbsp;|&nbsp;<a style="font-size: 12px" onclick="fieldsDeselectAll();">Deselect All</a></span>
+                        @Html.LabelFor(m => m.FieldList)
+                        @Html.MultiCheckBoxListFor(m => m.FieldList, ViewBag.FieldList as List<SelectListItem>, 3)
+                        @Html.ValidationMessageFor(m => m.FieldList, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="padding-top: 5px;">
+                    <div class="col-md-12">
+                        <button id="btnSubmit" class="btn btn-primary pull-right" type="submit" @Html.DisableOnSubmit(DisableButtonType.Submit, "Download Report")><i class="glyphicon glyphicon-cloud-download"></i>&nbsp;Download Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-danger" style="margin-top: 20px;">
+        Report Data has not been initialized, please wait for the scheduled job to run nightly or contact Support.
+    </div>
+}
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function ($) {
+        $('#@Html.IdFor(m => m.StartDate)').datepicker({
+            maxDate: new Date($('#@Html.IdFor(m => m.EndDate)').val()),
+            orientation: "bottom auto"
+        });
+
+        $('#@Html.IdFor(m => m.EndDate)').datepicker({
+            minDate: new Date($('#@Html.IdFor(m => m.StartDate)').val()),
+            orientation: 'bottom auto'
+        });
+
+        $('#@Html.IdFor(m => m.StartDate)').on('change',
+            function () {
+                $("#@Html.IdFor(m => m.EndDate)").datepicker("option", "minDate", new Date($(this).val()));
+            });
+
+        $('#@Html.IdFor(m => m.EndDate)').on('change',
+            function () {
+                $("#@Html.IdFor(m => m.StartDate)").datepicker("option", "maxDate", new Date($(this).val()));
+            });
+
+        if (!$('#@Html.IdFor(m => m.EndDate)').val()) {
+            $('#@Html.IdFor(m => m.EndDate)').val(moment().format('MM/DD/YYYY')).change();
+        }
+
+        if (!$('#@Html.IdFor(m => m.StartDate)').val()) {
+            $('#@Html.IdFor(m => m.StartDate)').val(moment().subtract(1, 'month').format('MM/DD/YYYY')).change();
+        }
+
+        $('#frmReport').submit(function () {
+            $('#btnSubmit').button('loading');
+        });
+    });
+
+    function fieldsSelectAll() {
+        $('.selectionList input[type=checkbox]').prop('checked', true);
+        return false;
+    }
+
+    function fieldsDeselectAll() {
+        $('.selectionList input[type=checkbox]').prop('checked', false);
+        return false;
+    }
+</script>

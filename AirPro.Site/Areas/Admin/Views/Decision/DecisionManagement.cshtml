@@ -1,0 +1,486 @@
+﻿@using AirPro.Common.Enumerations
+@{
+    ViewBag.Title = "Decision Management";
+}
+
+@section Styles {
+    <style>
+        .bootgrid-header {
+            margin: 0;
+        }
+
+        .bootgrid-header .actionBar {
+            padding: 0;
+        }
+
+        .panel-heading {
+            padding: 5px 10px;
+        }
+
+        .panel-title {
+            margin: 2px;
+            font-size: 20px;
+        }
+
+        .panel-title > .btn {
+            color: black;
+        }
+
+        .dropdown-item {
+            color: black;
+        }
+
+        a.column-header-anchor {
+            color: gray !important;
+            text-decoration: none;
+        }
+
+        td.text-left > ul {
+            padding-left: 10px;
+        }
+    </style>
+
+    <style>
+        /* Severity Options */
+        select.text-severity option[value="0"] {
+            background: white;
+            color: black;
+        }
+
+        .text-severity-success,
+        select.text-severity option[value="1"] {
+            background: #419641;
+            color: white;
+        }
+
+        .text-severity-warning, 
+        select.text-severity option[value="2"] {
+            background: #eb9316;
+            color: white;
+        }
+
+        .text-severity-danger,
+        select.text-severity option[value="3"] {
+            background: #c12e2a;
+            color: white;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        .validationMessage {
+            color: red;
+        }
+
+        #decision-modal .row {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #decision-modal .well {
+            padding: 0;
+            margin: 0;
+            background: white;
+        }
+
+        #decision-modal .table {
+            margin-bottom: 0;
+        }
+
+        .modal table tbody,
+        .modal table thead {
+            display: block;
+        }
+
+        .modal table tbody {
+            overflow-y: auto;
+            max-height: 194px;
+        }
+
+        .modal table th:nth-child(1),
+        .modal table th:nth-child(2) {
+            min-width: 30px;
+        }
+
+        .modal table td:nth-child(1),
+        .modal table td:nth-child(2) {
+            min-width: 40px;
+        }
+
+        table th:nth-child(3), td:nth-child(3) {
+            width: 100%;
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+<div id="decision-management" class="panel panel-primary">
+    <div class="panel-heading">
+        <h4 class="panel-title pull-left">
+            <span style="position: relative; top: 2px;">Decisions</span>
+            <button class="btn btn-default btn-sm" style="margin-left: 20px; display: none;" data-bind="visible: allowEdit()" onclick="loadDecision(0)"><i class="glyphicon glyphicon-plus"></i>Add Decision</button>
+        </h4>
+    </div>
+    <div style="overflow-y: auto;">
+        <div style="min-width: 700px;">
+            <table id="decisions-grid" class="table table-condensed table-hover table-striped table-responsive" data-toggle="bootgrid" data-ajax="true">
+                <thead>
+                    <tr>
+                        <th data-column-id="decisionId" data-identifier="true" data-visible="true" data-visible-in-selection="true" data-width="125">Decision ID</th>
+                        <th data-column-id="decisionText">Decision Text</th>
+                        <th data-column-id="activeInd" data-width="75" data-align="center" data-header-align="center" data-converter="bool">Active</th>
+                        <th data-column-id="createdByUserDisplay" data-visible="false">Created By</th>
+                        <th data-column-id="createdDt" data-converter="date" data-visible="false">Created Date</th>
+                        <th data-column-id="updatedByUserDisplay" data-visible="false">Updated By</th>
+                        <th data-column-id="updatedDt" data-converter="date" data-visible="false">Updated Date</th>
+                        <th data-column-id="decisionMenu" data-visible-in-selection="false" data-formatter="decisionMenu" data-sortable="false" data-align="center" data-width="45"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="decision-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Decision Manage</h4>
+            </div>
+            <div class="modal-body" data-bind="with: decisionManageViewModel">
+                <div data-bind="with: updateResult">
+                    <div class="alert" data-bind="css: { 'alert-success': success(), 'alert-danger': !success() }">
+                        <span data-bind="text: message"></span>
+                    </div>
+                </div>
+                <div class="row" data-bind="visible: decisionId() > 0">
+                    <div class="col-sm-4">
+                        <label>Decision Id</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <span data-bind="text: decisionId"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Decision Text</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <textarea data-bind="textInput: decisionText, enable: $root.allowEdit()" class="form-control" placeholder="Enter Decision Text"></textarea>
+                        <span data-bind='visible: decisionText.hasError, text: decisionText.validationMessage'> </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Severity</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select class="form-control text-severity" data-bind="value: defaultTextSeverity, css: defaultTextSeverityCss">
+                            @foreach (var s in Enum.GetValues(typeof(ReportTextSeverity)))
+                            {
+                                <option value="@Convert.ToInt32(s)">@s</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Vehicle Makes</label>
+                        <div>
+                            <a data-bind="click: selectAllVehicleMakes">Select All</a> |
+                            <a data-bind="click: deselectAllVehicleMakes">Deselect All</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="well">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Sel
+                                        </th>
+                                        <th class="text-center">
+                                            Def
+                                        </th>
+                                        <th>
+                                            Vehicle Make
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: { data: vehicleMakes, as: 'vm' }">
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: vm.selectedInd, enable: $root.allowEdit()" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: vm.preSelectedInd, enable: $root.allowEdit() && vm.selectedInd" />
+                                        </td>
+                                        <td data-bind="text: vm.vehicleMakeName"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Request Categories</label>
+                        <div>
+                            <a data-bind="click: selectAllRequestCategories">Select All</a> |
+                            <a data-bind="click: deselectAllRequestCategories">Deselect All</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="well">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Sel
+                                        </th>
+                                        <th class="text-center">
+                                            Def
+                                        </th>
+                                        <th>
+                                            Request Category
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: { data: requestCategories, as: 'rc' }">
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: rc.selectedInd, enable: $root.allowEdit()" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: rc.preSelectedInd, enable: $root.allowEdit() && rc.selectedInd" />
+                                        </td>
+                                        <td data-bind="text: rc.requestCategoryName"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Request Types</label>
+                        <div>
+                            <a data-bind="click: selectAllRequestTypes">Select All</a> |
+                            <a data-bind="click: deselectAllRequestTypes">Deselect All</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="well">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Sel
+                                        </th>
+                                        <th class="text-center">
+                                            Def
+                                        </th>
+                                        <th>
+                                            Request Type
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: { data: requestTypes, as: 'rt' }">
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: rt.selectedInd, enable: $root.allowEdit()" />
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" data-bind="checked: rt.preSelectedInd, enable: $root.allowEdit() && rt.selectedInd" />
+                                        </td>
+                                        <td data-bind="text: rt.requestTypeName"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Active</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="checkbox" data-bind="checked: activeInd, enable: $root.allowEdit()" />
+                    </div>
+                </div>
+                <div class="row" data-bind="visible: createdByUserDisplay()">
+                    <div class="col-sm-4">
+                        <label>Created</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <div data-bind="text: createdByUserDisplay"></div>
+                        <div data-bind="text: formatDateDisplay(createdDt())"></div>
+                    </div>
+                </div>
+                <div class="row" data-bind="visible: updatedByUserDisplay()">
+                    <div class="col-sm-4">
+                        <label>Updated</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <div data-bind="text: updatedByUserDisplay"></div>
+                        <div data-bind="text: formatDateDisplay(updatedDt())"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveDecision, visible: allowEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#decisions-grid-header').appendTo('#decision-management .panel-heading');
+            $('#decision-management .panel-title').appendTo('#decisions-grid-header .actionBar');
+
+            var DecisionManagementViewModel = function() {
+                var self = this;
+                self.allowEdit = ko.observable(@User.IsInRole(ApplicationRoles.DecisionManageEdit.ToString()).ToString().ToLower());
+                self.decisionManageViewModel = ko.observable(null);
+            };
+            window.decisionManagementViewModel = new DecisionManagementViewModel();
+            ko.applyBindings(window.decisionManagementViewModel);
+        });
+
+        $("#decisions-grid").bootgrid({
+            url: '@Url.Action("GetDecisionsByGridPage")',
+            rowCount: [10, 25, 50, 100],
+            searchSettings: {
+                delay: 500,
+                characters: 4
+            },
+            formatters: {
+                "decisionMenu": function (column, row) {
+                    @if (User.IsInRole(ApplicationRoles.DecisionManageEdit.ToString()))
+                    {
+                        <text>
+                            return '<button class="btn btn-warning btn-xs" onclick="loadDecision(' +
+                                row.decisionId +
+                                ')"><i class="glyphicon glyphicon-edit"></i></button>';
+                        </text>
+                    }
+                    else if (User.IsInRole(ApplicationRoles.DecisionManageView.ToString()))
+                    {
+                        <text>
+                            return '<button class="btn btn-info btn-xs" onclick="loadDecision(' +
+                                row.decisionId +
+                                ')"><i class="glyphicon glyphicon-info-sign"></i></button>';
+                        </text>
+                    }
+
+                }
+            },
+            converters: {
+                bool: {
+                    to: function(value) {
+                        return value
+                            ? "<i class='glyphicon glyphicon-ok-circle' style='color: green;'></i>"
+                            : "<i class='glyphicon glyphicon-remove-circle' style='color: red;'></i>";
+                    }
+                },
+                date: {
+                    to: function (value) { return formatDateDisplay(value); }
+                }
+            }
+        });
+
+        function formatDateDisplay(date) {
+            return moment(date, moment.HTML5_FMT.DATETIME_LOCAL_MS).format('MM/DD/YYYY h:mm:ss A');
+        }
+
+        var DecisionManageViewModel = function(data) {
+            var self = this;
+            ko.mapping.fromJS(data, {}, self);
+
+            self.decisionText.extend({ required: { message: 'Decision Text is Required.' } });
+
+            self.defaultTextSeverityCss = ko.pureComputed(function() {
+                if (self.defaultTextSeverity() == 1)
+                    return 'text-severity-success';
+                if (self.defaultTextSeverity() == 2)
+                    return 'text-severity-warning';
+                if (self.defaultTextSeverity() == 3)
+                    return 'text-severity-danger';
+                return '';
+            });
+
+            self.validate = function() {
+                var result = ko.validation.group(self, { deep: true });
+                if (result().length > 0) {
+                    result.showAllMessages(true);
+                    alert("Please fix all errors before saving.");
+                    return false;
+                }
+                return true;
+            };
+
+            function changeSelectionStatus(array, val) {
+                for (var i = 0; i < array().length; i++) {
+                    var item = array()[i];
+                    item.selectedInd(val);
+                }
+            }
+
+            self.selectAllVehicleMakes = function () { changeSelectionStatus(self.vehicleMakes, true); }
+            self.deselectAllVehicleMakes = function () { changeSelectionStatus(self.vehicleMakes, false); }
+            self.selectAllRequestCategories = function () { changeSelectionStatus(self.requestCategories, true); }
+            self.deselectAllRequestCategories = function () { changeSelectionStatus(self.requestCategories, false); }
+            self.selectAllRequestTypes = function () { changeSelectionStatus(self.requestTypes, true); }
+            self.deselectAllRequestTypes = function () { changeSelectionStatus(self.requestTypes, false); }
+        };
+
+        function loadDecision(decisionId) {
+            $.post('@Url.Action("GetDecisionById")',
+                { decisionId },
+                function(data) {
+                    window.decisionManagementViewModel.decisionManageViewModel(new DecisionManageViewModel(data));
+                    $('#decision-modal').modal('show');
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    alert('There was an unknown error loading, please reload the page.');
+                });
+        }
+
+        function saveDecision() {
+            var viewModel = window.decisionManagementViewModel.decisionManageViewModel();
+            if (viewModel && viewModel.validate()) {
+                var update = ko.mapping.toJS(viewModel, { ignore: "updateResult" });
+                $.post('@Url.Action("SaveDecision")',
+                    { Decision: update },
+                    function(data) {
+                        var manage = new DecisionManageViewModel(data);
+                        window.decisionManagementViewModel.decisionManageViewModel(manage);
+
+                        if (manage.updateResult && manage.updateResult.success()) {
+                            setTimeout(function() { $('#decision-modal').modal('hide'); }, 2000);
+                        }
+                    })
+                    .fail(function(e) {
+                        console.log(e);
+                        alert('There was an unknown error saving, please reload the page.');
+                    })
+                    .always(function() {
+                        $('#decisions-grid').bootgrid("reload");
+                    });
+            }
+        }
+
+        function changeCheckboxesState(sel, val) {
+            $(sel).prop('checked', val);
+        }
+    </script>
+}

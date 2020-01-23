@@ -1,0 +1,129 @@
+﻿@using AirPro.Common.Enumerations
+@model AirPro.Site.Models.Shared.PointOfImpactDefinition
+
+<style>
+    table.poi {
+        width: 100%;
+        background-image: url(/images/car_silouette.png);
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+        table.poi div {
+            width: 35px;
+            height: 35px;
+            margin: 15px auto;
+            border-radius: 50%;
+            border: black 5px solid;
+        }
+
+        table.poi td {
+            margin: 0 auto;
+        }
+
+    .poi div[data-selected="0"] {
+        background: none;
+    }
+
+    .poi div:not([data-selected="0"]) {
+        background: #0d60da;
+    }
+</style>
+
+<table class="poi">
+    <colgroup>
+        <col style="width: 33%" />
+        <col style="width: 33%" />
+        <col style="width: 33%" />
+    </colgroup>
+    <tbody>
+    <tr>
+        <td>
+            <div class="poi-imageV2" data-location-id="11" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.LeftFrontCorner)" data-toggle="tooltip" data-placement="top" title="Left Front Corner" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="12" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.FrontCenter)" data-toggle="tooltip" data-placement="top" title="Front Center" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="1" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RightFrontCorner)" data-toggle="tooltip" data-placement="top" title="Right Front Corner" data-container="body"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="poi-imageV2" data-location-id="10" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.LeftFrontSide)" data-toggle="tooltip" data-placement="top" title="Left Front Side" data-container="body"></div>
+        </td>
+        <td></td>
+        <td>
+            <div class="poi-imageV2" data-location-id="2" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RightFrontSide)" data-toggle="tooltip" data-placement="top" title="Right Front Side" data-container="body"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="poi-imageV2" data-location-id="9" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.LeftSide)" data-toggle="tooltip" data-placement="top" title="Left Side" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="13" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.Rollover)" data-toggle="tooltip" data-placement="top" title="Rollover" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="3" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RightSide)" data-toggle="tooltip" data-placement="top" title="Right Side" data-container="body"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="poi-imageV2" data-location-id="8" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.LeftRearSide)" data-toggle="tooltip" data-placement="top" title="Left Rear Side" data-container="body"></div>
+        </td>
+        <td></td>
+        <td>
+            <div class="poi-imageV2" data-location-id="4" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RightRearSide)" data-toggle="tooltip" data-placement="top" title="Right Rear Side" data-container="body"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="poi-imageV2" data-location-id="7" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.LeftRearCorner)" data-toggle="tooltip" data-placement="top" title="Left Rear Corner" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="6" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RearCenter)" data-toggle="tooltip" data-placement="top" title="Rear Center" data-container="body"></div>
+        </td>
+        <td>
+            <div class="poi-imageV2" data-location-id="5" data-selected="@Model.Values.FirstOrDefault(d => d == (int)PointOfImacts.RightRearCorner)" data-toggle="tooltip" data-placement="top" title="Right Rear Corner" data-container="body"></div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    @if (Model.ReadOnly == false)
+    {
+        <text>
+        $('.poi div').on('click', function() {
+            if ($(this).prop('readonly') === true) return;
+
+            var value = $(this).attr('data-selected');
+
+            if (value && value == 0)
+            {
+                var position = $(this).attr('data-location-id');
+                setLocation(position);
+            }
+            else if (value)
+            {
+                clearLocation($(this));
+            }
+        });
+        </text>
+    }
+
+    function setLocation(locationId) {
+        var elem = $('.poi div[data-location-id="' + locationId + '"]');
+        if (elem) {
+            $(elem).attr('data-selected', 1);
+            $(elem).append('<input type="hidden" name="@Model.PropertyName" value="' + locationId + '" />');
+        }
+    }
+
+    function clearLocation(elem) {
+        $(elem).attr('data-selected', 0);
+        $(elem).find('input[type="hidden"]').remove();
+    }
+</script>
